@@ -1,0 +1,2061 @@
+{
+  "stores": [
+    {
+      "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+      "name": "Lauckner, Ostendarp and Buchrucker",
+      "address": "Wilhelmsgasse 68c",
+      "zip": "1020",
+      "city": "Wien"
+    },
+    {
+      "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+      "name": "Ertl KG",
+      "address": "Im Dorf 87",
+      "zip": "1050",
+      "city": "Wien"
+    },
+    {
+      "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+      "name": "Rosenauer - Kerl",
+      "address": "Havelstr. 48a",
+      "zip": "1180",
+      "city": "Wien"
+    },
+    {
+      "guid": "02f18081-6afb-993b-5785-369331102393",
+      "name": "Koszewski UG",
+      "address": "Hallesche Str. 71c",
+      "zip": "1110",
+      "city": "Wien"
+    },
+    {
+      "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+      "name": "Wassilew, Schreiber and Br\u00F6mme",
+      "address": "Ginsterweg 207",
+      "zip": "1220",
+      "city": "Wien"
+    }
+  ],
+  "productCategories": [
+    {
+      "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+      "name": "Fantastic"
+    },
+    {
+      "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+      "name": "Licensed"
+    },
+    {
+      "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+      "name": "Handmade"
+    },
+    {
+      "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+      "name": "Refined"
+    }
+  ],
+  "products": [
+    {
+      "guid": "c47c22ec-6acb-7f5d-e61f-add5771cf475",
+      "ean": 729534,
+      "name": "Unbranded Rubber Soap",
+      "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+      "added": "2021-08-17T15:59:06",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    },
+    {
+      "guid": "573326c7-1e7d-326a-e5eb-85c007687c87",
+      "ean": 952530,
+      "name": "Tasty Concrete Computer",
+      "description": "The Apollotech B340 is an affordable wireless mouse with reliable connectivity, 12 months battery life and modern design",
+      "added": "2021-05-18T18:17:22",
+      "productCategory": {
+        "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+        "name": "Handmade"
+      }
+    },
+    {
+      "guid": "129e000f-4df1-252b-332a-eab49d9813e0",
+      "ean": 246122,
+      "name": "Sleek Rubber Tuna",
+      "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+      "added": "2021-07-19T06:11:57",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    },
+    {
+      "guid": "a5510ded-3ca2-8925-ee71-f92456de0c78",
+      "ean": 883396,
+      "name": "Small Wooden Chair",
+      "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+      "added": "2021-04-26T11:51:46",
+      "productCategory": {
+        "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+        "name": "Licensed"
+      }
+    },
+    {
+      "guid": "477defde-bbdf-8e5c-441d-a5b005a0a888",
+      "ean": 992742,
+      "name": "Ergonomic Soft Car",
+      "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+      "added": "2021-03-18T02:37:00",
+      "productCategory": {
+        "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+        "name": "Refined"
+      }
+    },
+    {
+      "guid": "045401bc-0d07-9f23-c4d1-5972b525f446",
+      "ean": 170038,
+      "name": "Tasty Metal Chair",
+      "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+      "added": "2021-07-16T18:24:09",
+      "productCategory": {
+        "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+        "name": "Licensed"
+      }
+    },
+    {
+      "guid": "313cd706-43dd-20f5-703a-7bc0468ab754",
+      "ean": 283778,
+      "name": "Rustic Soft Shirt",
+      "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+      "added": "2021-02-12T18:45:06",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    },
+    {
+      "guid": "c7f463f2-6ad2-ef60-6c0b-d34d2ccbdc45",
+      "ean": 733796,
+      "name": "Tasty Steel Ball",
+      "description": "New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart",
+      "added": "2021-10-25T09:13:32",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    },
+    {
+      "guid": "3c16bbae-9361-d189-4f5a-a949cde97c23",
+      "ean": 279507,
+      "name": "Handmade Cotton Sausages",
+      "description": "The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive",
+      "added": "2021-02-27T06:17:41",
+      "productCategory": {
+        "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+        "name": "Licensed"
+      }
+    },
+    {
+      "guid": "dba4898b-1122-c22e-f6b8-fe450cbc2dff",
+      "ean": 432690,
+      "name": "Handcrafted Frozen Chair",
+      "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+      "added": "2021-02-27T13:27:32",
+      "productCategory": {
+        "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+        "name": "Licensed"
+      }
+    },
+    {
+      "guid": "abdf5c0e-d9fa-2bec-af3b-7d8ab3bcb867",
+      "ean": 848527,
+      "name": "Tasty Cotton Towels",
+      "description": "The slim \u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality",
+      "added": "2021-01-07T01:51:50",
+      "productCategory": {
+        "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+        "name": "Handmade"
+      }
+    },
+    {
+      "guid": "1089666f-2bf0-ef7b-4909-08957e426533",
+      "ean": 381518,
+      "name": "Refined Rubber Soap",
+      "description": "The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive",
+      "added": "2021-07-07T21:28:13",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    },
+    {
+      "guid": "7ca24279-637a-ce5c-ef3f-b9704571c8fc",
+      "ean": 830344,
+      "name": "Licensed Concrete Mouse",
+      "description": "Carbonite web goalkeeper gloves are ergonomically designed to give easy fit",
+      "added": "2021-07-28T02:09:16",
+      "productCategory": {
+        "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+        "name": "Refined"
+      }
+    },
+    {
+      "guid": "ed5a243a-a9ae-8003-99e0-350fce4dae00",
+      "ean": 206389,
+      "name": "Handmade Metal Hat",
+      "description": "New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart",
+      "added": "2021-10-14T19:15:04",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    },
+    {
+      "guid": "0d20c120-198d-5abd-afcf-1b68581f75ae",
+      "ean": 976225,
+      "name": "Intelligent Granite Pizza",
+      "description": "The Apollotech B340 is an affordable wireless mouse with reliable connectivity, 12 months battery life and modern design",
+      "added": "2021-04-14T05:34:30",
+      "productCategory": {
+        "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+        "name": "Refined"
+      }
+    },
+    {
+      "guid": "3351affa-46c0-9246-d175-52392c8d9c76",
+      "ean": 615616,
+      "name": "Generic Plastic Car",
+      "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+      "added": "2021-09-09T02:40:04",
+      "productCategory": {
+        "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+        "name": "Refined"
+      }
+    },
+    {
+      "guid": "3f16e156-2c15-a596-4211-5e255e3ce5fd",
+      "ean": 985142,
+      "name": "Handmade Wooden Bike",
+      "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+      "added": "2021-09-03T22:01:41",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    },
+    {
+      "guid": "76882049-4458-8909-2347-cafa52a90631",
+      "ean": 888344,
+      "name": "Unbranded Plastic Shoes",
+      "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+      "added": "2021-07-31T02:57:35",
+      "productCategory": {
+        "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+        "name": "Refined"
+      }
+    },
+    {
+      "guid": "dd80393d-1d72-6802-f250-fbcd1f8cb63d",
+      "ean": 881282,
+      "name": "Licensed Fresh Hat",
+      "description": "The beautiful range of Apple Natural\u00E9 that has an exciting mix of natural ingredients. With the Goodness of 100% Natural Ingredients",
+      "added": "2021-02-09T04:49:27",
+      "productCategory": {
+        "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+        "name": "Handmade"
+      }
+    },
+    {
+      "guid": "370d5493-0fd7-f622-bd7b-b84a3cd86696",
+      "ean": 964205,
+      "name": "Practical Concrete Mouse",
+      "description": "The slim \u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality",
+      "added": "2021-07-13T18:41:51",
+      "productCategory": {
+        "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+        "name": "Handmade"
+      }
+    },
+    {
+      "guid": "fdafa4e7-d56f-92a0-8aa9-f7ed8965e52b",
+      "ean": 375846,
+      "name": "Fantastic Concrete Fish",
+      "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+      "added": "2021-09-06T12:51:14",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    },
+    {
+      "guid": "a3fa6479-1b1b-bbfe-973b-7825932711b3",
+      "ean": 667226,
+      "name": "Awesome Wooden Table",
+      "description": "Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support",
+      "added": "2021-07-31T09:38:56",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    },
+    {
+      "guid": "f58631dc-0885-1950-8980-623698743284",
+      "ean": 199829,
+      "name": "Fantastic Fresh Towels",
+      "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+      "added": "2021-06-25T23:03:44",
+      "productCategory": {
+        "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+        "name": "Handmade"
+      }
+    },
+    {
+      "guid": "1c470352-2139-3869-a134-791d71952578",
+      "ean": 253479,
+      "name": "Fantastic Metal Pizza",
+      "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+      "added": "2021-04-25T04:49:35",
+      "productCategory": {
+        "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+        "name": "Licensed"
+      }
+    },
+    {
+      "guid": "97ee3e79-a372-e4b3-39cc-f133f13eec16",
+      "ean": 739896,
+      "name": "Handcrafted Plastic Pizza",
+      "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+      "added": "2021-08-30T23:40:50",
+      "productCategory": {
+        "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+        "name": "Fantastic"
+      }
+    }
+  ],
+  "offers": [
+    {
+      "guid": "3a1251ef-8f19-9a20-2112-cedd4b89f795",
+      "product": {
+        "guid": "1c470352-2139-3869-a134-791d71952578",
+        "ean": 253479,
+        "name": "Fantastic Metal Pizza",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-04-25T04:49:35",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 688.72,
+      "lastUpdate": "2021-05-25T11:23:10"
+    },
+    {
+      "guid": "3a34617f-30c6-d028-5c70-ef5ae72da820",
+      "product": {
+        "guid": "dba4898b-1122-c22e-f6b8-fe450cbc2dff",
+        "ean": 432690,
+        "name": "Handcrafted Frozen Chair",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-02-27T13:27:32",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 581.40,
+      "lastUpdate": "2021-04-25T08:27:51"
+    },
+    {
+      "guid": "b03d5066-7422-1ef6-e1d6-04758597a528",
+      "product": {
+        "guid": "045401bc-0d07-9f23-c4d1-5972b525f446",
+        "ean": 170038,
+        "name": "Tasty Metal Chair",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-07-16T18:24:09",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 181.72,
+      "lastUpdate": "2021-08-27T03:17:50"
+    },
+    {
+      "guid": "a9a7b966-3f9d-e17b-eb1b-04b804e2425b",
+      "product": {
+        "guid": "f58631dc-0885-1950-8980-623698743284",
+        "ean": 199829,
+        "name": "Fantastic Fresh Towels",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-06-25T23:03:44",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 386.00,
+      "lastUpdate": "2021-08-15T13:29:07"
+    },
+    {
+      "guid": "518dac17-5dae-472b-5f19-3ec60dbc82ad",
+      "product": {
+        "guid": "1089666f-2bf0-ef7b-4909-08957e426533",
+        "ean": 381518,
+        "name": "Refined Rubber Soap",
+        "description": "The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive",
+        "added": "2021-07-07T21:28:13",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 120.99,
+      "lastUpdate": "2021-08-29T06:06:00"
+    },
+    {
+      "guid": "c63215f8-4cd2-a270-544a-0eec9acfa0b9",
+      "product": {
+        "guid": "dd80393d-1d72-6802-f250-fbcd1f8cb63d",
+        "ean": 881282,
+        "name": "Licensed Fresh Hat",
+        "description": "The beautiful range of Apple Natural\u00E9 that has an exciting mix of natural ingredients. With the Goodness of 100% Natural Ingredients",
+        "added": "2021-02-09T04:49:27",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 121.35,
+      "lastUpdate": "2021-03-20T22:04:23"
+    },
+    {
+      "guid": "d2813413-3edc-48aa-6095-b2854fd80302",
+      "product": {
+        "guid": "129e000f-4df1-252b-332a-eab49d9813e0",
+        "ean": 246122,
+        "name": "Sleek Rubber Tuna",
+        "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+        "added": "2021-07-19T06:11:57",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 939.98,
+      "lastUpdate": "2021-09-05T07:22:16"
+    },
+    {
+      "guid": "15f288ec-510a-3e2c-1cc8-815298d2cfc3",
+      "product": {
+        "guid": "3351affa-46c0-9246-d175-52392c8d9c76",
+        "ean": 615616,
+        "name": "Generic Plastic Car",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-09-09T02:40:04",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 920.09,
+      "lastUpdate": "2021-09-16T21:48:25"
+    },
+    {
+      "guid": "bf4228a1-8898-c29d-cc9d-4063d69a538b",
+      "product": {
+        "guid": "1c470352-2139-3869-a134-791d71952578",
+        "ean": 253479,
+        "name": "Fantastic Metal Pizza",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-04-25T04:49:35",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 137.35,
+      "lastUpdate": "2021-05-10T07:51:28"
+    },
+    {
+      "guid": "982c6c12-5f14-7ced-083f-6d19deebc0c3",
+      "product": {
+        "guid": "7ca24279-637a-ce5c-ef3f-b9704571c8fc",
+        "ean": 830344,
+        "name": "Licensed Concrete Mouse",
+        "description": "Carbonite web goalkeeper gloves are ergonomically designed to give easy fit",
+        "added": "2021-07-28T02:09:16",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 955.34,
+      "lastUpdate": "2021-09-05T12:26:15"
+    },
+    {
+      "guid": "8cb9209b-2630-ea85-da8f-460fef46d7a8",
+      "product": {
+        "guid": "fdafa4e7-d56f-92a0-8aa9-f7ed8965e52b",
+        "ean": 375846,
+        "name": "Fantastic Concrete Fish",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-09-06T12:51:14",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 164.64,
+      "lastUpdate": "2021-10-18T04:23:31"
+    },
+    {
+      "guid": "c4fdeee3-45be-8182-698b-c79c8743e593",
+      "product": {
+        "guid": "76882049-4458-8909-2347-cafa52a90631",
+        "ean": 888344,
+        "name": "Unbranded Plastic Shoes",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-07-31T02:57:35",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 334.35,
+      "lastUpdate": "2021-09-11T17:16:40"
+    },
+    {
+      "guid": "ef249298-72fd-5139-86d9-3a4e99b455ac",
+      "product": {
+        "guid": "dba4898b-1122-c22e-f6b8-fe450cbc2dff",
+        "ean": 432690,
+        "name": "Handcrafted Frozen Chair",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-02-27T13:27:32",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 610.87,
+      "lastUpdate": "2021-04-13T11:40:50"
+    },
+    {
+      "guid": "4e8003a4-a9c8-ab87-6044-f81560af5e51",
+      "product": {
+        "guid": "313cd706-43dd-20f5-703a-7bc0468ab754",
+        "ean": 283778,
+        "name": "Rustic Soft Shirt",
+        "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+        "added": "2021-02-12T18:45:06",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 216.50,
+      "lastUpdate": "2021-03-08T21:40:38"
+    },
+    {
+      "guid": "90fb310c-7850-d203-ee39-70ba1662bc94",
+      "product": {
+        "guid": "c47c22ec-6acb-7f5d-e61f-add5771cf475",
+        "ean": 729534,
+        "name": "Unbranded Rubber Soap",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-08-17T15:59:06",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 446.30,
+      "lastUpdate": "2021-10-11T13:32:00"
+    },
+    {
+      "guid": "42f08dea-24e1-e9ee-5604-e2142f82df73",
+      "product": {
+        "guid": "573326c7-1e7d-326a-e5eb-85c007687c87",
+        "ean": 952530,
+        "name": "Tasty Concrete Computer",
+        "description": "The Apollotech B340 is an affordable wireless mouse with reliable connectivity, 12 months battery life and modern design",
+        "added": "2021-05-18T18:17:22",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 521.24,
+      "lastUpdate": "2021-05-26T20:37:22"
+    },
+    {
+      "guid": "27bdb5a6-3dd3-fdfe-f2ca-3ff5e772617e",
+      "product": {
+        "guid": "3f16e156-2c15-a596-4211-5e255e3ce5fd",
+        "ean": 985142,
+        "name": "Handmade Wooden Bike",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-09-03T22:01:41",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 942.10,
+      "lastUpdate": "2021-09-16T10:54:58"
+    },
+    {
+      "guid": "ea7c198a-5b57-938b-8349-8b21d7d7ad34",
+      "product": {
+        "guid": "f58631dc-0885-1950-8980-623698743284",
+        "ean": 199829,
+        "name": "Fantastic Fresh Towels",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-06-25T23:03:44",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 147.77,
+      "lastUpdate": "2021-07-21T14:02:22"
+    },
+    {
+      "guid": "a87a6bb2-1e3e-0f1d-c52c-ae774a09059a",
+      "product": {
+        "guid": "dba4898b-1122-c22e-f6b8-fe450cbc2dff",
+        "ean": 432690,
+        "name": "Handcrafted Frozen Chair",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-02-27T13:27:32",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 613.43,
+      "lastUpdate": "2021-03-23T08:15:01"
+    },
+    {
+      "guid": "f3f71dce-bbb2-3805-cc2a-6b48ad654ae3",
+      "product": {
+        "guid": "c47c22ec-6acb-7f5d-e61f-add5771cf475",
+        "ean": 729534,
+        "name": "Unbranded Rubber Soap",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-08-17T15:59:06",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 888.50,
+      "lastUpdate": "2021-09-11T20:18:42"
+    },
+    {
+      "guid": "a5fd183f-b130-547e-184a-24d3a37f9b0f",
+      "product": {
+        "guid": "7ca24279-637a-ce5c-ef3f-b9704571c8fc",
+        "ean": 830344,
+        "name": "Licensed Concrete Mouse",
+        "description": "Carbonite web goalkeeper gloves are ergonomically designed to give easy fit",
+        "added": "2021-07-28T02:09:16",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 946.20,
+      "lastUpdate": "2021-08-22T20:30:19"
+    },
+    {
+      "guid": "e738a636-b3b4-934f-ab0e-c21dbb4966b5",
+      "product": {
+        "guid": "c7f463f2-6ad2-ef60-6c0b-d34d2ccbdc45",
+        "ean": 733796,
+        "name": "Tasty Steel Ball",
+        "description": "New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart",
+        "added": "2021-10-25T09:13:32",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 704.13,
+      "lastUpdate": "2021-11-07T23:31:13"
+    },
+    {
+      "guid": "8120b03c-9705-2ea4-c93b-0d79e737cd99",
+      "product": {
+        "guid": "c47c22ec-6acb-7f5d-e61f-add5771cf475",
+        "ean": 729534,
+        "name": "Unbranded Rubber Soap",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-08-17T15:59:06",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 891.95,
+      "lastUpdate": "2021-09-01T08:39:49"
+    },
+    {
+      "guid": "09a9eb62-0788-5a18-19e5-ef84bb6f1e85",
+      "product": {
+        "guid": "dd80393d-1d72-6802-f250-fbcd1f8cb63d",
+        "ean": 881282,
+        "name": "Licensed Fresh Hat",
+        "description": "The beautiful range of Apple Natural\u00E9 that has an exciting mix of natural ingredients. With the Goodness of 100% Natural Ingredients",
+        "added": "2021-02-09T04:49:27",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 214.12,
+      "lastUpdate": "2021-02-26T02:23:22"
+    },
+    {
+      "guid": "70c9200f-4900-8436-7ccc-d50a62469e51",
+      "product": {
+        "guid": "76882049-4458-8909-2347-cafa52a90631",
+        "ean": 888344,
+        "name": "Unbranded Plastic Shoes",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-07-31T02:57:35",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 485.23,
+      "lastUpdate": "2021-08-26T17:09:15"
+    },
+    {
+      "guid": "e4154a7f-894b-78bd-1848-132933d26d41",
+      "product": {
+        "guid": "dba4898b-1122-c22e-f6b8-fe450cbc2dff",
+        "ean": 432690,
+        "name": "Handcrafted Frozen Chair",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-02-27T13:27:32",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 291.45,
+      "lastUpdate": "2021-04-23T04:15:13"
+    },
+    {
+      "guid": "4cde93d0-e510-7521-d0cd-7d6fbde39ec5",
+      "product": {
+        "guid": "ed5a243a-a9ae-8003-99e0-350fce4dae00",
+        "ean": 206389,
+        "name": "Handmade Metal Hat",
+        "description": "New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart",
+        "added": "2021-10-14T19:15:04",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 227.83,
+      "lastUpdate": "2021-11-24T10:40:24"
+    },
+    {
+      "guid": "336cbe8c-acb9-8fd6-d95d-2fce0dba2deb",
+      "product": {
+        "guid": "a3fa6479-1b1b-bbfe-973b-7825932711b3",
+        "ean": 667226,
+        "name": "Awesome Wooden Table",
+        "description": "Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support",
+        "added": "2021-07-31T09:38:56",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 164.71,
+      "lastUpdate": "2021-09-26T23:35:41"
+    },
+    {
+      "guid": "4ba74867-a3ca-4f6b-33a8-363c1491b212",
+      "product": {
+        "guid": "97ee3e79-a372-e4b3-39cc-f133f13eec16",
+        "ean": 739896,
+        "name": "Handcrafted Plastic Pizza",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-08-30T23:40:50",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 518.99,
+      "lastUpdate": "2021-09-29T02:13:09"
+    },
+    {
+      "guid": "729c910e-af9d-0262-b6b3-584211be1043",
+      "product": {
+        "guid": "a3fa6479-1b1b-bbfe-973b-7825932711b3",
+        "ean": 667226,
+        "name": "Awesome Wooden Table",
+        "description": "Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support",
+        "added": "2021-07-31T09:38:56",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 951.60,
+      "lastUpdate": "2021-08-02T15:07:35"
+    },
+    {
+      "guid": "80996841-f34f-552b-806e-fc06417c2287",
+      "product": {
+        "guid": "ed5a243a-a9ae-8003-99e0-350fce4dae00",
+        "ean": 206389,
+        "name": "Handmade Metal Hat",
+        "description": "New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart",
+        "added": "2021-10-14T19:15:04",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 180.03,
+      "lastUpdate": "2021-11-01T02:10:46"
+    },
+    {
+      "guid": "9bfae5f5-97ee-a10b-673a-97e1734dd5d8",
+      "product": {
+        "guid": "573326c7-1e7d-326a-e5eb-85c007687c87",
+        "ean": 952530,
+        "name": "Tasty Concrete Computer",
+        "description": "The Apollotech B340 is an affordable wireless mouse with reliable connectivity, 12 months battery life and modern design",
+        "added": "2021-05-18T18:17:22",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 324.80,
+      "lastUpdate": "2021-07-05T05:51:40"
+    },
+    {
+      "guid": "99fb63c7-be1e-ba80-4dcf-a041e902265b",
+      "product": {
+        "guid": "a3fa6479-1b1b-bbfe-973b-7825932711b3",
+        "ean": 667226,
+        "name": "Awesome Wooden Table",
+        "description": "Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support",
+        "added": "2021-07-31T09:38:56",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 701.47,
+      "lastUpdate": "2021-08-16T23:08:29"
+    },
+    {
+      "guid": "46ee8ae7-1ad7-f392-a64a-9a5a8917e391",
+      "product": {
+        "guid": "f58631dc-0885-1950-8980-623698743284",
+        "ean": 199829,
+        "name": "Fantastic Fresh Towels",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-06-25T23:03:44",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 901.05,
+      "lastUpdate": "2021-06-28T01:26:47"
+    },
+    {
+      "guid": "02138c2b-4534-d2b7-1e94-710d8061a096",
+      "product": {
+        "guid": "477defde-bbdf-8e5c-441d-a5b005a0a888",
+        "ean": 992742,
+        "name": "Ergonomic Soft Car",
+        "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+        "added": "2021-03-18T02:37:00",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 913.12,
+      "lastUpdate": "2021-05-14T22:54:54"
+    },
+    {
+      "guid": "9252269e-5c08-e66f-89b5-051f0941e109",
+      "product": {
+        "guid": "3c16bbae-9361-d189-4f5a-a949cde97c23",
+        "ean": 279507,
+        "name": "Handmade Cotton Sausages",
+        "description": "The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive",
+        "added": "2021-02-27T06:17:41",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 601.49,
+      "lastUpdate": "2021-04-07T07:34:59"
+    },
+    {
+      "guid": "728967ed-205b-b22d-5fe5-3985c19d4f0a",
+      "product": {
+        "guid": "c7f463f2-6ad2-ef60-6c0b-d34d2ccbdc45",
+        "ean": 733796,
+        "name": "Tasty Steel Ball",
+        "description": "New range of formal shirts are designed keeping you in mind. With fits and styling that will make you stand apart",
+        "added": "2021-10-25T09:13:32",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 227.18,
+      "lastUpdate": "2021-12-04T19:30:24"
+    },
+    {
+      "guid": "b0fd78ce-45c1-9295-8a15-c42f059bb9db",
+      "product": {
+        "guid": "7ca24279-637a-ce5c-ef3f-b9704571c8fc",
+        "ean": 830344,
+        "name": "Licensed Concrete Mouse",
+        "description": "Carbonite web goalkeeper gloves are ergonomically designed to give easy fit",
+        "added": "2021-07-28T02:09:16",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 140.11,
+      "lastUpdate": "2021-08-03T17:08:58"
+    },
+    {
+      "guid": "c37a146b-4509-6864-077b-691e3555af99",
+      "product": {
+        "guid": "76882049-4458-8909-2347-cafa52a90631",
+        "ean": 888344,
+        "name": "Unbranded Plastic Shoes",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-07-31T02:57:35",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 993.65,
+      "lastUpdate": "2021-08-14T17:52:15"
+    },
+    {
+      "guid": "0e8a2ce1-a5ac-b0f9-ec1f-c7368723ec49",
+      "product": {
+        "guid": "313cd706-43dd-20f5-703a-7bc0468ab754",
+        "ean": 283778,
+        "name": "Rustic Soft Shirt",
+        "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+        "added": "2021-02-12T18:45:06",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 249.57,
+      "lastUpdate": "2021-03-28T01:40:07"
+    },
+    {
+      "guid": "80983eb3-a6f3-18f0-74cb-34a64c4b2502",
+      "product": {
+        "guid": "abdf5c0e-d9fa-2bec-af3b-7d8ab3bcb867",
+        "ean": 848527,
+        "name": "Tasty Cotton Towels",
+        "description": "The slim \u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality",
+        "added": "2021-01-07T01:51:50",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 802.25,
+      "lastUpdate": "2021-02-22T18:05:06"
+    },
+    {
+      "guid": "f76f25c2-eb84-631e-ffac-b105e2bba817",
+      "product": {
+        "guid": "97ee3e79-a372-e4b3-39cc-f133f13eec16",
+        "ean": 739896,
+        "name": "Handcrafted Plastic Pizza",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-08-30T23:40:50",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 187.05,
+      "lastUpdate": "2021-09-06T02:40:57"
+    },
+    {
+      "guid": "7460ca00-f4c0-cc8f-fd21-db5a0fbb6e8e",
+      "product": {
+        "guid": "a5510ded-3ca2-8925-ee71-f92456de0c78",
+        "ean": 883396,
+        "name": "Small Wooden Chair",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-04-26T11:51:46",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 851.02,
+      "lastUpdate": "2021-05-16T05:32:54"
+    },
+    {
+      "guid": "89449d38-15c5-91d2-0b46-452ba0a55f5e",
+      "product": {
+        "guid": "129e000f-4df1-252b-332a-eab49d9813e0",
+        "ean": 246122,
+        "name": "Sleek Rubber Tuna",
+        "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+        "added": "2021-07-19T06:11:57",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 361.67,
+      "lastUpdate": "2021-08-11T03:32:31"
+    },
+    {
+      "guid": "d52660e0-7450-de3b-a737-4c77a1975893",
+      "product": {
+        "guid": "313cd706-43dd-20f5-703a-7bc0468ab754",
+        "ean": 283778,
+        "name": "Rustic Soft Shirt",
+        "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+        "added": "2021-02-12T18:45:06",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 423.09,
+      "lastUpdate": "2021-02-16T10:12:35"
+    },
+    {
+      "guid": "b98ae5ea-9d31-c433-0c4c-0db0c2e3e2d8",
+      "product": {
+        "guid": "97ee3e79-a372-e4b3-39cc-f133f13eec16",
+        "ean": 739896,
+        "name": "Handcrafted Plastic Pizza",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-08-30T23:40:50",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 403.92,
+      "lastUpdate": "2021-09-16T03:33:36"
+    },
+    {
+      "guid": "cc53cb19-5baf-7223-b232-ff1ead419e16",
+      "product": {
+        "guid": "129e000f-4df1-252b-332a-eab49d9813e0",
+        "ean": 246122,
+        "name": "Sleek Rubber Tuna",
+        "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+        "added": "2021-07-19T06:11:57",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 461.00,
+      "lastUpdate": "2021-08-06T11:52:15"
+    },
+    {
+      "guid": "88e7f160-e4e7-8a5b-e8f9-6491d80226ff",
+      "product": {
+        "guid": "0d20c120-198d-5abd-afcf-1b68581f75ae",
+        "ean": 976225,
+        "name": "Intelligent Granite Pizza",
+        "description": "The Apollotech B340 is an affordable wireless mouse with reliable connectivity, 12 months battery life and modern design",
+        "added": "2021-04-14T05:34:30",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 725.87,
+      "lastUpdate": "2021-06-12T08:26:43"
+    },
+    {
+      "guid": "9ea944dd-905e-4c10-f856-3e52006a4646",
+      "product": {
+        "guid": "3f16e156-2c15-a596-4211-5e255e3ce5fd",
+        "ean": 985142,
+        "name": "Handmade Wooden Bike",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-09-03T22:01:41",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 539.46,
+      "lastUpdate": "2021-09-23T20:53:32"
+    },
+    {
+      "guid": "ae1104fa-ebd5-0af4-fd2a-fde94f90c4a8",
+      "product": {
+        "guid": "f58631dc-0885-1950-8980-623698743284",
+        "ean": 199829,
+        "name": "Fantastic Fresh Towels",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-06-25T23:03:44",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 840.64,
+      "lastUpdate": "2021-08-03T18:39:21"
+    },
+    {
+      "guid": "5a4e29b1-327d-a7b5-1184-ce6f590e5ccf",
+      "product": {
+        "guid": "76882049-4458-8909-2347-cafa52a90631",
+        "ean": 888344,
+        "name": "Unbranded Plastic Shoes",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-07-31T02:57:35",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 806.61,
+      "lastUpdate": "2021-08-09T05:13:21"
+    },
+    {
+      "guid": "d6b5a834-e5fd-05ad-a48b-1947b31899cf",
+      "product": {
+        "guid": "0d20c120-198d-5abd-afcf-1b68581f75ae",
+        "ean": 976225,
+        "name": "Intelligent Granite Pizza",
+        "description": "The Apollotech B340 is an affordable wireless mouse with reliable connectivity, 12 months battery life and modern design",
+        "added": "2021-04-14T05:34:30",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 795.48,
+      "lastUpdate": "2021-05-20T02:37:06"
+    },
+    {
+      "guid": "fdd8bc51-0791-7c3f-d43e-17f93e946e8c",
+      "product": {
+        "guid": "3f16e156-2c15-a596-4211-5e255e3ce5fd",
+        "ean": 985142,
+        "name": "Handmade Wooden Bike",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-09-03T22:01:41",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 157.15,
+      "lastUpdate": "2021-09-26T15:21:32"
+    },
+    {
+      "guid": "653130a5-2073-1e09-aa0c-37697bc073c6",
+      "product": {
+        "guid": "a5510ded-3ca2-8925-ee71-f92456de0c78",
+        "ean": 883396,
+        "name": "Small Wooden Chair",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-04-26T11:51:46",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 770.84,
+      "lastUpdate": "2021-05-09T04:42:17"
+    },
+    {
+      "guid": "a0e5ac58-3577-c546-af83-58a09515b9f5",
+      "product": {
+        "guid": "fdafa4e7-d56f-92a0-8aa9-f7ed8965e52b",
+        "ean": 375846,
+        "name": "Fantastic Concrete Fish",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-09-06T12:51:14",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 905.23,
+      "lastUpdate": "2021-10-06T14:46:36"
+    },
+    {
+      "guid": "c66aae0e-1b9c-c84a-cbda-4f4c71170e69",
+      "product": {
+        "guid": "370d5493-0fd7-f622-bd7b-b84a3cd86696",
+        "ean": 964205,
+        "name": "Practical Concrete Mouse",
+        "description": "The slim \u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality",
+        "added": "2021-07-13T18:41:51",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 642.32,
+      "lastUpdate": "2021-07-21T02:42:37"
+    },
+    {
+      "guid": "152ac30c-2173-e376-596d-b89adf8cc1bd",
+      "product": {
+        "guid": "313cd706-43dd-20f5-703a-7bc0468ab754",
+        "ean": 283778,
+        "name": "Rustic Soft Shirt",
+        "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+        "added": "2021-02-12T18:45:06",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 543.04,
+      "lastUpdate": "2021-03-18T12:16:08"
+    },
+    {
+      "guid": "d2d5c2fa-9071-d351-9951-24065cebbeef",
+      "product": {
+        "guid": "045401bc-0d07-9f23-c4d1-5972b525f446",
+        "ean": 170038,
+        "name": "Tasty Metal Chair",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-07-16T18:24:09",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 553.53,
+      "lastUpdate": "2021-09-01T19:08:20"
+    },
+    {
+      "guid": "b67d19cd-deeb-2d6d-5d25-ab9d5923c09b",
+      "product": {
+        "guid": "a5510ded-3ca2-8925-ee71-f92456de0c78",
+        "ean": 883396,
+        "name": "Small Wooden Chair",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-04-26T11:51:46",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 358.97,
+      "lastUpdate": "2021-06-23T04:23:58"
+    },
+    {
+      "guid": "5266537f-f92f-e2c0-fa97-cbbb6cac0f40",
+      "product": {
+        "guid": "370d5493-0fd7-f622-bd7b-b84a3cd86696",
+        "ean": 964205,
+        "name": "Practical Concrete Mouse",
+        "description": "The slim \u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality",
+        "added": "2021-07-13T18:41:51",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 726.71,
+      "lastUpdate": "2021-08-25T17:52:19"
+    },
+    {
+      "guid": "5174ccde-277d-1345-9ca5-b9c22ea004bb",
+      "product": {
+        "guid": "3c16bbae-9361-d189-4f5a-a949cde97c23",
+        "ean": 279507,
+        "name": "Handmade Cotton Sausages",
+        "description": "The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive",
+        "added": "2021-02-27T06:17:41",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 415.19,
+      "lastUpdate": "2021-04-17T07:54:15"
+    },
+    {
+      "guid": "22a61d4b-ed40-ab18-3647-5d22287dcbb3",
+      "product": {
+        "guid": "370d5493-0fd7-f622-bd7b-b84a3cd86696",
+        "ean": 964205,
+        "name": "Practical Concrete Mouse",
+        "description": "The slim \u0026 simple Maple Gaming Keyboard from Dev Byte comes with a sleek body and 7- Color RGB LED Back-lighting for smart functionality",
+        "added": "2021-07-13T18:41:51",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "8e1bd9de-7cf5-be9b-f1e6-c8d4344317ec",
+        "name": "Ertl KG",
+        "address": "Im Dorf 87",
+        "zip": "1050",
+        "city": "Wien"
+      },
+      "price": 344.84,
+      "lastUpdate": "2021-07-23T05:40:30"
+    },
+    {
+      "guid": "54dc9a0f-9647-b19a-d550-dc1134880b9e",
+      "product": {
+        "guid": "573326c7-1e7d-326a-e5eb-85c007687c87",
+        "ean": 952530,
+        "name": "Tasty Concrete Computer",
+        "description": "The Apollotech B340 is an affordable wireless mouse with reliable connectivity, 12 months battery life and modern design",
+        "added": "2021-05-18T18:17:22",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 921.91,
+      "lastUpdate": "2021-06-11T02:58:21"
+    },
+    {
+      "guid": "e2024b60-a92e-ebf4-e709-8e8d0445f819",
+      "product": {
+        "guid": "045401bc-0d07-9f23-c4d1-5972b525f446",
+        "ean": 170038,
+        "name": "Tasty Metal Chair",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-07-16T18:24:09",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 747.08,
+      "lastUpdate": "2021-07-26T02:44:13"
+    },
+    {
+      "guid": "57f7da6d-0778-a680-31f7-ead30dd82fc3",
+      "product": {
+        "guid": "477defde-bbdf-8e5c-441d-a5b005a0a888",
+        "ean": 992742,
+        "name": "Ergonomic Soft Car",
+        "description": "New ABC 13 9370, 13.3, 5th Gen CoreA5-8250U, 8GB RAM, 256GB SSD, power UHD Graphics, OS 10 Home, OS Office A \u0026 J 2016",
+        "added": "2021-03-18T02:37:00",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 850.71,
+      "lastUpdate": "2021-05-07T14:09:50"
+    },
+    {
+      "guid": "cbc9afa2-4fc2-ef0d-8ff2-cde444fdca86",
+      "product": {
+        "guid": "3351affa-46c0-9246-d175-52392c8d9c76",
+        "ean": 615616,
+        "name": "Generic Plastic Car",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-09-09T02:40:04",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "02f18081-6afb-993b-5785-369331102393",
+        "name": "Koszewski UG",
+        "address": "Hallesche Str. 71c",
+        "zip": "1110",
+        "city": "Wien"
+      },
+      "price": 127.72,
+      "lastUpdate": "2021-09-29T16:55:52"
+    },
+    {
+      "guid": "f0b94d29-bb1e-2c7f-1534-81d6ca6ea4be",
+      "product": {
+        "guid": "3351affa-46c0-9246-d175-52392c8d9c76",
+        "ean": 615616,
+        "name": "Generic Plastic Car",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-09-09T02:40:04",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 787.66,
+      "lastUpdate": "2021-10-09T17:08:40"
+    },
+    {
+      "guid": "02b8b8eb-4534-4ed7-d4dd-1f7a1193da61",
+      "product": {
+        "guid": "dd80393d-1d72-6802-f250-fbcd1f8cb63d",
+        "ean": 881282,
+        "name": "Licensed Fresh Hat",
+        "description": "The beautiful range of Apple Natural\u00E9 that has an exciting mix of natural ingredients. With the Goodness of 100% Natural Ingredients",
+        "added": "2021-02-09T04:49:27",
+        "productCategory": {
+          "guid": "266dde85-cc10-4bf2-94c9-1e590e802fea",
+          "name": "Handmade"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 890.91,
+      "lastUpdate": "2021-03-15T08:45:07"
+    },
+    {
+      "guid": "08dd4faf-3c42-87a9-e812-e079ab942c74",
+      "product": {
+        "guid": "3c16bbae-9361-d189-4f5a-a949cde97c23",
+        "ean": 279507,
+        "name": "Handmade Cotton Sausages",
+        "description": "The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive",
+        "added": "2021-02-27T06:17:41",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "fb9b4cf1-b880-48ea-4cff-fb162c7bc270",
+        "name": "Lauckner, Ostendarp and Buchrucker",
+        "address": "Wilhelmsgasse 68c",
+        "zip": "1020",
+        "city": "Wien"
+      },
+      "price": 819.71,
+      "lastUpdate": "2021-03-03T11:09:25"
+    },
+    {
+      "guid": "44e23e80-7f4c-9030-5e06-f01c2eb93768",
+      "product": {
+        "guid": "3351affa-46c0-9246-d175-52392c8d9c76",
+        "ean": 615616,
+        "name": "Generic Plastic Car",
+        "description": "Boston\u0027s most advanced compression wear technology increases muscle oxygenation, stabilizes active muscles",
+        "added": "2021-09-09T02:40:04",
+        "productCategory": {
+          "guid": "be85fb53-681e-0203-861c-9388bf7a5f8a",
+          "name": "Refined"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 718.73,
+      "lastUpdate": "2021-09-19T07:33:17"
+    },
+    {
+      "guid": "f314c3bb-1ad9-d065-c9f9-d3a055fa0276",
+      "product": {
+        "guid": "3c16bbae-9361-d189-4f5a-a949cde97c23",
+        "ean": 279507,
+        "name": "Handmade Cotton Sausages",
+        "description": "The automobile layout consists of a front-engine design, with transaxle-type transmissions mounted at the rear of the engine and four wheel drive",
+        "added": "2021-02-27T06:17:41",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 726.51,
+      "lastUpdate": "2021-03-18T21:02:06"
+    },
+    {
+      "guid": "5d0b22b5-19b3-9022-5ad0-9a910681c045",
+      "product": {
+        "guid": "045401bc-0d07-9f23-c4d1-5972b525f446",
+        "ean": 170038,
+        "name": "Tasty Metal Chair",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-07-16T18:24:09",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 946.07,
+      "lastUpdate": "2021-08-13T22:15:16"
+    },
+    {
+      "guid": "73d6401c-471b-2bbf-e079-a3c2eed9e42c",
+      "product": {
+        "guid": "97ee3e79-a372-e4b3-39cc-f133f13eec16",
+        "ean": 739896,
+        "name": "Handcrafted Plastic Pizza",
+        "description": "The Nagasaki Lander is the trademarked name of several series of Nagasaki sport bikes, that started with the 1984 ABC800J",
+        "added": "2021-08-30T23:40:50",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 929.62,
+      "lastUpdate": "2021-10-03T22:25:03"
+    },
+    {
+      "guid": "017e4c87-14c5-b782-cd05-e778105aa22a",
+      "product": {
+        "guid": "a3fa6479-1b1b-bbfe-973b-7825932711b3",
+        "ean": 667226,
+        "name": "Awesome Wooden Table",
+        "description": "Ergonomic executive chair upholstered in bonded black leather and PVC padded seat and back for all-day comfort and support",
+        "added": "2021-07-31T09:38:56",
+        "productCategory": {
+          "guid": "88c258d4-a7f7-ead3-d779-ed2c2ed8d9f3",
+          "name": "Fantastic"
+        }
+      },
+      "store": {
+        "guid": "ddc15197-0998-5964-3630-af0873c5356c",
+        "name": "Wassilew, Schreiber and Br\u00F6mme",
+        "address": "Ginsterweg 207",
+        "zip": "1220",
+        "city": "Wien"
+      },
+      "price": 977.61,
+      "lastUpdate": "2021-08-31T16:51:03"
+    },
+    {
+      "guid": "db5d07c5-2a92-94b1-36ba-96760ab8bda1",
+      "product": {
+        "guid": "1c470352-2139-3869-a134-791d71952578",
+        "ean": 253479,
+        "name": "Fantastic Metal Pizza",
+        "description": "Andy shoes are designed to keeping in mind durability as well as trends, the most stylish range of shoes \u0026 sandals",
+        "added": "2021-04-25T04:49:35",
+        "productCategory": {
+          "guid": "4df6342f-e51a-e1b2-cefa-8e74baccc348",
+          "name": "Licensed"
+        }
+      },
+      "store": {
+        "guid": "5e871525-b7b4-a0b0-0b6f-3071059a91bd",
+        "name": "Rosenauer - Kerl",
+        "address": "Havelstr. 48a",
+        "zip": "1180",
+        "city": "Wien"
+      },
+      "price": 222.14,
+      "lastUpdate": "2021-06-05T21:55:44"
+    }
+  ]
+}
