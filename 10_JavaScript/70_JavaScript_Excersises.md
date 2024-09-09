@@ -43,7 +43,7 @@ function render(isOpen) {
 - **Q3.** In what scenarios is the `&&` operator useful?
 - **Q4.** In what scenarios is the `?:` operator useful?
 
-- **E1.** Write a function `displayCart` that takes a cart object `{ items: Array } and returns a footer displaying the total amount if there are items in the cart, otherwise "Your cart is empty."
+- **E1.** Write a function `displayCart` that takes a cart object `{ items: Array }` and returns a footer displaying the total amount if there are items in the cart, otherwise "Your cart is empty."
 
 ## Optional chaining (?.), Nullish coalescing operator (??)
 - **Q1.** How does the optional chaining operator `?.` work? 
