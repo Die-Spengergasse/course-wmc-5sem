@@ -1,6 +1,8 @@
 # Test with
+# docker rm -f todo_backend
 # docker build -t todo_backend . && docker run -d -p 5001:5001 -e "ASPNETCORE_HTTPS_PORT=5001" --name todo_backend todo_backend
 # Build container. Load full SDK as base image.
+
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 

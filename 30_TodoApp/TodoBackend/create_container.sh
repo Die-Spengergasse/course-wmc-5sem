@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo Pull changes...
+git pull
+
 SSL_CERT_FILE="todo_backend.pfx"                  # generated with dotnet dev-certs in this script
 DOCKER_IMAGE=todo_backend
 # Generate random secret (the secret in appsettings.json is empty)
@@ -15,7 +18,7 @@ dotnet dev-certs https --trust
 
 docker rm -f $DOCKER_IMAGE
 docker build -t $DOCKER_IMAGE . 
-MSYS_NO_PATHCONV=1 docker run -d -p 5000:80 -p 5001:443 --name $DOCKER_IMAGE \
+MSYS_NO_PATHCONV=1 docker run -d -p 5080:80 -p 5443:443 --name $DOCKER_IMAGE \
     -e "ASPNETCORE_URLS=https://+;http://+" \
     -e ASPNETCORE_Kestrel__Certificates__Default__Password="$CERT_PASS" \
     -e ASPNETCORE_Kestrel__Certificates__Default__Path="/https/$SSL_CERT_FILE" \
@@ -23,3 +26,6 @@ MSYS_NO_PATHCONV=1 docker run -d -p 5000:80 -p 5001:443 --name $DOCKER_IMAGE \
     -e "SECRET=$SECRET" \
     -v $HOME/.aspnet/https:/https/ \
     $DOCKER_IMAGE
+
+echo Ready.
+echo Start with https://localhost:5443/swagger or https://localhost:5443/api/categories
