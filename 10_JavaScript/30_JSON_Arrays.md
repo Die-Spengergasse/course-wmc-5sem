@@ -379,7 +379,7 @@ Arrays sind Blöcke, die nur aus Punkten bestehen.
    Das Property title ist ein String mit dem Wert "Meeting: Konzeption des Frontends"
 * Zugesagte Teilnehmer *************************************************************
    Cyrillus Landre hat für das Meeting "Meeting: Konzeption des Frontends" zugesagt.
-* Abgesagte Teilnehmer *************************************************************
+* Teilnehmer, die nicht reagiert haben**********************************************
    Ilario Semken hat noch nicht reagiert.
 ```
 
@@ -415,9 +415,8 @@ console.log("* String Properties und ihre Werte*********************************
 console.log("* Zugesagte Teilnehmer *************************************************************");
 
 // *************************************************************************************************
-// Wer hat für das Meeting definitiv abgesagt, d. h. confirmed hat den Wert false? Verwende dafür
-// eine Schleife, die das Array durchgeht. 
-console.log("* Abgesagte Teilnehmer *************************************************************");
+// Wer hat noch nicht reagiert, d. h. confirmed wurde nicht gesetzt?
+console.log("* Teilnehmer, die nicht reagiert haben**********************************************");
 ```
 
 ## Übung 2
