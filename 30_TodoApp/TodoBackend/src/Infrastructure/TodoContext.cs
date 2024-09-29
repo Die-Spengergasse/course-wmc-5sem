@@ -18,6 +18,9 @@ namespace TodoBackend.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Category>().Property(c => c.Priority).HasConversion<string>();
+            modelBuilder.Entity<Category>().HasIndex("Name", "OwnerId").IsUnique(true);
+
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 // Generic config for all entities
@@ -97,8 +100,8 @@ namespace TodoBackend.Infrastructure
             var todoTasks = new Faker<TodoTask>().CustomInstantiator(f =>
             {
                 var todoItem = f.PickRandom(todoItems);
-                var dueDate = todoItem.DueDate.HasValue 
-                    ? f.Date.Between(DateTime.Now, todoItem.DueDate.Value).OrNull(f, 0.2f) 
+                var dueDate = todoItem.DueDate.HasValue
+                    ? f.Date.Between(DateTime.Now, todoItem.DueDate.Value).OrNull(f, 0.2f)
                     : f.Date.Future().OrNull(f, 0.2f);
                 var createdAt = f.Date.Between(todoItem.CreatedAt, DateTime.UtcNow);
                 var updatedAt = f.Date.Between(createdAt, DateTime.UtcNow);

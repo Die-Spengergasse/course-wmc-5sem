@@ -1,0 +1,72 @@
+@startuml
+hide empty methods
+
+package "Tasks" {
+    left to right direction
+    enum Priority {
+        Low
+        Medium
+        High
+    }
+    entity Category {
+        - Id : int
+        - Guid : Guid
+        - Name : string
+        - Description : string
+        - IsVisible : bool
+        - Priority : Priority
+        - Owner : User
+        - CreatedAt : DateTime
+        - UpdatedAt : DateTime
+        ---
+        + Category(string name, string description,
+        bool isVisible, Priority priority, User owner)
+    }
+    entity TodoItem {
+        - Id : int
+        - Guid : Guid
+        - Title : string
+        - Description : string
+        - Category : Category
+        - IsCompleted : bool
+        - DueDate : DateTime?
+        - CreatedAt : DateTime
+        - UpdatedAt : DateTime
+        - TodoTasks : List<TodoTask>
+        ---
+        + TodoItem(string title, string description,
+        Category category, bool isCompleted,
+        DateTime? dueDate = null)
+    }
+    entity TodoTask {
+        - Id : int
+        - Guid : Guid
+        - TodoItem : TodoItem
+        - Title : string
+        - IsCompleted : bool
+        - DueDate : DateTime?
+        - CreatedAt : DateTime
+        - UpdatedAt : DateTime
+        ---
+        + TodoTask(TodoItem todoItem, string title,
+        bool isCompleted, DateTime? dueDate = null)
+    }
+
+}
+entity User {
+    - Id : int
+    - Guid : Guid
+    - Name : string
+    - Salt : string
+    - PassHash : string
+    + CheckPassword(string password) : bool
+    + GenerateUserWithPassword(string username, string password) : User
+}
+
+
+
+Category -- Priority
+Category "0..n" --> "1" User : > Owner
+TodoItem "0..n" --> "1" Category : > Category
+TodoTask "0..n" --> "1" TodoItem : > TodoItem
+@enduml

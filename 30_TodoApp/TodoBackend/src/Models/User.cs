@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 
 namespace TodoBackend.Models
 {
+    [Index(nameof(Name), IsUnique = true)]
     public class User : Entity<int>
     {
         public User(string name, string salt, string passHash)

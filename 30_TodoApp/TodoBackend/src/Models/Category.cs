@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.SqlTypes;
 
 namespace TodoBackend.Models
@@ -23,8 +25,10 @@ namespace TodoBackend.Models
         public string Description { get; set; }
         public bool IsVisible { get; set; }
         public Priority Priority { get; set; }
+        [ForeignKey("OwnerId")]
         public User Owner { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public List<TodoItem> TaskItems { get; } = new();
     }
 }

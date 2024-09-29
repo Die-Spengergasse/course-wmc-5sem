@@ -1,7 +1,13 @@
 #!/bin/bash
+set -e
 
 echo Pull changes...
 git pull
+
+if ! docker stats --no-stream; then
+    echo "Docker is not running. Please start Docker and try again."
+    exit 1
+fi
 
 SSL_CERT_FILE="todo_backend.pfx"                  # generated with dotnet dev-certs in this script
 DOCKER_IMAGE=todo_backend
@@ -27,5 +33,8 @@ MSYS_NO_PATHCONV=1 docker run -d -p 5080:80 -p 5443:443 --name $DOCKER_IMAGE \
     -v $HOME/.aspnet/https:/https/ \
     $DOCKER_IMAGE
 
-echo Ready.
-echo Start with https://localhost:5443/swagger or https://localhost:5443/api/categories
+echo "+------------------------------------------------------------------------------------+"
+echo "| READY                                                                              |"
+echo "|                                                                                    |"
+echo "| Start with https://localhost:5443/swagger or https://localhost:5443/api/categories |"
+echo "+------------------------------------------------------------------------------------+"
