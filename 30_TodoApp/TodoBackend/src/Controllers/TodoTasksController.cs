@@ -51,8 +51,9 @@ namespace TodoBackend.Controllers
         }
 
         [HttpPut("{guid}")]
-        public async Task<IActionResult> EditTodoTask(EditTodoTaskCmd cmd)
+        public async Task<IActionResult> EditTodoTask(Guid guid, EditTodoTaskCmd cmd)
         {
+            if (guid != cmd.Guid) return BadRequest();
             var username = Username;
             var todoTask = await _db.TodoTasks
                 .Where(t => t.TodoItem.Category.Owner.Name == username && t.Guid == cmd.Guid)

@@ -35,7 +35,7 @@ namespace TodoBackend.Controllers
                     && (!isCompleted.HasValue ? true : t.IsCompleted == isCompleted.Value))
                 .OrderBy(t => t.CreatedAt)
                 .Select(t => new AllTodoItemsDto(
-                    t.Guid, t.Title, t.Description, t.Category.Name, t.Category.Priority.ToString(),
+                    t.Guid, t.Title, t.Description, t.Category.Name, t.Category.Priority.ToString(), t.Category.IsVisible,
                     t.IsCompleted, t.DueDate, t.CreatedAt, t.UpdatedAt))
                 .ToListAsync();
             return Ok(todoItems);
@@ -51,7 +51,7 @@ namespace TodoBackend.Controllers
                 .Select(t => new TodoItemDto(
                     t.Guid, t.Title, t.Description, t.Category.Name, t.Category.Priority.ToString(),
                     t.IsCompleted, t.DueDate, t.CreatedAt, t.UpdatedAt,
-                    t.TodoItems.Select(ti => new TodoTaskDto(ti.Guid, ti.Title, ti.IsCompleted, ti.DueDate, ti.CreatedAt, ti.UpdatedAt)).ToList()))
+                    t.TodoTasks.Select(ti => new TodoTaskDto(ti.Guid, ti.Title, ti.IsCompleted, ti.DueDate, ti.CreatedAt, ti.UpdatedAt)).ToList()))
                 .FirstOrDefaultAsync();
             if (todoItem == null)
                 return NotFound();
@@ -73,15 +73,16 @@ namespace TodoBackend.Controllers
             _db.TodoItems.Add(todoItem);
             await _db.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetTodoItem), new { guid = todoItem.Guid });
+            return CreatedAtAction(nameof(AddTodoItem), new { guid = todoItem.Guid });
         }
 
         [HttpPut("{guid}")]
-        public async Task<IActionResult> EditTodoItem(Guid Guid, EditTodoItemCmd cmd)
+        public async Task<IActionResult> EditTodoItem(Guid guid, EditTodoItemCmd cmd)
         {
+            if (guid != cmd.Guid) return BadRequest();
             var username = Username;
             var todoItem = await _db.TodoItems
-                .Where(t => t.Category.Owner.Name == username && t.Guid == Guid)
+                .Where(t => t.Category.Owner.Name == username && t.Guid == guid)
                 .FirstOrDefaultAsync();
             if (todoItem == null)
                 return NotFound();

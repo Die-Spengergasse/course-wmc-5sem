@@ -26,6 +26,6 @@ namespace TodoBackend.Models
         public DateTime? DueDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public List<TodoItem> TodoItems { get; } = new();
+        public List<TodoTask> TodoTasks { get; } = new();
     }
 }
