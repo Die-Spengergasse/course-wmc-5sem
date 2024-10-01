@@ -18,7 +18,7 @@ CWD=$(pwd)
 
 # Create HTTPS Certificates
 CERT_PASS=$(dd if=/dev/random bs=128 count=1 2> /dev/null | base64)
-rm "$HOME/.aspnet/https/$SSL_CERT_FILE"
+rm -f "$HOME/.aspnet/https/$SSL_CERT_FILE"
 dotnet dev-certs https -ep "$HOME/.aspnet/https/$SSL_CERT_FILE" -p "$CERT_PASS"
 dotnet dev-certs https --trust
 
