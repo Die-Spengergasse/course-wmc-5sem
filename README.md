@@ -15,6 +15,9 @@ Siehe [software.md](software.md).
 - [Classes](10_JavaScript/50_Classes.md)
 - [Modules](10_JavaScript/60_Modules.md)
 
+## Typescript
+- [Die erste Typescript App](./20_Typescript/10_FirstApp.md)
+- [Typescript Basics](./20_Typescript/20_TypescriptBasics.md)
 
 ## Todo App
 - [Fertiges Backend](30_TodoApp/01_Backend.md)
