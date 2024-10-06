@@ -18,6 +18,7 @@ Siehe [software.md](software.md).
 ## Typescript
 - [Die erste Typescript App](./20_Typescript/10_FirstApp.md)
 - [Typescript Basics](./20_Typescript/20_TypescriptBasics.md)
+- [Object und Array destructing](./20_Typescript/30_Destructing.md)
 
 ## Todo App
 - [Fertiges Backend](30_TodoApp/01_Backend.md)
