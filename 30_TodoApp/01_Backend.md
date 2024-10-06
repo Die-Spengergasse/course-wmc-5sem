@@ -7,19 +7,23 @@ Das Modell der Todo-App besteht aus mehreren Klassen, die in Beziehung zueinande
 
 ## Starten der App
 
-### Voraussetzungen
-
 Klone das Repo mit folgendem Befehl auf deinen Rechner:
 
 ```bash
 git clone https://github.com/Die-Spengergasse/course-wmc-5sem
 ```
 
-Du benötigst außerdem Docker und unter Windows *git bash*.
-Im Verzeichnis *30_TodoApp/TodoBackend* gibt befindet sich ein Shellscript [create_container.sh](TodoBackend/create_container.sh).
+### Start ohne Docker
 
-### Start unter Windows
-Klicke doppelt auf die Datei *create_container.sh* im Ordner *30_TodoApp/TodoBackend*.
+Wenn du die .NET 8 SDK installiert hast, kannst du einfach die Datei *startServer.cmd* **(Windows)** im Verzeichnis *30_TodoApp/TodoBackend* ausführen.
+Unter **macOS** gehst du im Terminal in das Verzeichnis *30_TodoApp/TodoBackend* und führst die Datei *./start_server.sh* aus.
+Beide Skripts führen vorher *git pull* durch, um sicherzustellen, dass du den aktuellen Sourcecode hast.
+Nun kannst du die API mit *https://localhost:5443/swagger* im Browser ansehen.
 
-#### Start unter macOS oder Linux
-Führe im Terminal im Verzeichnis *30_TodoApp/TodoBackend* den Befehl *./create_container.sh* aus.
+> **Hinweis:** Beende die API mit *CTRL+C* in der Konsole, damit der Port wieder freigegeben wird.
+
+### Start als Docker Container
+
+Wenn du keine .NET 8 SDK hast, oder die App als Docker container starten möchtest, gibt es ein Shellscript [create_container.sh](TodoBackend/create_container.sh) im Ordner *30_TodoApp/TodoBackend*.
+Führe es unter **Windows** mit Doppelklick aus. Das Programm *git bash* muss dafür installiert sein.
+Unter **macOS** starte das Skript im Terminal mit *./create_container.sh*

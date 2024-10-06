@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.Linq;
 using TodoBackend.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,4 +70,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseStaticFiles();
-app.Run();
+
+app.Start();
+var color = Console.ForegroundColor;
+Console.ForegroundColor = ConsoleColor.Green;
+Console.WriteLine("+-------------+");
+Console.WriteLine("| API started |");
+Console.WriteLine("+-------------+");
+Console.WriteLine($"Visit swagger running on {app.Urls.First(u => u.StartsWith("https"))}/swagger\n");
+Console.ForegroundColor = color;
+app.WaitForShutdown();
+
