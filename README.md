@@ -21,3 +21,5 @@ Siehe [software.md](software.md).
 
 ## Todo App
 - [Fertiges Backend](30_TodoApp/01_Backend.md)
+- [Die erste App mit React und Next.js](30_TodoApp/02_FirstReactApp.md)
+
