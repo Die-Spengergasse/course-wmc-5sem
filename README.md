@@ -12,12 +12,11 @@ Siehe [software.md](software.md).
   - [Callbacks und Closures](10_JavaScript/40_FunctionsCallback.md)
   - [Prototype, this und new](10_JavaScript/41_FunctionsPrototype.md)
   - [Arrow functions und Arraymethoden](10_JavaScript/42_FunctionsArrowFunctions.md)
-- [Classes](10_JavaScript/50_Classes.md)
-- [Modules](10_JavaScript/60_Modules.md)
 
 ## Typescript
 - [Die erste Typescript App](./20_Typescript/10_FirstApp.md)
 - [Typescript Basics](./20_Typescript/20_TypescriptBasics.md)
+- [Typescript und API](./20_Typescript/25_TypescriptWithApi.md)
 - [Object und Array destructing](./20_Typescript/30_Destructing.md)
 
 ## Todo App
