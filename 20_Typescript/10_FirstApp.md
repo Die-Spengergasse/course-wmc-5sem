@@ -94,7 +94,7 @@ Stelle dies mit der Datei *.gitignore* im Verzeichnis *first_app* sicher:
 
 **.gitignore**
 ```
-../node_modules
+**/node_modules
 ```
 
 ## Schreiben des source codes
