@@ -20,6 +20,8 @@ Siehe [software.md](software.md).
 - [Object und Array destructing](./20_Typescript/30_Destructing.md)
 
 ## Todo App
+- 📹 YT: [App Architecture](https://www.youtube.com/watch?v=d1Gd-MGaleE&list=PLUU3EzfPr915ebZONvUVHKm8Bls6D7EgA)
+- 📹 YT: [Single Page Applications Architecture](https://www.youtube.com/watch?v=H1NmO3f5oiI&list=PLUU3EzfPr915ebZONvUVHKm8Bls6D7EgA)
+- 📹 YT: [Everything You NEED to Know About WEB APP Architecture](https://www.youtube.com/watch?v=sDlCSIDwpDs)
 - [Fertiges Backend](30_TodoApp/01_Backend.md)
 - [Die erste App mit React und Next.js](30_TodoApp/02_FirstReactApp.md)
-

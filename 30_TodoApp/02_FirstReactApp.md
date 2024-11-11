@@ -17,6 +17,14 @@ Nun wollen wir die erste SPA (single page app) schreiben, die die Ausgabe in den
 Erstelle mit dem folgendem Befehl in der Konsole ein neues Next.js Projekt mit TypeScript.
 Es wird automatisch ein Ordner *todo-app* erstellt, d. h. du führst den Befehl in der Konsole im Verzeichnis darüber aus.
 
+Um das Skript *create-next-app* zur Verfügung zu haben, muss einmalig das Paket global installiert werden:
+
+```
+npm install -g create-next-app
+```
+
+Danach kann im Zielordner mit der Erstellung der ersten App begonnen werden.
+
 ```bash
 npx create-next-app@latest todo-app --typescript
 ```
@@ -31,6 +39,7 @@ npx create-next-app@latest todo-app --typescript
 √ Would you like to use Tailwind CSS? ...                         No / Yes <-- YES
 √ Would you like to use *src/* directory? ...                     No / Yes <-- YES
 √ Would you like to use App Router? (recommended) ...             No / Yes <-- NO
+√ Would you like to use Turbopack for next dev? ...               No / Yes <-- NO
 √ Would you like to customize the default import alias (@/*)? ... No / Yes <-- YES
 ```
 
