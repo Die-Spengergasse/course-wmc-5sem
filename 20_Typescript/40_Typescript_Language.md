@@ -391,11 +391,13 @@ const cars: Record<string, Car> = {
 };
 ```
 
-- **noPropertyAccessFromIndexSignature** raises an error if using dot notation to access dynamic properties.
+- **noPropertyAccessFromIndexSignature** raises an error if using dot notation to access dynamic properties.  
+❗️Only use dot notation for known properties, and bracket notation for dynamic properties.
   ![img_17.png](assets/ts-error-2.png)
 
 ```typescript
 // ❌ Error: if `noPropertyAccessFromIndexSignature` is true (set in tsconfig.json)
+// 🥲 TypeScript warns that accessing dynamic properties like `toyota` via dot notation is unsafe.
 const toyota = cars.toyota;
 
 // ✅ OK: Use bracket notation to access dynamic properties
@@ -403,20 +405,21 @@ const toyota = cars["toyota"];
 toyota.make = "blabla";
 ```
 
-- **noUncheckedIndexedAccess** raises an error if access dynamic properties without handling if the property is undefined.
+- **noUncheckedIndexedAccess** raises an error if access dynamic properties without handling if the property is undefined.  
+  ❗️Always check if dynamic properties exist before accessing them to prevent runtime errors.
   ![img_17.png](assets/ts-error-1.png)
 ```typescript
+const toyota = cars["toyota"];
 
 // ❌ Error: if `noUncheckedIndexedAccess` is true (set in tsconfig.json)
+// 🥲 TypeScript warns that `toyota` might be `undefined` and undefined.make is a runtime error.
 toyota.make = "blabla";
 
-// ✅ OK: Check if dynamic property exists
-const toyota = cars["toyota"];
+// ✅ OK: Check if dynamic property `toyota` exists before accessing `make`
 if (toyota) { toyota.make = "blabla"; }
 
 // ✅ OK: Use non-null assertion operator, only if you are sure that the property exists
-const toyota = cars["toyota"]!;
-toyota.make = "blabla";
+toyota!.make = "blabla";
 ```
 
 
@@ -647,13 +650,13 @@ mkdir test
 my-project/
 ├── node_modules/               # Dependencies
 │   └── ...
-├── dist/                       # Compiled output from ESBuild
+├── dist/                       # Compiled output from Typescript compiler
 │   └── ...
 ├── src/                        # Sources
-│   ├── main.ts                 # Main Entry Point
+│   ├── main.ts                 # Main Entry Point of the Application
 │   └── ...
-├── test/                      # Tests
-│   ├── main.test.ts            # Main Entry Point Jest Test
+├── test/                       # Tests
+│   ├── main.test.ts            # Jest Test
 │   └── ...
 ├── package.json                # Project Config and Dependencies
 ├── tsconfig.json               # TypeScript Config
@@ -669,7 +672,7 @@ my-project/
     "target": "ES2020",                         // Specify ECMAScript target version for the compiled JavaScript
     "module": "ESNext",                         // Specify module code generation (use the latest module system)
     "lib": ["ES2020", "DOM", "DOM.Iterable"],   // Include library files for ES2020, DOM APIs, and DOM Iterables (for browser)
-    //"lib": ["ES2020],                         // Include library files for ES2020, DOM APIs, and DOM Iterables (for Node)
+    //"lib": ["ES2020],                         // Include library files for ES2020 (for Node)
     "outDir": "./dist",                         // Specify the output directory for compiled JavaScript files
     "rootDir": "./src",                         // Specify the root directory of TypeScript source files
 
@@ -681,8 +684,9 @@ my-project/
     "noUnusedParameters": true,                 // Report errors for parameters defined but not used in functions
     "noImplicitReturns": true,                  // Report errors if not all code paths in a function have return statements
     "noFallthroughCasesInSwitch": true,         // Report errors for fall-through cases in switch statements without a break
-    "noUncheckedIndexedAccess": true,           // Requires explicit checking for accessing object properties by index
     "noUncheckedSideEffectImports": true,       // Report errors on imports with side effects that are unused
+    "noUncheckedIndexedAccess": true,           // Report errors when accessing dynamic properties without handling undefined
+    "noPropertyAccessFromIndexSignature": true, // Report errors if using dot notation to access dynamic properties
 
     /* Paths and Module Aliases */
     "paths": {},                                // Configure path mapping for module imports

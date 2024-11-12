@@ -185,7 +185,7 @@ npm run test
 - **`version`**: The current version of your project, following semantic versioning.
 - **`description`**: A brief description of what your project does.
 - **`main`**: The entry point of your application which is executed when running `node`.
-- **`type`**: The module type, either `module` or `commonjs`. `import/export` is used for `module`.
+- **`type`**: The module type, either `module` or `commonjs`. Set it to `module` for EcmaScript Modules (ESM) which uses `import/export` syntax.
 - **`scripts`**: Defines a set of commands that can be run using `npm run`, such as starting the application or running tests.
 - **`dependencies`**: Lists the packages required for your project to run. These are installed when running `npm install`.
 - **`devDependencies`**: Lists the packages only needed during development (e.g., testing or building tools).
@@ -357,10 +357,10 @@ my-project/
 ├── dist/                       # Compiled output from ESBuild
 │   └── ...
 ├── src/                        # Sources
-│   ├── main.ts                 # Main Entry Point
+│   ├── main.ts                 # Main Entry Point of the Application
 │   └── ...
-├── test/                      # Tests
-│   ├── main.test.ts            # Main Entry Point Jest Test
+├── test/                       # Tests
+│   ├── main.test.ts            # Jest Test
 │   └── ...
 ├── package.json                # Project Config and Dependencies
 ├── tsconfig.json               # TypeScript Config
@@ -382,7 +382,7 @@ my-project/
     "target": "ES2020",                         // Specify ECMAScript target version for the compiled JavaScript
     "module": "ESNext",                         // Specify module code generation (use the latest module system)
     "lib": ["ES2020", "DOM", "DOM.Iterable"],   // Include library files for ES2020, DOM APIs, and DOM Iterables (for browser)
-    //"lib": ["ES2020],                         // Include library files for ES2020, DOM APIs, and DOM Iterables (for Node)
+    //"lib": ["ES2020],                         // Include library files for ES2020 (for Node)
     "outDir": "./dist",                         // Specify the output directory for compiled JavaScript files
     "rootDir": "./src",                         // Specify the root directory of TypeScript source files
 
@@ -394,8 +394,9 @@ my-project/
     "noUnusedParameters": true,                 // Report errors for parameters defined but not used in functions
     "noImplicitReturns": true,                  // Report errors if not all code paths in a function have return statements
     "noFallthroughCasesInSwitch": true,         // Report errors for fall-through cases in switch statements without a break
-    "noUncheckedIndexedAccess": true,           // Requires explicit checking for accessing object properties by index
     "noUncheckedSideEffectImports": true,       // Report errors on imports with side effects that are unused
+    "noUncheckedIndexedAccess": true,           // Report errors when accessing dynamic properties without handling undefined
+    "noPropertyAccessFromIndexSignature": true, // Report errors if using dot notation to access dynamic properties
 
     /* Paths and Module Aliases */
     "paths": {},                                // Configure path mapping for module imports
@@ -527,7 +528,7 @@ npm run build
 
 
 ### Exploration Tasks
-- Explore ESBuild as a `bundler` to produce a single JavaScript output file vs `transpiler` to produce multiple JavaScript files.
+- Explore ESBuild as a `bundler` to produce a single JavaScript output file vs ESBuild as a `transpiler` to produce multiple JavaScript files.
 - What happens if you remove `.js` from the import statement in `main.ts`? (Hint: `ESM Resolution`)
 
 
@@ -609,7 +610,7 @@ npm run lint
 
 ### Exploration Tasks
 - Make intentional linting errors in the TypeScript code to see how ESLint catches and fixes them.
-- What if you remove the `--fix` flag from the ESLint script? How does it change the behavior?
+- What if you remove the `--fix` flag from the ESLint script?
 
 <br>
 <hr>
@@ -672,7 +673,7 @@ npm run format
 ### Exploration Tasks
 - Make intentional formatting errors in the TypeScript code to see how Prettier catches and fixes them.
 - Explore the Prettier configuration options to customize the code formatting.
-- What happens if you remove the `--write` flag from the Prettier script? How does it change the behavior?
+- What happens if you remove the `--write` flag from the Prettier script?
 
 <br>
 <hr>
@@ -703,7 +704,7 @@ npm run format
 # Install Jest locally to the project with TypeScript support
 npm install --save-dev jest @types/jest ts-jest
 
-# # Initialize Jest configuration (creates `jest.config.js`)
+# Initialize Jest configuration (creates `jest.config.js`)
 npx ts-jest config:init
 ```
 
@@ -733,7 +734,7 @@ export default {
 
 ### Run Scripts
 ```sh
-# test: Run Jest to execute tests in the `test` directory
+# Run Jest to execute tests in the `test` directory
 npm run test
 ```
 

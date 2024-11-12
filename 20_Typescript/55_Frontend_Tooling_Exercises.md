@@ -35,6 +35,7 @@
 
 - **Q1.** What is a code formatter, and why do we use Prettier in this project?
 - **Q2.** What do we have a `.prettier.config.js` file in the project folder?
+- **Q3.** What are custom rules in Prettier, and how can they help maintain code quality?
 
 
 ## Jest
@@ -43,7 +44,7 @@
 - **Q2.** What do we have a `jest.config.js` file in the project folder?
 - **Q3.** What is a test suite, and how do you create one in Jest?
 - **Q4.** What is a test case, and how do you write one in Jest?
-- **Q6.** What is describe and it in Jest, and how do they help organize tests?
+- **Q6.** What is `describe` and `it` in Jest, and how do they help organize tests?
 - **Q6.** What is an expectation, and how do you write one in Jest?
 - **Q7.** What is a matcher, and how do you use it in Jest?
 - **Q8.** What is BDD (Behavior-Driven Development), and how does it relate to Jest?
@@ -75,7 +76,7 @@ The project should demonstrate all the tooling and testing concepts covered in t
   
   // Calculate the total age of users
   export function calculateTotalAge(users: User[]): number {
-  // TODO
+    // TODO
   }
   ```
 
