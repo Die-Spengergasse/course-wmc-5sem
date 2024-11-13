@@ -2,15 +2,17 @@
 
 ## Tooling Overview
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Node.js_logo_2015.svg/2560px-Node.js_logo_2015.svg.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 20px" width="150"/>
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png" style="margin-left: 20px; margin-top: 20px; margin-bottom: 20px" width="75"/>
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/2048px-Typescript_logo_2020.svg.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
-<img src="https://cdn.icon-icons.com/icons2/3914/PNG/512/esbuild_logo_icon_248931.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/ESLint_logo.svg/546px-ESLint_logo.svg.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
-<img src="https://prettier.io/icon.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
-<img src="https://cdn.freebiesupply.com/logos/large/2x/jest-logo-png-transparent.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
-<img src="https://playwright.dev/img/playwright-logo.svg" style="margin-left: 20px; margin-top: 0px; margin-bottom: 10px" width="75"/>
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Vitejs-logo.svg/410px-Vitejs-logo.svg.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
+<p float="left">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Node.js_logo_2015.svg/2560px-Node.js_logo_2015.svg.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 20px" width="150"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png" style="margin-left: 20px; margin-top: 20px; margin-bottom: 20px" width="75"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/2048px-Typescript_logo_2020.svg.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
+  <img src="https://cdn.icon-icons.com/icons2/3914/PNG/512/esbuild_logo_icon_248931.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/ESLint_logo.svg/546px-ESLint_logo.svg.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
+  <img src="https://prettier.io/icon.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
+  <img src="https://cdn.freebiesupply.com/logos/large/2x/jest-logo-png-transparent.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
+  <img src="https://playwright.dev/img/playwright-logo.svg" style="margin-left: 20px; margin-top: 0px; margin-bottom: 10px" width="75"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Vitejs-logo.svg/410px-Vitejs-logo.svg.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="50"/>
+</p>
 
 ### JavaScript Runtimes
 - **Node**: A JavaScript runtime that allows you to run JavaScript outside the browser environment.
@@ -47,9 +49,10 @@
 
 ## Node and NPM
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Node.js_logo_2015.svg/2560px-Node.js_logo_2015.svg.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 20px" width="400"/>
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 20px" width="200"/>
-
+<p float="left">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Node.js_logo_2015.svg/2560px-Node.js_logo_2015.svg.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 20px" width="400"/>
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Npm-logo.svg/1200px-Npm-logo.svg.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 20px" width="200"/>
+</p>
 
 ### Overview
 - **Link:** https://nodejs.org/en/
