@@ -1,6 +1,6 @@
 # FrontEnd Tooling Guide
 
-## Tooling Overview
+## 1. Tooling Overview
 
 <p float="left">
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Node.js_logo_2015.svg/2560px-Node.js_logo_2015.svg.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 20px" width="150"/>
@@ -45,7 +45,7 @@
 <br>
 
 
-## Node and NPM
+## 2. Node and NPM
 
 <p float="left">
   <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Node.js_logo_2015.svg/2560px-Node.js_logo_2015.svg.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 20px" width="400"/>
@@ -207,7 +207,7 @@ npm run test
 <br>
 
 
-## `npm init`, `npm create`, and `npx`
+## 3. `npm init`, `npm create`, and `npx`
 
 ### What Are They?
 - **`npm init`** and **`npm create`** are commands for initializing new projects in Node.
@@ -260,7 +260,7 @@ npx create-react-app my-app
 <br>
 
 
-## Semantic Versioning
+## 4. Semantic Versioning
 
 <img src="https://digitalcommunications.wp.st-andrews.ac.uk/files/2017/01/semver03.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 20px" width="400"/>
 
@@ -314,7 +314,7 @@ npx create-react-app my-app
 <br>
 
 
-## TypeScript Project Guide
+## 5. TypeScript Project Guide
 
 - This project demonstrates setting up a TypeScript project with ESBuild, ESLint, Prettier, and Jest.
 - We gradually add tooling to the project to improve code quality, maintainability, and testing.
@@ -464,7 +464,7 @@ npm run start
 <br>
 
 
-## ESBuild
+## 6. ESBuild
 
 <img src="https://cdn.icon-icons.com/icons2/3914/PNG/512/esbuild_logo_icon_248931.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="200"/>
 
@@ -525,7 +525,7 @@ npm run build
 <br>
 
 
-## ESLint
+## 7. ESLint
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/ESLint_logo.svg/546px-ESLint_logo.svg.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="200"/>
 
@@ -604,7 +604,7 @@ npm run lint
 <br>
 
 
-## Prettier
+## 8. Prettier
 
 <img src="https://prettier.io/icon.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="200"/>
 
@@ -666,7 +666,7 @@ npm run format
 <br>
 
 
-## Jest
+## 9. Jest
 
 <img src="https://cdn.freebiesupply.com/logos/large/2x/jest-logo-png-transparent.png" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="200"/>
 
