@@ -42,8 +42,6 @@
 ### Build Tools
 - **Vite**: A fast build tool for modern JavaScript projects with a built-in development server.
 
-<br>
-
 
 ## 2. Node and NPM
 
@@ -204,8 +202,6 @@ npm run test
 - **Duplication**: The same package can be installed multiple times at different versions, leading to duplication.
 - **Further Reading**: [Why is node_modules so big?](https://alphacoder.xyz/node-modules/)
 
-<br>
-
 
 ## 3. `npm init`, `npm create`, and `npx`
 
@@ -256,8 +252,6 @@ npx create-react-app my-app
 | `npm init <initializer>`    | Creates a new project using a template.           | Turns into `npm exec create-<initializer>` |
 | `npm create <initializer>`  | Same as `npm init <initializer>`.                 | Turns into `npm exec create-<initializer>` |
 | `npx create-<initializer>`  | Runs a package directly without global install.   | Direct execution, no transformation.       |
-
-<br>
 
 
 ## 4. Semantic Versioning
@@ -310,8 +304,6 @@ npx create-react-app my-app
 ### Updating Packages
 - **Update all packages**: `npm update` updates all packages to their latest versions based on the versioning scheme.
 - **Update a single package**: `npm update <package_name>` updates a specific package to its latest version based on the versioning scheme.
-
-<br>
 
 
 ## 5. TypeScript Project Guide
@@ -461,8 +453,6 @@ npm run start
 - Make errors in the TypeScript code to see how TypeScript catches them during compilation.
 - What happens if you remove `.js` from the import statement in `main.ts`? (Hint: `ESM Resolution`)
 
-<br>
-
 
 ## 6. ESBuild
 
@@ -521,8 +511,6 @@ npm run build
 ### Exploration Tasks
 - Explore ESBuild as a `bundler` to produce a single JavaScript output file vs ESBuild as a `transpiler` to produce multiple JavaScript files.
 - What happens if you remove `.js` from the import statement in `main.ts`? (Hint: `ESM Resolution`)
-
-<br>
 
 
 ## 7. ESLint
@@ -601,8 +589,6 @@ npm run lint
 - Make intentional linting errors in the TypeScript code to see how ESLint catches and fixes them.
 - What if you remove the `--fix` flag from the ESLint script?
 
-<br>
-
 
 ## 8. Prettier
 
@@ -662,8 +648,6 @@ npm run format
 - Make intentional formatting errors in the TypeScript code to see how Prettier catches and fixes them.
 - Explore the Prettier configuration options to customize the code formatting.
 - What happens if you remove the `--write` flag from the Prettier script?
-
-<br>
 
 
 ## 9. Jest
