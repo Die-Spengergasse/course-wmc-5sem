@@ -43,9 +43,6 @@
 - **Vite**: A fast build tool for modern JavaScript projects with a built-in development server.
 
 
-<br>
-<hr>
-
 
 ## Node and NPM
 
@@ -195,22 +192,16 @@ npm run test
 
 
 ### The `node_modules` folder
-
-
 - **Purpose**: Stores all the packages installed for the project.
 - **Version Control**: Excluded from version control (in `.gitignore`) since it can be re-created with `npm install`.
 
 ### The `node_modules` folder issues 🤔
-
 <img src="https://miro.medium.com/v2/resize:fit:4800/format:webp/1*x9s00J9jmkdl8QG18F_iIw.png" style="margin-left: 50px; margin-top: 20px; margin-bottom: 10px" width="500"/>
 
 - **Nested Dependencies**: Each package can have its own dependencies, leading to a large number of files.
 - **Transitive Dependencies**: Dependencies of dependencies can also be installed, leading to a large tree of packages.
 - **Duplication**: The same package can be installed multiple times at different versions, leading to duplication.
 - **Further Reading**: [Why is node_modules so big?](https://alphacoder.xyz/node-modules/)
-
-<br>
-<hr>
 
 
 ## `npm init`, `npm create`, and `npx`
@@ -264,9 +255,6 @@ npx create-react-app my-app
 | `npx create-<initializer>`  | Runs a package directly without global install.   | Direct execution, no transformation.       |
 
 
-<br>
-<hr>
-
 
 ## Semantic Versioning
 
@@ -319,9 +307,6 @@ npx create-react-app my-app
 - **Update all packages**: `npm update` updates all packages to their latest versions based on the versioning scheme.
 - **Update a single package**: `npm update <package_name>` updates a specific package to its latest version based on the versioning scheme.
 
-
-<br>
-<hr>
 
 
 ## TypeScript Project Guide
@@ -472,9 +457,6 @@ npm run start
 - What happens if you remove `.js` from the import statement in `main.ts`? (Hint: `ESM Resolution`)
 
 
-<br>
-<hr>
-
 
 ## ESBuild
 
@@ -534,9 +516,6 @@ npm run build
 - Explore ESBuild as a `bundler` to produce a single JavaScript output file vs ESBuild as a `transpiler` to produce multiple JavaScript files.
 - What happens if you remove `.js` from the import statement in `main.ts`? (Hint: `ESM Resolution`)
 
-
-<br>
-<hr>
 
 
 ## ESLint
@@ -615,8 +594,6 @@ npm run lint
 - Make intentional linting errors in the TypeScript code to see how ESLint catches and fixes them.
 - What if you remove the `--fix` flag from the ESLint script?
 
-<br>
-<hr>
 
 
 ## Prettier
@@ -678,8 +655,6 @@ npm run format
 - Explore the Prettier configuration options to customize the code formatting.
 - What happens if you remove the `--write` flag from the Prettier script?
 
-<br>
-<hr>
 
 
 ## Jest
@@ -778,7 +753,3 @@ describe('add function', () => {
 ### Exploration Tasks
 - Make intentional errors in the test cases to see how Jest catches and reports them.
 - Explore Jest's built-in matchers and assertions to understand how to write effective tests.
-
-
-<br>
-<hr>
