@@ -2,7 +2,7 @@
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Typescript_logo_2020.svg/2048px-Typescript_logo_2020.svg.png" style="margin-left: 75px; margin-top: 20px; margin-bottom: 20px" width="200"/>
 
-## Introduction
+## 1. Introduction
 
 ### Overview
 * **Link**: https://www.typescriptlang.org/
@@ -12,6 +12,7 @@
 
 ### Key Features
 * **Statically Typed**: Provides type checking at compile time to catch errors during development and not runtime.
+* **Structural Typing**: Is concerned with the shape of the data, rather than explicitly enforcing type names.
 * **Type Inference**: Automatically determines types when they're not explicitly specified.
 * **JavaScript Compatibility**: All valid JavaScript code is valid TypeScript code.
 
@@ -33,12 +34,8 @@
 - The **.d.ts** view provides a type-only, showing declarations of interfaces, types, and constants without implementation details.
 ![img_2.png](assets/ts-playground-1.png)
 
-
-<br>
-<hr>
-
   
-## Basic Data Types
+## 2. Basic Data Types
 
 ### Core Types
 - TypeScript provides several basic types to represent data.
@@ -83,7 +80,7 @@ name2 = 18;
 
 
 ### Object Types
-- Defines the shape of an object.
+- Defines the shape of an object with properties and their types.
 ```typescript
 interface User { name: string; age: number; }
 type User = { name: string; age: number; }
@@ -95,14 +92,6 @@ type User = { name: string; age: number; }
 ```typescript
 interface Employee extends User { role: string; }
 type Employee = User & { role: string; }
-```
-
-
-### Declaration Merging
-- Allows adding properties to an existing interface. Useful for extending third-party libraries or global objects.
-```typescript
-interface Document { customProperty: string; }
-document.customProperty = "My Custom Property";
 ```
 
 
@@ -119,43 +108,6 @@ let numbers: Array<number> = [1, 2, 3];
 function greet(user: User): string {
     return `Hello, ${user.name}!`;
 }
-```
-
-### Declare Keyword
-- Used to declare the type information for functions, variables, or classes without providing their implementation.
-- Without both the type definition and implementation must be provided in the same file.
-```typescript
-// e.g., my-custom-library.d.ts
-declare function greet(name: string): void;
-declare let age: number;
-
-// e.g., my-custom-library.js
-function greet(name: string): void { /*..*/ }
-let age: number = 18;
-```
-
-
-### Function Overloading
-- Allows defining multiple function signatures for a single function.
-```typescript
-// my-custom-library.d.ts
-declare function add(a: number, b: number): number;
-declare function add(a: string, b: string): string;
-
-// my-custom-library.js
-function add(a: any, b: any): any { /*..*/ }
-```
-
-
-### Generic Types
-- A type that can work with multiple data types.
-```typescript
-function map<T, U>(array: T[], mapFn: (elem: T) => U): U[] {
-    return array.map(mapFn);
-}
-
-const numbers = map([1, 2, 3], (x) => x * 2);
-const strings = map(["a", "b", "c"], (x) => x.toUpperCase());
 ```
 
 
@@ -180,10 +132,14 @@ if (myMove === Direction.Down) { /*..*/ }
 ### Aliase Types
 - Creates a new name for an existing type.
 ```typescript
+// Alias for a string type
 type Name = string;
-type NameResolver = () => string;
+
+// Alias for a function type
+type NameResolver = (name: string) => string;
 
 const myName: Name = "Alice";
+const getName: NameResolver = (name: string) => `Greetings ${name}`;
 ```
 
 
@@ -197,11 +153,9 @@ function move(direction: Direction) {
 }
 ```
 
-<br>
-<hr>
 
+## 3. Intermediate Data Types
 
-## Advanced Data Types and Techniques
 
 ### Union Types (A ∪ B)
 - **A | B**: A type that can be one of several types.
@@ -227,7 +181,6 @@ function getArea(shape: Shape): number {
             return shape.size * shape.size;
         case "rectangle":
             return shape.width * shape.height;
-        // Potential error if new shape is added
     }
 }
 ```
@@ -263,26 +216,42 @@ type CryptoKey = string;
 
 
 ### Type Guards
-- **is**: TypeGuards are runtime checks that determine if a value is of a specific type.
+Type Guards are to narrow down the type of a variable within a conditional block to prevent type errors.
+
+- **typeof**: Type guard for primitive types.
 ```typescript
 function isNumber(value: unknown): value is number {
   return typeof value === "number";
 }
 
-function doubleValue(value: number | string) {
-  if (isNumber(value)) {
-    return value * 2;
-  } else {
-    return value + value;
-  }
+// .. later in the code
+if (isNumber(value)) {
+    // TypeScript knows that `value` is a number and can safely call toFixed
+    console.log(value.toFixed(2));
+}
+```
+
+- **in**: Type guard for object properties.
+```typescript
+interface Animal { name: string; }
+interface Dog extends Animal { breed: string;}
+
+function isDog(animal: Animal): animal is Dog {
+    return 'breed' in animal;
 }
 
-doubleValue(5); // 10
-doubleValue("Hi"); // "HiHi"
+// .. later in the code
+if (isDog(myAnimal)) {
+    // TypeScript knows that `myAnimal` is a Dog and has a breed property
+    console.log(myAnimal.breed);
+}
 ```
 
 
+
 ### Type Assertions
+Type assertions are a way to tell the TypeScript compiler that you know more about the type of a value than it does.
+
 - **Subtype Relationship (S is a subtype of T):** Works and is type-safe.
 ```typescript 
 interface Animal { name: string; }
@@ -294,18 +263,13 @@ let animal: Animal = myDog as Animal;
 
 - **Supertype Relationship (T is a supertype of S):** Works, but it's not guaranteed to be safe.
 ```typescript
-let animal2: Animal = { name: "Max" };
-let myDog2 = animal2 as Dog;
+interface Animal { name: string; }
+interface Dog extends Animal { breed: string;}
+
+let animal: Animal = { name: "Max" };
+let myDog = animal as Dog;
 ```
 
-- **Structural Compatibility:** TypeScript checks the structure of the types, not the names.
-```typescript
-interface Car { make: string; model: string; }
-interface Vehicle { make: string; model: string; wheels?: number; }
-
-let myCar: Car = { make: "Toyota", model: "Corolla" };
-let vehicle: Vehicle = myCar as Vehicle;
-```
 
 - **Unrelated Types**: Double assertion `..as unknown as` allows for any type conversion.
 ```typescript
@@ -315,8 +279,9 @@ function handler(event: Event) {
 }
 ```
 
-
 ### Special Types
+Special types in TypeScript are designed for specific scenarios where standard types like `string`, `number`, or `boolean` are not adequate.
+
 - **Never**: A type for functions that never return.
 ```typescript
 function throwError(message: string): never {
@@ -352,34 +317,42 @@ if (typeof value === "string") {
 ```
 
 
+## 4. Advanced Data Types
+
 ### Utility Types
-```typescript
-interface Car { make: string; model: string; year?: number; }
-```
+
+Utility types are built-in types that provide common type transformations.
 
 - **Partial<Type>**: Create a new type by making all properties optional (opposite of `Required`).
 ```typescript
+interface Car { make: string; model: string; year: number; }
+
 function updateCar(car: Car, partialCar: Partial<Car>): Car {
     return { ...car, ...partialCar };
 }
+
+const car: Car = { make: "Toyota", model: "Corolla", year: 2020 };
+updateCar(car, { model: "Camry" });
 ```
 
 - **Pick<Type, Keys>**: Create a new type by selecting properties from an existing object type. (opposite of `Omit`)
 ```typescript
+interface Car { make: string; model: string; year: number; }
 const car: Pick<Car, "make" | "model"> = { make: "Toyota", model: "Corolla" };
 
-car.make = "Honda"; // OK
-car.model = "Civic"; // OK
-car.year; // Error
+car.make = "Honda"; // ✅ OK
+car.model = "Civic"; // ✅ OK
+car.year; // ❌ Error 
 ```
 
 - **Omit<Type, Keys>**: Create a new type by excluding properties from an existing object type. (opposite of `Pick`)
 ```typescript
+interface Car { make: string; model: string; year: number; }
 const car: Omit<Car, "year"> = { make: "Toyota", model: "Corolla" };
 
-car.make = "Honda"; // OK
-car.model = "Civic"; // OK
-car.year; // Error
+car.make = "Honda"; // ✅ OK
+car.model = "Civic"; // ✅ OK
+car.year; // ❌ Error 
 ```
 
 - **Record<Keys, Type>**: Create a new dictionary type with specified keys and value types.
@@ -389,105 +362,85 @@ const cars: Record<string, Car> = {
     "toyota": { make: "Toyota", model: "Corolla", year: 2020 },
     "honda": { make: "Honda", model: "Civic", year: 2021 }
 };
-```
 
-- **noPropertyAccessFromIndexSignature** raises an error if using dot notation to access dynamic properties.  
-❗️Only use dot notation for known properties, and bracket notation for dynamic properties.
-  ![img_17.png](assets/ts-error-2.png)
-
-```typescript
-// ❌ Error: if `noPropertyAccessFromIndexSignature` is true (set in tsconfig.json)
-// 🥲 TypeScript warns that accessing dynamic properties like `toyota` via dot notation is unsafe.
-const toyota = cars.toyota;
-
-// ✅ OK: Use bracket notation to access dynamic properties
-const toyota = cars["toyota"];
-toyota.make = "blabla";
-```
-
-- **noUncheckedIndexedAccess** raises an error if access dynamic properties without handling if the property is undefined.  
-  ❗️Always check if dynamic properties exist before accessing them to prevent runtime errors.
-  ![img_17.png](assets/ts-error-1.png)
-```typescript
-const toyota = cars["toyota"];
-
-// ❌ Error: if `noUncheckedIndexedAccess` is true (set in tsconfig.json)
-// 🥲 TypeScript warns that `toyota` might be `undefined` and undefined.make is a runtime error.
-toyota.make = "blabla";
-
-// ✅ OK: Check if dynamic property `toyota` exists before accessing `make`
-if (toyota) { toyota.make = "blabla"; }
-
-// ✅ OK: Use non-null assertion operator, only if you are sure that the property exists
-toyota!.make = "blabla";
+cars["toyota"].make; // ✅ OK
+cars["tesla"].make; // ❌ Error
 ```
 
 
-### Non-Null Assertation Operator
-- **!**: Non-Null Assertion (!) tells TypeScript to ignore potential null or undefined values.
-
+### Generic Types
+- **\<T\>**: A type that can work with multiple data types.
 ```typescript
-const toyota = cars["toyota"]!;
-toyota.make = "blabla";
-```
-
-
-### Generic Constraints
-- **extends**: Creates a type of all the properties defined in the interface, plus additional properties.
-```typescript
-function logCar<T extends Car>(car: T) {
-    console.log(car.make.length);
+// T = dynamic type based on the input array
+function map<T>(array: T[], mapFn: (elem: T) => T): T[] {
+    return array.map(mapFn);
 }
 
-// ✅ OK: all required properties
-logCar({ make: "Toyota", model: "Corolla" });
+// [2, 4, 6]
+const numbers = map([1, 2, 3], (x) => x * 2);
 
-// ✅ OK: all required plus extra properties
-logCar({ make: "Tesla", model: "Model X", autopilot: true });
-
-// ❌ Error: Object literal may only specify known properties.
-logCar({ cool: true }); 
+// ["A", "B", "C"]
+const strings = map(["a", "b", "c"], (x) => x.toUpperCase());
 ```
 
+### Generic Type Constraints
+- ****\<T extends ...\>****: Constrains a generic type T to include all properties of a base type while allowing extra properties.
+```typescript
+interface Car { make: string; model: string; }
+
+// T extends Car = dynamic type based on Car properties
+function logCar<T extends Car>(car: T) {
+    console.log(`Make: ${car.make}, Model: ${car.model}`);
+}
+
+// Inline object with extra properties
+logCar({ make: "Tesla", model: "Model X", autopilot: true });
+```
 
 ### Lookup Types
 - **keyof**: Create a union type by extracting keys from an object type.
 ```typescript
-// CarKeys = "make" | "model" | "year"
+// Creates a union type of all keys in Car ("make" | "model")
 type CarKeys = keyof Car; 
 
-// CarPropTypes = string | number
+// Creates a union type of all value types in Car (string | number)
 type CarPropTypes = Car[keyof Car];
 ```
 
 
-### Lookup Types & Generic Constraints
-- **extends keof**: Constrain a generic type to keys of an object type.
+### Lookup Types & Generic Type Constraints
+- **\<Key extends keof...\>**: Constrain a generic type to keys of an object type.
 ```typescript
-// Key extends keyof Car = dynamic type based on Car keys
+interface Car { make: string; model: string; }
+
+// Key extends keyof Car = Allows only keys of Car
 function getCarProperty<Key extends keyof Car>(car: Car, key: Key): Car[Key] {
     return car[key];
 }
 
-// T extends keyof Type = dynamic type based on T keys
-function getProperty<Key extends keyof T, T>(obj: T, key: Key): T[Key] {
-    return obj[key];
-}
+const car = { make: "Toyota", model: "Corolla" };
+
+// ✅ OK: Get the value of the "make" property
+const make = getCarProperty(car, "make");
+
+// ❌ Error: Property "year" does not exist on type "Car"
+const year = getCarProperty(car, "year");
 ```
 
 
 ### Mapped Types
 - **in**: Create a object type by mapping over the properties of an existing type.
 ```typescript
-// Make all properties optional
-type OptionalCar = {
-  [K in keyof Car]?: Car[K];
-};
+// Variant 1: Map over all `Car` properties and make them optional
+type OptionalCar = { [Property in keyof Car]?: Car[Property]; };
 
-// Make all properties readonly
-type ReadOnlyCar = {
-  readonly [K in keyof Car]: Car[K];
-};
+// Vairant 2: Map over all `Type` properties and make them optional
+type MyPartialType<Type> = { [Property in keyof Type]?: Type[Property]; };
+type OptionalCar = MyPartialType<Car>;
+// type OptionalUser = MyPartialType<User>;
+
+// All properties are optional
+const car: OptionalCar = { make: "Toyota" };
 ```
 
 
@@ -518,13 +471,96 @@ type CarMakeType = Car[typeof prop];
 | `<T extends keyof Car>`     | Constrain `T` to keys of `Car`                   | Flexible, depends on `Car`                  |
 | `prop: T, value: Car[T]`    | Use `T` for both the key and value type in `Car` | Depends on `T`, e.g., `string` for `"make"` |
 
-<br>
-<hr>
+
+## 5. Advanced Type Concepts
+
+### Structural Type Checking
+TypeScript uses structural typing to determine if an object is compatible with a given type, meaning it only considers the shape or structure of the data.
+
+- **Structural Typing via Variable Assignment**: TypeScript checks that the variable is compatible with the interface allowing extra properties.
+```typescript
+interface Car { make: string; model: string; }
+function displayCarInfo(car: Car) { /*..*/ }
+
+const car = { make: "Toyota", model: "Corolla" };
+// ✅ OK: `car` variable has exact properties to fulfill the `Car` interface.
+displayCarInfo(car);
+
+const carWithExtras = { make: "Honda", model: "Civic", year: 2022 };
+// ✅ OK: `carWithExtras` variable has extra properties beyond those in the `Car` interface.
+displayCarInfo(carWithExtras);
+```
 
 
-## Best Practices
+- **Structural Typing via Inline Objects**: TypeScript checks that the object matches the interface exactly, disallowing any extra properties to prevent errors.
+```typescript
+interface Car { make: string; model: string; }
+function displayCarInfo(car: Car) { /*..*/ }
 
-### Guarding Angel of Exhaustive Trick: `assertNever(value: never): never`
+// ✅ OK: `car` object has exact properties to fulfill the `Car` interface.
+displayCarInfo({ make: "Toyota", model: "Corolla" });
+
+// ❌ Error: `carWithExtras` object has extra properties that do not fulfill the `Car` interface.
+displayCarInfo({ make: "Honda", model: "Civic", year: 2022 });
+```
+
+- **Inline Flexibility**: TypeScript allows with `<T extends Car>`  inline objects to have additional properties beyond those strictly defined in the Car interface.
+
+```typescript
+interface Car { make: string; model: string; }
+function displayCarInfo<T extends Car>(car: T) { /*..*/}
+
+// ✅ OK: Inline object has extra properties, allowed by `<T extends Car>` constraint
+displayCarInfo({ make: "Honda", model: "Civic", year: 2022 });
+```
+
+
+### Records Type Checking
+
+TypeScript provides specific configurations to ensure type safety, when working with dynamic data structures such as records.
+
+- **noPropertyAccessFromIndexSignature** raises an error if using dot notation to access dynamic properties.
+- ❗️Only use dot notation for known properties, and bracket notation for dynamic properties.  
+
+
+  ![img_17.png](assets/ts-error-2.png)
+
+```typescript
+const cars: Record<string, Car> = { "toyota": { make: "Toyota", model: "Corolla" } };
+
+// ❌ Error: if `noPropertyAccessFromIndexSignature` is true (set in tsconfig.json)
+// ❗ Why: TypeScript warns that accessing dynamic properties like `toyota` via dot notation is unsafe.
+const toyota = cars.toyota;
+
+// ✅ OK: Use bracket notation to access dynamic properties
+const toyota = cars["toyota"];
+toyota.make = "blabla";
+```
+
+- **noUncheckedIndexedAccess** raises an error if access dynamic properties without handling if the property is undefined.
+- ❗️Always check if dynamic properties exist before accessing them to prevent runtime errors.
+
+
+  ![img_17.png](assets/ts-error-1.png)
+```typescript
+const cars: Record<string, Car> = { "toyota": { make: "Toyota", model: "Corolla" } };
+const toyota = cars["toyota"];
+
+// ❌ Error: if `noUncheckedIndexedAccess` is true (set in tsconfig.json)
+// ❗ Why: TypeScript warns that `toyota` might be `undefined` and undefined.make is a runtime error.
+toyota.make = "blabla";
+
+// ✅ OK: Check if dynamic property `toyota` exists before accessing `make`
+if (toyota) { toyota.make = "blabla"; }
+
+// ✅ OK: Use non-null assertion operator, only if you are sure that the property exists
+toyota!.make = "blabla";
+```
+
+
+## 6. Advanced Patterns
+
+### Guarding Angel of Exhaustiveness Pattern: `assertNever(value: never): never`
 
 <img src="https://angelicthrone.com/cdn/shop/articles/guardian-angel-sitael_1200x.png?v=1725613932" width="500">
 
@@ -536,6 +572,10 @@ interface Square { kind: "square"; size: number; }
 interface Rectangle { kind: "rectangle"; width: number; height: number; }
 type Shape = Square | Rectangle;
 
+/**
+ * The `assertNever` function is used to enforce exhaustiveness in type checking.
+ * It expects a value of type `never`, which means that the function should never be called.
+ */
 function assertNever(value: never): never {
     throw new Error("Unexpected value received: " + value);
 }
@@ -546,14 +586,15 @@ function getArea(shape: Shape): number {
             return shape.size * shape.size;
         case "rectangle":
             return shape.width * shape.height;
-        default:
-            return assertNever(shape); 
+     default:
+         // ❌ Error: Ensure all cases are handled at compile time to prevent runtime errors.
+        return assertNever(shape); 
     }
 }
 ```
 
 
-### Double Assertion Trick: `..as unknown as..`
+### Double Assertion Pattern: `..as unknown as..`
 
 <img src="https://static.bandainamcoent.eu/high/unknown-9/Brand-setup/Product_thumbnails/AWA_Product_1160px.jpg" width="500">
 
@@ -562,15 +603,15 @@ function getArea(shape: Shape): number {
 
 ```typescript
 function handleEvent(event: Event) {
-    // Okay: The `event` is a `MouseEvent`, so we can solve it with single assertion
+    // ✅ OK: The `event` is a `MouseEvent`, so we can solve it with single assertion
     let mouseEvent = event as MouseEvent;
 }
 
 function handler(event: Event) {
-    // Error: Neither 'Event' nor 'HTMLElement' is assignable to the other, so we need double assertion
+    // ❌ Error: Neither 'Event' nor 'HTMLElement' is assignable to the other, so we need double assertion
     // let element = event as HTMLElement;
     
-    // Okay: Double assertion allows for type conversion
+    // ✅ OK: Double assertion allows for type conversion
     let element = event as unknown as HTMLElement;
 }
 ```
@@ -579,7 +620,7 @@ function handler(event: Event) {
 - **Use `unknown` vs `any`**: Both `as unknown as` and `as any as` can be used, but `unknown` is preferred for type safety.
 
 
-### Definite Assignment Assertion Trick: `variable!: type`
+### Definite Assignment Assertion Pattern: `variable!: type`
 
 <img src="https://i.ytimg.com/vi/AT6IPtrcJNI/maxresdefault.jpg" width="500">
 
@@ -587,7 +628,7 @@ function handler(event: Event) {
 - **Use `!`**: To declare a variable that will be initialized later, especially in situations involving conditional logic or initialization in a separate function.
 
 ```typescript
-// No initialization
+// ✅ No initialization: Use `!`
 let userName!: string;
 
 // Delayed initialization
@@ -600,11 +641,56 @@ function initializeUser() {
 }
 ```
 
-<br>
-<hr>
+
+### Generic Type Constraints: `<T extends ...>`
+- **Purpose**: Use `<T extends ...>` when creating reusable functions that need to accept/return subtypes of a given base type.
+
+```typescript
+interface Car { make: string; model: string; }
+interface Van extends Car { fridge: boolean; }
+
+// Input and output are of type `T`
+function cloneCar<T extends Car>(car: T): T {
+    return { ...car };
+}
+
+// ✅ Retains type safety for subtypes: Van in, Van out
+const van: Van = { make: "Ford", model: "Transit", fridge: true };
+const vanCloned: Van = cloneCarGeneric(van);
+```
 
 
-## TypeScript Setup
+### Declare: `declare function ...`
+- **Purpose**: Use to provide type information about variables, functions, or classes without needing to provide actual implementation.
+```typescript
+// `my-library.js` implements `greet` function
+function greet(name: string): void { /*..*/ }
+
+// `main.ts` uses `greet` function
+declare function greet(name: string): void;
+
+// Use `greet`
+greet("Alice");
+```
+
+
+### Polymorphic Behavior
+- **Purpose**: Use multiple function signatures to handle different types of input while maintaining type safety.
+```typescript
+// Polymorphic function with multiple signatures
+function add(a: number, b: number): number;
+function add(a: string, b: string): string;
+
+// Implementation using `any` to handle both overloads
+function add(a: any, b: any): any { /*..*/ }
+
+// Use `add`
+add(1, 2); // Returns number
+add("Hello", "World"); // Returns string
+```
+
+
+## 7. TypeScript Setup
 
 ### Installation
 ```sh
@@ -673,6 +759,8 @@ my-project/
     "module": "ESNext",                         // Specify module code generation (use the latest module system)
     "lib": ["ES2020", "DOM", "DOM.Iterable"],   // Include library files for ES2020, DOM APIs, and DOM Iterables (for browser)
     //"lib": ["ES2020],                         // Include library files for ES2020 (for Node)
+    
+    /* Output and Directory */
     "outDir": "./dist",                         // Specify the output directory for compiled JavaScript files
     "rootDir": "./src",                         // Specify the root directory of TypeScript source files
 
@@ -687,10 +775,7 @@ my-project/
     "noUncheckedSideEffectImports": true,       // Report errors on imports with side effects that are unused
     "noUncheckedIndexedAccess": true,           // Report errors when accessing dynamic properties without handling undefined
     "noPropertyAccessFromIndexSignature": true, // Report errors if using dot notation to access dynamic properties
-
-    /* Paths and Module Aliases */
-    "paths": {},                                // Configure path mapping for module imports
-
+    
     /* Compatibility */
     // "types": ["node"],                       // Automatically include type definitions (for Node)
     "esModuleInterop": true,                    // Enable interop compatibility for importing CommonJS modules (e.g. Jest)
@@ -699,44 +784,62 @@ my-project/
     "skipLibCheck": true,                       // Skip type-checking of declaration files (.d.ts) for faster builds
     
     /* Debugging */
-    "sourceMap": true                           // Generate source maps for debugging TypeScript in the browser or IDE
+    "sourceMap": true,                          // Generate source maps for debugging TypeScript in the browser or IDE
     
     /* Declaration Files */
     // "declaration": true,                     // Generate declaration files (.d.ts) for TypeScript code
     // "declarationDir": "dist/types",          // Output directory for declaration files
+    
+    /* Paths and Module Aliases */
+    "paths": {}                                 // Configure path mapping for module imports
   },
   "include": ["src/**/*"],                      // Include all TypeScript source files in the src directory
   "exclude": ["node_modules"]                   // Exclude the node_modules directory from compilation
 }
 ```
 
-<br>
-<hr>
 
+## 7. Typescript Path Aliases (`tsconfig.json`)
 
-## TypeScript Paths and Type Definitions
-
-### Path Aliases `(tsconfig.json)`
-
+### Overview
 - **Link**: [Path Aliases in TypeScript](https://www.typescriptlang.org/tsconfig#paths)
 - **Purpose**: Path aliases provide cleaner, descriptive import paths, making code easier to read, maintain, and refactor.
-- **Note**: Path aliases must be resolved by module bundlers like ESBuild since JavaScript does not support this natively.
 
 
-- **Example Configuration**
+### Considerations
+- **Compiler Time**: At compile time, The Typescript compiler can resolve baseUrl and paths during development for type checking.
+- **Runtime Time**: For runtime, we need a bundler like Vite or ESBuild to resolve the aliases, as JavaScript runtimes do not natively recognize these custom paths. 
+
+### Configuration
+
+- **Folder Structure**
+```markdown
+my-project/
+├── src/
+│   ├── components/
+│   │   └── button.ts
+│   ├── models/
+│   │   └── user.ts
+│   └── utils/
+│       └── date.ts
+```
+
+- **tsconfig.json**
 ```json
 {
   "compilerOptions": {
+    "baseUrl": "./src",                     // Set the base directory for non-relative module names
     "paths": {
-      "@components/*": ["components/*"],
-      "@models/*": ["models/*"],
-      "@utils/*": ["utils/*"]
+      "@components/*": ["components/*"],    // Map `@components/` to the models directory under src/
+      "@models/*": ["models/*"],            // Map `@models/` to the models directory under src/
+      "@utils/*": ["utils/*"]               // Map `@utils/` to the utils directory under src/
     }
   }
 }
 ```
 
-- **Example Usage**
+
+- **Import Statements**
 ```typescript
 // Before
 import { User } from "../../models/user";
@@ -750,7 +853,10 @@ import { Button } from "@components/button";
 ```
 
 
-### Type Definitions (`*.d.ts`)
+
+## 7. Typescript Type Definitions (`*.d.ts`)
+
+### Overview
 - **Link**: https://www.typescriptlang.org/docs/handbook/2/type-declarations.html
 - **Purpose**: Type definitions provide type information for JavaScript libraries without TypeScript support.
 - **Installation**: Type definitions are installed via `@types` packages.
