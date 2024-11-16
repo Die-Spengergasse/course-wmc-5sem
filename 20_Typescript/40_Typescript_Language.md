@@ -12,7 +12,7 @@
 
 ### Key Features
 * **Statically Typed**: Provides type checking at compile time to catch errors during development and not runtime.
-* **Structural Typing**: Is concerned with the shape of the data, rather than explicitly enforcing type names.
+* **Structural Typed**: Is concerned with the shape of the data, rather than explicitly enforcing type names.
 * **Type Inference**: Automatically determines types when they're not explicitly specified.
 * **JavaScript Compatibility**: All valid JavaScript code is valid TypeScript code.
 
