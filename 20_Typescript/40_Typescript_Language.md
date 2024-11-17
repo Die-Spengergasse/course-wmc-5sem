@@ -660,7 +660,7 @@ function handler(event: Event) {
 - **Use `!`**: To declare a variable that will be initialized later, especially in situations involving conditional logic or initialization in a separate function.
 
 ```typescript
-// ✅ No initialization: Use `!`
+// No initialization: Use `!`
 let userName!: string;
 
 // Delayed initialization
@@ -686,7 +686,7 @@ function cloneCar<T extends Car>(car: T): T {
     return { ...car };
 }
 
-// ✅ Retains type safety for subtypes: Van in, Van out
+// Retains type safety for subtypes: Van in, Van out
 const van: Van = { make: "Ford", model: "Transit", fridge: true };
 const vanCloned: Van = cloneCarGeneric(van);
 ```
@@ -698,28 +698,35 @@ const vanCloned: Van = cloneCarGeneric(van);
 // `my-library.js` implements `greet` function
 function greet(name: string): void { /*..*/ }
 
-// `main.ts` uses `greet` function
+// `main.ts` declares  and uses `greet` function
 declare function greet(name: string): void;
-
-// Use `greet`
 greet("Alice");
 ```
 
 
-### Polymorphic Behavior
+### Overload Signature Pattern: `function ...`
 - **Purpose**: Use multiple function signatures to handle different types of input while maintaining type safety.
 ```typescript
-// Polymorphic function with multiple signatures
-function add(a: number, b: number): number;
-function add(a: string, b: string): string;
+// Overload Signature (must be followed by implementation signature)
+function createDate(timestamp: number): Date;
+function createDate(month: number, day: number, year: number): Date;
 
-// Implementation using `any` to handle both overloads
-function add(a: any, b: any): any { /*..*/ }
+// Implementation Signature (must match the overload signatures)
+function createDate(monthOrTimestamp: number, day?: number, year?: number): Date {
+    return day === undefined || year === undefined
+        ? new Date(monthOrTimestamp)
+        : new Date(year, monthOrTimestamp, day);
+}
 
-// Use `add`
-add(1, 2); // Returns number
-add("Hello", "World"); // Returns string
+// Usage
+const date1 = createDate(1731839878000); // ✅ OK
+const date2 = createDate(10, 31, 2022); // ✅ OK
+const date3 = createDate(10, 31); // ❌ Error: No overload expects 2 arguments, ...
 ```
+
+- **What is a Timestamp?**: Tracks time as a running total of seconds/milliseconds since the Unix Epoch (January 1, 1970) at UTC.
+- **Timestamp to Date**: Use `new Date(timestamp)` to convert a timestamp to a Date object.
+- **Example**: `new Date(1731839878000)` is `Sun Nov 17 2024 10:37:58 GMT+0000`
 
 
 ## 8. TypeScript Setup
