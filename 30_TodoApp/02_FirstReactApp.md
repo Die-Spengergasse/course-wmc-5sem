@@ -65,6 +65,24 @@ Installiere *axios*, um HTTP-Anfragen an das Backend zu stellen:
 npm install axios
 ```
 
+## Konfiguration des Linters
+
+Wie in unseren Typescript Projekten wollen wir die Option *no-explicit-any* zentral setzen.
+Das können wir in der Datei *.eslintrc.json* machen:
+
+**.eslintrc.json**
+```json
+{
+  "extends": [
+    "next/core-web-vitals",
+    "next/typescript"
+  ],
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off"
+  }
+}
+```
+
 ## Erstellen der TypeScript Interfaces
 
 Erstelle im Ordner *src/types* eine Datei *TodoItem.ts* für die Todo-Items:
@@ -166,6 +184,7 @@ export default TodoApp;
 ```typescript
 import { useEffect, useState } from "react";
 import axios from "axios";
+import https from "https";
 import { TodoItem, isTodoItem } from "../types/TodoItem";
 import { Category, isCategory } from "../types/Category";
 
@@ -175,8 +194,12 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   useEffect(() => {
+    const agent = new https.Agent({
+      rejectUnauthorized: false
+    });
+
     // Todo Items abrufen
-    axios.get("https://localhost:5443/api/TodoItems")
+    axios.get("https://localhost:5443/api/TodoItems", { httpsAgent: agent })
       .then(response => {
         const filteredTodos = response.data.filter(isTodoItem);
         setTodoItems(filteredTodos);
@@ -184,7 +207,7 @@ export default function Home() {
       .catch(error => console.error(error));
 
     // Kategorien abrufen
-    axios.get("https://localhost:5443/api/Categories")
+    axios.get("https://localhost:5443/api/Categories", { httpsAgent: agent })
       .then(response => {
         const filteredCategories = response.data.filter(isCategory);
         setCategories(filteredCategories);
@@ -329,3 +352,28 @@ npm run dev
 
 Öffne deinen Browser und gehe zu *http://localhost:3000*. Du solltest nun eine Todo-Liste sehen, die Daten vom Backend abruft und eine Filterfunktion nach Kategorien bietet.
 
+
+## 9. Exportieren der App
+
+Editiere die Datei **next.config.ts** und füge folgenden Inhalt ein:
+
+```javascript
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
+  reactStrictMode: true,
+  output: "export"
+};
+
+export default nextConfig;
+```
+
+Die Option *output: "export"* legt ein *out* Verzeichnis mit der App an. Mit
+
+```
+npm run build
+```
+
+kann die App nun erstellt und in dieses Verzeichnis geschrieben werden.
+Es kann nun auf einem Webserver gehostet werden.

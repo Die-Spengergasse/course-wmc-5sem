@@ -25,3 +25,4 @@ Siehe [software.md](software.md).
 - 📹 YT: [Everything You NEED to Know About WEB APP Architecture](https://www.youtube.com/watch?v=sDlCSIDwpDs)
 - [Fertiges Backend](30_TodoApp/01_Backend.md)
 - [Die erste App mit React und Next.js](30_TodoApp/02_FirstReactApp.md)
+- [Layout, Komponenten und Routen](30_TodoApp/10_Layout_Routing.md)
