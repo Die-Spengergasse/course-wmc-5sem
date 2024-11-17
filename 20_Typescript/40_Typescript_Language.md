@@ -17,11 +17,6 @@
 * **JavaScript Compatibility**: All valid JavaScript code is valid TypeScript code.
 
 
-### Compiler vs Transpiler
-- **Transpiler**: `tsc` converts TypeScript to JavaScript, which is considered transpilation since it translates from TypeScript to a compatible version of JavaScript.
-- **Compiler**: `tsc` also performs type-checking, syntax checking, and enforces type constraints, which are typical of compilers. This is why `tsc` is often referred to as a compiler.
-
-
 ### Playground
 - **Purpose**: An online editor to experiment with TypeScript code and see the JavaScript output.
 - **Link**: https://www.typescriptlang.org/play
@@ -34,8 +29,45 @@
 - The **.d.ts** view provides a type-only, showing declarations of interfaces, types, and constants without implementation details.
 ![img_2.png](assets/ts-playground-1.png)
 
+
+## 2. TypeScript Compiler
+
+### Compiler vs Transpiler
+- **Transpiler**: `tsc` converts TypeScript to JavaScript, which is considered transpilation since it translates from TypeScript to a compatible version of JavaScript.
+- **Compiler**: `tsc` also performs type-checking, syntax checking, and enforces type constraints, which are typical of compilers. This is why `tsc` is often referred to as a compiler.
+
+
+### What is a Type?
+- **Type**: A classification that defines the possible values and allowed operations for a piece of data.
+
+### What is a Type System?
+- **Set of Rules**: Defines how types are assigned, combined, and used, ensuring type safety and catching errors early.
+
+### How TypeScript Compiler Works?
+1. **Analyzes** code and assigns types based on the context.
+2. **Tracks** types across the code to ensure they match.
+3. **Maintains** type consistency by validating expected usage.
+4. **Reports** errors if something seems wrong to prevent runtime issues.
+5. **Transpiles** TypeScript code to JavaScript for execution in the browser or Node.
+
+
+## 3. TypeScript Compiler Insights
+
+### Abstract Syntax Tree (AST)
+- **Definition**: A tree representation of code that shows its structure, including relationships between variables, functions, and operators.
+- **Purpose**: The AST is used by the TypeScript compiler to analyze, type-check, and transpile code.
+
+<img src="https://ruslanspivak.com/lsbasi-part7/lsbasi_part7_ast_01.png" style="margin-top: 20px; margin-bottom: 20px" width="500"/>
+
+### How TypeScript Uses the AST
+1. **Lexical Analysis**: The code is broken down into tokens representing keywords, variables, and symbols.
+2. **AST Generation**: Tokens are parsed into an AST that represents the structure of the code.
+3. **Semantic Analysis**: TypeScript performs type checking and ensures variables are used correctly by analyzing the AST.
+4. **AST Transformation**: Converts TypeScript features into JavaScript-compatible equivalents.
+5. **Code Generation**: The AST is used to generate JavaScript code, making sure all TypeScript features are transpiled properly.
+
   
-## 2. Basic Data Types
+## 3. Basic Data Types
 
 ### Core Types
 - TypeScript provides several basic types to represent data.
@@ -154,7 +186,7 @@ function move(direction: Direction) {
 ```
 
 
-## 3. Intermediate Data Types
+## 4. Intermediate Data Types
 
 
 ### Union Types (A ∪ B)
@@ -317,7 +349,7 @@ if (typeof value === "string") {
 ```
 
 
-## 4. Advanced Data Types
+## 5. Advanced Data Types
 
 ### Utility Types
 
@@ -472,7 +504,7 @@ type CarMakeType = Car[typeof prop];
 | `prop: T, value: Car[T]`    | Use `T` for both the key and value type in `Car` | Depends on `T`, e.g., `string` for `"make"` |
 
 
-## 5. Advanced Type Concepts
+## 6. Advanced Type Concepts
 
 ### Structural Type Checking
 TypeScript uses structural typing to determine if an object is compatible with a given type, meaning it only considers the shape or structure of the data.
@@ -558,7 +590,7 @@ toyota!.make = "blabla";
 ```
 
 
-## 6. Advanced Patterns
+## 7. Advanced Patterns
 
 ### Guarding Angel of Exhaustiveness Pattern: `assertNever(value: never): never`
 
@@ -690,7 +722,7 @@ add("Hello", "World"); // Returns string
 ```
 
 
-## 7. TypeScript Setup
+## 8. TypeScript Setup
 
 ### Installation
 ```sh
@@ -854,7 +886,7 @@ import { Button } from "@components/button";
 
 
 
-## 7. Typescript Type Definitions (`*.d.ts`)
+## 9. Typescript Type Definitions (`*.d.ts`)
 
 ### Overview
 - **Link**: https://www.typescriptlang.org/docs/handbook/2/type-declarations.html
