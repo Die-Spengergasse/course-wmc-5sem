@@ -181,7 +181,7 @@ export default TodoApp;
 Öffne *src/pages/index.tsx* und füge den folgenden Code ein:
 
 **src/pages/index.tsx**
-```typescript
+```tsx
 import { useEffect, useState } from "react";
 import axios from "axios";
 import https from "https";
@@ -193,40 +193,41 @@ export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
-  useEffect(() => {
-    const agent = new https.Agent({
-      rejectUnauthorized: false
-    });
-
-    // Todo Items abrufen
-    axios.get("https://localhost:5443/api/TodoItems", { httpsAgent: agent })
-      .then(response => {
-        const filteredTodos = response.data.filter(isTodoItem);
-        setTodoItems(filteredTodos);
-      })
-      .catch(error => console.error(error));
-
-    // Kategorien abrufen
-    axios.get("https://localhost:5443/api/Categories", { httpsAgent: agent })
-      .then(response => {
-        const filteredCategories = response.data.filter(isCategory);
-        setCategories(filteredCategories);
-      })
-      .catch(error => console.error(error));
-  }, []);
-
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedCategory(event.target.value);
-  };
-
+  // Wenn wir im Dropdownfeld eine Kategorie auswählen, sollen nur die Todo Items dieser Kategorie angezeigt werden.
   const filteredTodoItems = selectedCategory
     ? todoItems.filter(item => item.categoryName === selectedCategory)
     : todoItems;
 
+  useEffect(() => {
+    // Da wir axios.get mit await verwenden, muss diese Funktion async sein.
+    async function fetchData() {
+      const agent = new https.Agent({
+        rejectUnauthorized: false
+      });
+
+      try {
+        // Todo Items abrufen
+        const todoResponse = await axios.get("https://localhost:5443/api/TodoItems", { httpsAgent: agent });
+        const filteredTodos = todoResponse.data.filter(isTodoItem);
+        setTodoItems(filteredTodos);
+
+        // Kategorien abrufen, um das Dropdownfeld zu befüllen.
+        const categoryResponse = await axios.get("https://localhost:5443/api/Categories", { httpsAgent: agent });
+        const filteredCategories = categoryResponse.data.filter(isCategory);
+        setCategories(filteredCategories);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    // Die Funktion wird ohne await aufgerufen. Bei useEffect können wir keine async Funktion übergeben.
+    // Siehe https://react.dev/reference/react/useEffect#fetching-data-with-effects
+    fetchData();
+  }, []);
+
   return (
     <div>
       <h1>Todo Liste</h1>
-      <select onChange={handleCategoryChange}>
+      <select onChange={(event)=>setSelectedCategory(event.target.value)}>
         <option value="">Alle Kategorien</option>
         {categories.map(category => (
           <option key={category.guid} value={category.name}>
