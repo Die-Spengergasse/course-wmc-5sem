@@ -1,16 +1,36 @@
+
+/* Dark Theme */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 1rem;
-  padding: 0em;
-  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+  background-color: #121212; /* Dark background */
+  color: #e0e0e0; /* Light text */
 }
 
+/* Reset styles */
 * {
   box-sizing: border-box;
 }
 
+/* Content styles */
+.content {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-h1 {
+/* Header */
+h1, h2, h3 {
+  color: #bb86fc;
   text-align: center;
-  color: #333;
+}
+
+/* Utility */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 }

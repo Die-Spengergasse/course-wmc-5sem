@@ -1,9 +1,9 @@
 # Layout, Komponenten und Routen
 
 
-![](todo_pages_2231.png)
+![](todo_pages_0938.png)
 
-> Link zum Programm: [Laout_Routing20241117.zip](Laout_Routing20241117.zip), im Repo unter *30_TodoApp/Laout_Routing*.  
+> Link zum Programm: [Laout_Routing20241118.zip](Laout_Routing20241118.zip), im Repo unter *30_TodoApp/Laout_Routing*.  
 > Wichtig: Diese Informationen beziehen sich auf das Routingsystem in Next.js 15.
 > Es wurde in der Version 13 angepasst, kontrolliere daher in Tutorials immer die Version!
 
@@ -43,8 +43,10 @@ export default function RootLayout({
                 <title>To-Do App</title>
             </head>
             <body>
-                <Navbar />
-                <main>{children}</main>
+                <div className="container">
+                    <Navbar />
+                    <main className="content">{children}</main>
+                </div>
             </body>
         </html>
     );
@@ -312,7 +314,7 @@ Es beinhaltet ein Array *todoTasks*, das alle Tasks anbietet.
 Stelle diese Tasks in einer clientseitigen Component dar.
 
 Gehe dabei so vor:
-- Lade als Basisimplementierung die Datei [Laout_Routing20241117.zip](Laout_Routing20241117.zip) aus dem Repo.
+- Lade als Basisimplementierung die Datei [Laout_Routing20241118.zip](Laout_Routing20241118.zip) aus dem Repo.
 - Definiere ein Interface *TodoItemDetail* in *src/app/types*.
   Es soll die Antwort, die z. B. von https://localhost:5443/api/TodoItems/3b33199e-bc34-7895-eb67-338383c35c99 kommt, aufnehmen.
   Vergiss nicht auf den Typeguard.

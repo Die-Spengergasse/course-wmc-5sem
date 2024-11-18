@@ -18,8 +18,10 @@ export default function RootLayout({
                 <title>To-Do App</title>
             </head>
             <body>
-                <Navbar />
-                <main>{children}</main>
+                <div className="container">
+                    <Navbar />
+                    <main className="content">{children}</main>
+                </div>
             </body>
         </html>
     );
