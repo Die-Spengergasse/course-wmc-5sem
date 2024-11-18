@@ -2,6 +2,10 @@
 
 ![](./todo_first_app_1748.png)
 
+> Download der App: [First_App20241118.zip](./First_App20241118.zip).
+> Im Repo ist die App im Ordner *30_TodoApp/First_App*.
+> Vergiss nicht, *npm install* nach dem Download im Ordner, wo die Datei *package.json* ist, auszuführen.
+
 Im Kapitel Typescript haben wir bereits auf unser [Backend](01_Backend.md) zugegriffen, um Daten zu laden.
 Stelle daher sicher, dass es läuft.
 Nun wollen wir die erste SPA (single page app) schreiben, die die Ausgabe in den Browser bringt.
@@ -38,27 +42,24 @@ npx create-next-app@latest todo-app --typescript
 √ Would you like to use ESLint? ...                               No / Yes <-- YES
 √ Would you like to use Tailwind CSS? ...                         No / Yes <-- YES
 √ Would you like to use *src/* directory? ...                     No / Yes <-- YES
-√ Would you like to use App Router? (recommended) ...             No / Yes <-- NO
+√ Would you like to use App Router? (recommended) ...             No / Yes <-- YES
 √ Would you like to use Turbopack for next dev? ...               No / Yes <-- NO
-√ Would you like to customize the default import alias (@/*)? ... No / Yes <-- YES
+√ Would you like to customize the default import alias (@/*)? ... No / Yes <-- NO
 ```
 
 ### Überblick über das Next.js Projekt
 
 Nach der Initialisierung findest du die folgenden Dateien und Ordner:
 
-- **pages/**: Hier befinden sich alle Seiten deiner App. Jede Datei in diesem Ordner wird zu einer Route. Zum Beispiel wird *index.tsx* zur Startseite (*/*).
-  Wichtig: Dieser Ordner wird vom create-next-app Skript mit *App Router: NO* angelegt und ist noch das alte Routingschema.
-  Im nächsten Kapitel nutzen wir dann das neue Routingsystem mit dem *app* Ordner.
-  Wenn du die Option *Would you like to use App Router? (recommended)* auf YES setzt, wird ein app Ordner für das neue Routing angelegt.
+- **src/app/page.tsx**: Dies ist die Indexpage, sie wird aufgerufen, wenn die Root Adresse (/) aufgerufen wird.
+- **src/app/globals.css**: Dies ist das Haupt Stylesheet der Applikation.
+- **src/app/layout.tsx**: Hier wird das Grundlayout definiert.
+  Es ist der "HTML Boilerplate Code".
+  In *{children}* werden die einzelnen Seiten eingesetzt.
 - **public/**: Statische Dateien wie Bilder, Icons oder andere Ressourcen werden hier abgelegt.
-- **styles/**: Dieser Ordner enthält CSS-Dateien für die Styles deiner App.
 - **next.config.js**: Diese Datei enthält die Konfiguration von Next.js. Hier kannst du spezifische Einstellungen für dein Projekt anpassen.
 - **tsconfig.json**: Hier werden die TypeScript-Konfigurationen festgelegt.
 - **package.json**: Diese Datei listet alle Abhängigkeiten des Projekts sowie Skripte zum Bauen, Starten und Entwickeln.
-
-> Lösche nach der Erstellung alle Dateien aus dem Ordner *pages*.
-> Wir werden sie nach und nach anlegen, um ihre Bedeutung zu erfahren.
 
 ### Installieren der notwendigen Pakete
 
@@ -88,9 +89,9 @@ Das können wir in der Datei *.eslintrc.json* machen:
 
 ## Erstellen der TypeScript Interfaces
 
-Erstelle im Ordner *src/types* eine Datei *TodoItem.ts* für die Todo-Items:
+Erstelle im Ordner *src/app/types* eine Datei *TodoItem.ts* für die Todo-Items:
 
-**src/types/TodoItem.ts**
+**src/app/types/TodoItem.ts**
 ```typescript
 export interface TodoItem {
   guid: string;
@@ -124,7 +125,7 @@ export function isTodoItem(item: any): item is TodoItem {
 
 Erstelle eine weitere Datei *Category.ts* für die Kategorien:
 
-**src/types/Category.ts**
+**src/app/types/Category.ts**
 ```typescript
 export interface Category {
   guid: string;
@@ -154,42 +155,48 @@ export function isCategory(item: any): item is Category {
 - **isTodoItem Type Guard**: Dies ist ein sogenannter "Type Guard", der sicherstellt, dass ein Objekt den Typ *TodoItem* hat.
 - **Category Interface**: Dieses Interface beschreibt die Struktur einer Kategorie. Auch hier nutzen wir einen "Type Guard" mit *isCategory*.
 
-## Erstellen der Datei _app.tsx
+## Erstellen der Datei layout.tsx
 
-Die Datei *_app.tsx* in einem Next.js-Projekt ist eine spezielle Komponente, die als "Custom App" bezeichnet wird.
-Sie ermöglicht es dir, das Standardverhalten von Next.js anzupassen und globale Layouts oder Stile auf alle Seiten der Anwendung anzuwenden.
-Hier ist eine detaillierte Erklärung, was _app.tsx macht und warum sie wichtig ist:
+Wie bei jeder Webseite beginnen wir mit dem HTML Grundgerüst.
+Die Funktion *RootLayout()* liefert dieses Gerüst zurück.
+In *{children}* werden die einzelnen *Pages* eingesetzt, in unserem Fall die Datei *page.tsx*.
 
-### Zweck von _app.tsx
+**src/app/layout.tsx**
+```tsx
+import { Metadata } from "next";
+import "./globals.css";
 
-- **Globale Layouts und Stile:** _app.tsx ist der ideale Ort, um globale Layouts oder Stile zu definieren, die auf jeder Seite der Anwendung erscheinen sollen. Wenn du z. B. ein Navigationsmenü oder eine Fußzeile hast, die auf jeder Seite sichtbar sein soll, kannst du es hier einfügen. Ebenso ist es üblich, globale CSS-Dateien wie globals.css hier zu importieren.
-- **Initialisierung von Seiten:** Jedes Mal, wenn eine Seite in Next.js geladen wird, wird sie über _app.tsx gerendert. Das bedeutet, dass jede Seite durch die Komponente, die in _app.tsx definiert ist, gerendert wird.
-- **Zustandsverwaltung und Bibliotheken:** Wenn du externe Bibliotheken wie Zustandsspeicher (z.B. Redux, Zustand), Authentifizierung oder andere Logik auf globaler Ebene hinzufügen möchtest, kannst du dies in _app.tsx tun. Diese Konfiguration wird dann in der gesamten Anwendung verfügbar sein.
-- **Client-seitige Navigation:** In einer Next.js-App wird die client-seitige Navigation, d.h. das Wechseln zwischen den Seiten ohne vollständiges Neuladen, über _app.tsx gesteuert. Es ist also ein zentraler Punkt für die Handhabung von Navigationen und Seitenwechseln.
+export const metadata: Metadata = {
+  title: "My first Next.js App"
+};
 
-**src/pages/_app.tsx**
-```typescript
-import type { AppProps } from 'next/app';
-import '../styles/globals.css';  // Importiere die globale CSS-Datei
-
-function TodoApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+      </body>
+    </html>
+  );
 }
-
-export default TodoApp;
 ```
 
-## Erstellen der Hauptkomponente der App
+## Erstellen der Indexpage der App
 
-Öffne *src/pages/index.tsx* und füge den folgenden Code ein:
+Öffne *src/app/page.tsx* und füge den folgenden Code ein:
 
-**src/pages/index.tsx**
+**src/app/page.tsx**
 ```tsx
+"use client"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import https from "https";
-import { TodoItem, isTodoItem } from "../types/TodoItem";
-import { Category, isCategory } from "../types/Category";
+import { TodoItem, isTodoItem } from "./types/TodoItem";
+import { Category, isCategory } from "./types/Category";
 
 export default function Home() {
   const [todoItems, setTodoItems] = useState<TodoItem[]>([]);
@@ -262,6 +269,9 @@ export default function Home() {
 - **axios.get()**: Hiermit werden HTTP GET-Anfragen an die API gesendet. Die Antworten werden in den jeweiligen State-Variablen gespeichert.
 - **handleCategoryChange**: Diese Funktion wird aufgerufen, wenn der Benutzer eine Kategorie aus dem Dropdown-Menü auswählt. Die ausgewählte Kategorie wird im State gespeichert und die Liste der Todo-Items wird entsprechend gefiltert.
 - **isTodoItem & isCategory**: Diese Type Guards stellen sicher, dass die vom Backend erhaltenen Daten die erwarteten Strukturen haben, bevor sie in den State gespeichert werden.
+- **use client**: Standardmäßig werden Komponenten von Next.js am Server gerendert.
+  Wollen wie Userinteraktion, muss die Komponente allerdings am Client gerendert werden.
+  Details sind im nächsten Kapitel zu finden.
 
 #### Wie funktioniert useState<TodoItem[]>([])?
 
@@ -299,8 +309,9 @@ Es wird verwendet, um die Todo-Items und Kategorien von der API zu laden, wenn d
 
 ## CSS Layout für die App
 
-Um das Layout der App zu verbessern, erstellen wir eine einfache CSS-Datei. Gehe zu src/styles/global.css und füge das folgende CSS hinzu:
+Um das Layout der App zu verbessern, erstellen wir eine einfache CSS-Datei. Gehe zu *src/app/globals.css* und füge den folgenden Inhalt ein:
 
+**src/app/globals.css**
 ```css
 body {
   font-family: Arial, sans-serif;
@@ -344,9 +355,32 @@ li p {
   margin: 5px 0;
   color: #666;
 }
+```
+
+## Die fertige Dateistruktur
+
+Am Ende soll die Dateistruktur so aussehen.
+Achte darauf, dass im Ordner *src* nur der Ordner *app* ist.
 
 ```
-## 8. Starte den Entwicklungsserver
+todo-app
+  + .eslintrc.json
+  + next.config.ts
+  + package.json
+  + public
+  + src
+  |  + app
+  |  |  + globals.css
+  |  |  + layout.tsx
+  |  |  + page.tsx
+  |  |  + types
+  |  |  |  + Category.ts
+  |  |  |  + TodoItem.ts
+  + tailwind.config.ts
+  + tsconfig.json
+```
+
+## Starte des Entwicklungsservers
 
 Führe den folgenden Befehl aus, um den Entwicklungsserver zu starten:
 
@@ -357,7 +391,7 @@ npm run dev
 Öffne deinen Browser und gehe zu *http://localhost:3000*. Du solltest nun eine Todo-Liste sehen, die Daten vom Backend abruft und eine Filterfunktion nach Kategorien bietet.
 
 
-## 9. Exportieren der App
+## Exportieren der App
 
 Editiere die Datei **next.config.ts** und füge folgenden Inhalt ein:
 
