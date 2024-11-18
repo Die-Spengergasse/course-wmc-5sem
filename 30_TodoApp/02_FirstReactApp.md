@@ -48,6 +48,9 @@ npx create-next-app@latest todo-app --typescript
 Nach der Initialisierung findest du die folgenden Dateien und Ordner:
 
 - **pages/**: Hier befinden sich alle Seiten deiner App. Jede Datei in diesem Ordner wird zu einer Route. Zum Beispiel wird *index.tsx* zur Startseite (*/*).
+  Wichtig: Dieser Ordner wird vom create-next-app Skript mit *App Router: NO* angelegt und ist noch das alte Routingschema.
+  Im nächsten Kapitel nutzen wir dann das neue Routingsystem mit dem *app* Ordner.
+  Wenn du die Option *Would you like to use App Router? (recommended)* auf YES setzt, wird ein app Ordner für das neue Routing angelegt.
 - **public/**: Statische Dateien wie Bilder, Icons oder andere Ressourcen werden hier abgelegt.
 - **styles/**: Dieser Ordner enthält CSS-Dateien für die Styles deiner App.
 - **next.config.js**: Diese Datei enthält die Konfiguration von Next.js. Hier kannst du spezifische Einstellungen für dein Projekt anpassen.
