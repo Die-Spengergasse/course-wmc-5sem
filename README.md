@@ -17,9 +17,14 @@ Siehe [software.md](software.md).
 - [Die erste Typescript App](./20_Typescript/10_FirstApp.md)
 - [Typescript Basics](./20_Typescript/20_TypescriptBasics.md)
 - [Typescript und API](./20_Typescript/25_TypescriptWithApi.md)
-- [Object und Array destructing](./20_Typescript/30_Destructing.md)
+- **Vertiefung in Typescript**
+  - [Object und Array destructing](./20_Typescript/30_Destructing.md)
+  - [TypeScript Language Overview](./20_Typescript/40_Typescript_Language.md)
+  - [TypeScript Questions and Exercises](./20_Typescript/45_Typescript_Exercises.md)
+  - [FrontEnd Tooling Guide](./20_Typescript/50_Frontend_Tooling.md)
+  - [FrontEnd Tooling Questions and Exercises](./20_Typescript/55_Frontend_Tooling_Exercises.md)
 
-## Todo App mit Next.js
+## 3 Todo App mit Next.js
 - 📹 YT: [App Architecture](https://www.youtube.com/watch?v=d1Gd-MGaleE&list=PLUU3EzfPr915ebZONvUVHKm8Bls6D7EgA)
 - 📹 YT: [Single Page Applications Architecture](https://www.youtube.com/watch?v=H1NmO3f5oiI&list=PLUU3EzfPr915ebZONvUVHKm8Bls6D7EgA)
 - 📹 YT: [Everything You NEED to Know About WEB APP Architecture](https://www.youtube.com/watch?v=sDlCSIDwpDs)
