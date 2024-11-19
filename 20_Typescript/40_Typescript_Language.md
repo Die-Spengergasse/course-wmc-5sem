@@ -792,48 +792,41 @@ my-project/
 
 ```json
 {
-  "compilerOptions": {
-    /* Language and Environment */
-    "target": "ES2020",                         // Specify ECMAScript target version for the compiled JavaScript
-    "module": "ESNext",                         // Specify module code generation (use the latest module system)
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],   // Include library files for ES2020, DOM APIs, and DOM Iterables (for browser)
-    //"lib": ["ES2020],                         // Include library files for ES2020 (for Node)
-    
-    /* Output and Directory */
-    "outDir": "./dist",                         // Specify the output directory for compiled JavaScript files
-    "rootDir": "./src",                         // Specify the root directory of TypeScript source files
+ "compilerOptions": {
+  /* Language */
+  "target": "ES2020",                         // JavaScript version to use (e.g. ES2020)
+  "module": "ESNext",                         // Module system to use (e.g. ESM)
+  "moduleResolution": "node",                 // Module resolution strategy (e.g. Node.js)
+  "lib": ["ES2020", "DOM", "DOM.Iterable"],   // Libraries to include (e.g. Browser APIs)
 
-    /* Enable Strict Type-Checking */
-    "strict": true,                             // Enable all strict type-checking options for TypeScript
+  /* Environment */
+  "outDir": "./dist",                         // Output directory for compiled JavaScript files
+  "rootDir": "./src",                         // Root directory for TypeScript source files
 
-    /* Additional Error Checks */
-    "noUnusedLocals": true,                     // Report errors for variables declared but not used within the code
-    "noUnusedParameters": true,                 // Report errors for parameters defined but not used in functions
-    "noImplicitReturns": true,                  // Report errors if not all code paths in a function have return statements
-    "noFallthroughCasesInSwitch": true,         // Report errors for fall-through cases in switch statements without a break
-    "noUncheckedSideEffectImports": true,       // Report errors on imports with side effects that are unused
-    "noUncheckedIndexedAccess": true,           // Report errors when accessing dynamic properties without handling undefined
-    "noPropertyAccessFromIndexSignature": true, // Report errors if using dot notation to access dynamic properties
-    
-    /* Compatibility */
-    // "types": ["node"],                       // Automatically include type definitions (for Node)
-    "esModuleInterop": true,                    // Enable interop compatibility for importing CommonJS modules (e.g. Jest)
-    "useDefineForClassFields": true,            // Emit class fields with `define` semantics
-    "forceConsistentCasingInFileNames": true,   // Ensure consistent casing in module imports
-    "skipLibCheck": true,                       // Skip type-checking of declaration files (.d.ts) for faster builds
-    
-    /* Debugging */
-    "sourceMap": true,                          // Generate source maps for debugging TypeScript in the browser or IDE
-    
-    /* Declaration Files */
-    // "declaration": true,                     // Generate declaration files (.d.ts) for TypeScript code
-    // "declarationDir": "dist/types",          // Output directory for declaration files
-    
-    /* Paths and Module Aliases */
-    "paths": {}                                 // Configure path mapping for module imports
-  },
-  "include": ["src/**/*"],                      // Include all TypeScript source files in the src directory
-  "exclude": ["node_modules"]                   // Exclude the node_modules directory from compilation
+  /* Declaration Files */
+  "skipLibCheck": true,                       // Skip type-checking of declaration files (.d.ts)
+
+  /* Strict Type-Checking */
+  "strict": true,                             // Enable all strict type-checking options for TypeScript
+
+  /* Additional Type-Checking */
+  "noUnusedLocals": true,
+  "noUnusedParameters": true,
+  "noImplicitReturns": true,
+  "noFallthroughCasesInSwitch": true,
+  "noUncheckedSideEffectImports": true,
+  "noUncheckedIndexedAccess": true,
+  "noPropertyAccessFromIndexSignature": true,
+
+  /* Compatibility */
+  "esModuleInterop": true,                    // Emit JavaScript for CommonJS compatibility (e.g. Jest)
+  "useDefineForClassFields": true,            // Emit ECMAScript-standard-compliant class fields
+  "forceConsistentCasingInFileNames": true,   // Ensure that casing is correct in imports
+
+  /* Debugging */
+  "sourceMap": true                           // Good for debugging, but not for production
+ },
+ "include": ["src/**/*.ts"]                   // Files to include in compilation
 }
 ```
 

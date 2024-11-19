@@ -31,7 +31,7 @@
 
 ### Linters and Formatters
 - **ESLint**: A tool for identifying and reporting on problematic patterns in JavaScript code, ensuring code quality.
-- **Prettier**: An opinionated code formatter that enforces consistent code style across the codebase.
+- **Prettier**: An opinionated code formatter that enforces consistent code style across the codebase and team.
 
 
 ### Testing Frameworks
@@ -65,7 +65,7 @@
 
 ### Installation
 * **Install:** https://nodejs.org/en/download
-* **Update:** https://stackoverflow.com/questions/6237295/how-can-i-update-node-js-and-npm-to-their-latest-versions
+* **Update with npm**: https://www.npmjs.com/package/n
 
 ```sh
 # Check Node version
@@ -116,23 +116,17 @@ cd <project-name>
 # Initialize a new `npm project` (creates `package.json`)
 npm init
 
+# Installs all dependencies (listed in `package.json` and creates `node_modules`)
+npm install
+
 # Installs a specific package (updates `package.json` and `node_modules`)
-npm install <package_name>
+npm install <package_name>@<version>
 
-# Update a package in `package.json`
-npm update <package_name>
-
-# Uninstall a package from `package.json`
-npm uninstall <package_name>
-
-# Install a package globally to use as a command line tool
-npm install -g <package_name>
+# Updates all packages to their latest versions (based on the versioning scheme)
+npm update
 
 # Run a script from package.json
 npm run <script_name>
-
-# Upgrade npm to the latest version
-npm install -g npm@latest
 ```
 
 
@@ -339,7 +333,7 @@ mkdir test
 my-project/
 ├── node_modules/               # Dependencies
 │   └── ...
-├── dist/                       # Compiled output from ESBuild
+├── dist/                       # Compiled output from ESBuild or TypeScript Compiler
 │   └── ...
 ├── src/                        # Sources
 │   ├── main.ts                 # Main Entry Point of the Application
@@ -363,50 +357,45 @@ my-project/
 ```json
 {
   "compilerOptions": {
-    /* Language and Environment */
-    "target": "ES2020",                         // Specify ECMAScript target version for the compiled JavaScript
-    "module": "ESNext",                         // Specify module code generation (use the latest module system)
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],   // Include library files for ES2020, DOM APIs, and DOM Iterables (for browser)
-    //"lib": ["ES2020],                         // Include library files for ES2020 (for Node)
-    "outDir": "./dist",                         // Specify the output directory for compiled JavaScript files
-    "rootDir": "./src",                         // Specify the root directory of TypeScript source files
+    /* Language */
+    "target": "ES2020",                         // JavaScript version to use (e.g. ES2020)
+    "module": "ESNext",                         // Module system to use (e.g. ESM)
+    "moduleResolution": "node",                 // Module resolution strategy (e.g. Node.js)
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],   // Libraries to include (e.g. Browser APIs)
 
-    /* Enable Strict Type-Checking */
+    /* Environment */
+    "outDir": "./dist",                         // Output directory for compiled JavaScript files
+    "rootDir": "./src",                         // Root directory for TypeScript source files
+
+    /* Declaration Files */
+    "skipLibCheck": true,                       // Skip type-checking of declaration files (.d.ts)
+
+    /* Strict Type-Checking */
     "strict": true,                             // Enable all strict type-checking options for TypeScript
 
-    /* Additional Error Checks */
-    "noUnusedLocals": true,                     // Report errors for variables declared but not used within the code
-    "noUnusedParameters": true,                 // Report errors for parameters defined but not used in functions
-    "noImplicitReturns": true,                  // Report errors if not all code paths in a function have return statements
-    "noFallthroughCasesInSwitch": true,         // Report errors for fall-through cases in switch statements without a break
-    "noUncheckedSideEffectImports": true,       // Report errors on imports with side effects that are unused
-    "noUncheckedIndexedAccess": true,           // Report errors when accessing dynamic properties without handling undefined
-    "noPropertyAccessFromIndexSignature": true, // Report errors if using dot notation to access dynamic properties
-
-    /* Paths and Module Aliases */
-    "paths": {},                                // Configure path mapping for module imports
+    /* Additional Type-Checking */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true,
 
     /* Compatibility */
-    // "types": ["node"],                       // Automatically include type definitions (for Node)
-    "esModuleInterop": true,                    // Enable interop compatibility for importing CommonJS modules (e.g. Jest)
-    "useDefineForClassFields": true,            // Emit class fields with `define` semantics
-    "forceConsistentCasingInFileNames": true,   // Ensure consistent casing in module imports
-    "skipLibCheck": true,                       // Skip type-checking of declaration files (.d.ts) for faster builds
-    
+    "esModuleInterop": true,                    // Emit JavaScript for CommonJS compatibility (e.g. Jest)
+    "useDefineForClassFields": true,            // Emit ECMAScript-standard-compliant class fields
+    "forceConsistentCasingInFileNames": true,   // Ensure that casing is correct in imports
+
     /* Debugging */
-    "sourceMap": true                           // Generate source maps for debugging TypeScript in the browser or IDE
-    
-    /* Declaration Files */
-    // "declaration": true,                     // Generate declaration files (.d.ts) for TypeScript code
-    // "declarationDir": "dist/types",          // Output directory for declaration files
+    "sourceMap": true                           // Good for debugging, but not for production
   },
-  "include": ["src/**/*"],                      // Include all TypeScript source files in the src directory
-  "exclude": ["node_modules"]                   // Exclude the node_modules directory from compilation
+  "include": ["src/**/*.ts"]                    // Files to include in compilation
 }
 ```
 
 
-### Initial `package.json`
+### Update `package.json`
 ```json
 {
   "name": "my-typescript-project",
@@ -426,9 +415,9 @@ my-project/
 
 
 ### Example Code
-```javascript
+```typescript
 // src/utils.ts
-export function greet(name) {
+export function greet(name: string) {
   console.log(`Hello, ${name}!`);
 }
 
@@ -481,15 +470,14 @@ npm install --save-dev esbuild
 ### Update `package.json`
 ```json
 {
-  // ..
+  // other properties omitted ..
   "main": "dist/bundle.js",
   "scripts": {
     "type-check": "tsc --noEmit",
     "build": "esbuild src/main.ts --bundle --minify --outfile=dist/bundle.js",
-    // "build": "esbuild src/**/*.ts --outdir=dist"
+    // "build": "esbuild src/**/*.ts --outdir=dist",
     "start": "npm run build && node dist/bundle.js"
-  },
-  // ..
+  }
 }
 ```
 
@@ -533,7 +521,8 @@ npm run build
 ### Installation
 ```sh
 # Install ESLint locally in the project
-npm install --save-dev eslint
+
+
 
 # Initialize ESLint configuration (creates `eslint.config.js`)
 npx eslint --init
@@ -544,9 +533,9 @@ npx eslint --init
 ```json
 {
   "scripts": {
-    // ..
-    "lint": "eslint \"{src,test}/**/*.ts\" --fix",
-  },
+    // other scripts omitted ..
+    "lint": "eslint \"{src,test}/**/*.ts\" --fix"
+  }
 }
 ```
 
@@ -596,7 +585,7 @@ npm run lint
 
 ### Overview
 * **Link**: https://prettier.io/
-* **Purpose**: An opinionated code formatter that enforces consistent style across projects.
+* **Purpose**: An opinionated code formatter that enforces consistent code style across the codebase and team.
 * **Developed By**: James Long and contributors.
 
 
@@ -616,9 +605,9 @@ npm install --save-dev prettier
 ```json
 {
   "scripts": {
-    // ..
-    "format": "prettier --write \"{src,test}/**/*.ts\"",
-  },
+    // other scripts omitted ..
+    "format": "prettier --write \"{src,test}/**/*.ts\""
+  }
 }
 ```
 
@@ -684,9 +673,9 @@ npx ts-jest config:init
 ```json
 {
   "scripts": {
-    // ..
-    "test": "jest",
-  },
+    // other scripts omitted ..
+    "test": "jest"
+  }
 }
 ```
 
@@ -703,6 +692,8 @@ export default {
 };
 ```
 
+
+
 ### Run Scripts
 ```sh
 # Run Jest to execute tests in the `test` directory
@@ -713,7 +704,7 @@ npm run test
 ### Writing Tests
 
 ```typescript
-// src/add.ts
+// src/math.ts
 export function add (a: number, b: number): number {
   if (a < 0 || b < 0) { throw new Error("Numbers must be positive"); }
   return a + b;
@@ -721,8 +712,11 @@ export function add (a: number, b: number): number {
 ```
 
 ```typescript
-// test/add.test.ts
-import { add } from '../src/add.js';
+// test/math.test.ts
+import { add } from '../src/math';
+
+// No .js extension !
+// import { add } from '../src/math.js';
 
 describe('add function', () => {
   it('should return the correct sum of two positive numbers', () => {
@@ -746,3 +740,60 @@ describe('add function', () => {
 ### Exploration Tasks
 - Make intentional errors in the test cases to see how Jest catches and reports them.
 - Explore Jest's built-in matchers and assertions to understand how to write effective tests.
+- What happens if you add `.js` in the import statement in `math.test.ts`?
+
+
+
+## 10. Vitest
+
+<img src="https://vitest.dev/logo-shadow.svg" style="margin-left: 20px; margin-top: 0px; margin-bottom: 20px" width="200"/>
+
+### Key Features
+- **Modern Jest Replacement**: Works as a drop-in replacement for Jest with faster test execution.
+- **Vite Integration**: Seamless integration with Vite for faster test runs.
+- **Built-in TypeScript/ESM Support**: Supports TypeScript and ESM modules out of the box.
+- **Watch-Mode**: Automatically re-runs tests when files change, speeding up the development process.
+
+
+
+### Installation
+```sh
+npm install --save-dev vitest
+```
+
+
+### Update `package.json`
+```json
+{
+  "scripts": {
+    // other scripts omitted ..
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage"
+  }
+}
+```
+
+### Configuration (`vitest.config.js`)
+- **Link**: https://vitest.dev/guide/
+
+```javascript
+/** @type {import('vitest').Config} **/
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    coverage: {
+      reporter: ['text', 'html'],
+    },
+  },
+});
+```
+
+
+### Exploration Tasks
+- Run watch mode tests to see how Vitest automatically re-runs tests when files change.
+- Run test coverage to see how Vitest generates code coverage reports.
+- What happens if you add `.js` in the import statement in `math.test.ts`?
