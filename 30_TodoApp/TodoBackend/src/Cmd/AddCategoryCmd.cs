@@ -1,5 +1,13 @@
-﻿namespace TodoBackend.Cmd
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TodoBackend.Cmd
 {
     public record AddCategoryCmd(
-        string Name, string Description, bool IsVisible, string Priority);
+        [StringLength(255, MinimumLength = 1, ErrorMessage = "Name must be between 1 and 255 characters.")]
+        string Name,
+        [StringLength(255, MinimumLength = 3, ErrorMessage = "Name must be between 3 and 255 characters.")]
+        string Description,
+        bool IsVisible,
+        [RegularExpression("Low|Medium|High", ErrorMessage = "Priority must be Low, Medium or High.")]
+        string Priority);
 }

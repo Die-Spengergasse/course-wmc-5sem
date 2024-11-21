@@ -53,7 +53,14 @@ namespace TodoBackend.Controllers
                 owner: user
             );
             _db.Categories.Add(category);
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.InnerException?.Message ?? e.Message);
+            }
             return CreatedAtAction(nameof(AddCategory), new { guid = category.Guid });
         }
 
@@ -72,7 +79,14 @@ namespace TodoBackend.Controllers
             category.IsVisible = cmd.IsVisible;
             category.Priority = Enum.Parse<Priority>(cmd.Priority);
             category.UpdatedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.InnerException?.Message ?? e.Message);
+            }
             return NoContent();
         }
 
@@ -85,7 +99,14 @@ namespace TodoBackend.Controllers
             if (category == null) return NoContent();
             category.IsVisible = false;
             category.UpdatedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.InnerException?.Message ?? e.Message);
+            }
             return NoContent();
         }
     }
