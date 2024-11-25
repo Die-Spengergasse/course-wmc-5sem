@@ -48,7 +48,7 @@ export default function CategoryAdd() {
                 <div>
                     <div>Priority</div>
                     <div>
-                        {["Low", "Medium", "Height"].map(p => {
+                        {["Low", "Medium", "High"].map(p => {
                             const id = `priority_${p}`.toLowerCase();
                             return <label key={p} htmlFor={id}>{p}<input type="radio" id={id} name="priority" value={p} required /></label>
                         })}
