@@ -322,3 +322,5 @@ Gehe dabei so vor:
 - In der Component *src/app/todos/[id]/page.tsx* wird der API Request vom Server geladen.
   Dann wird die clientseitige Component eingebunden. Es wird ein Array von *TodoItemDetail* Instanzen übergeben.
 
+> Hinweis: Falls ein Fehler mit dem Outputtyp *export* beim Laden der Parameter auftritt, kannst du in
+> *next.config.ts* diese Option entfernen.
