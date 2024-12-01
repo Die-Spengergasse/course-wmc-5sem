@@ -19,7 +19,8 @@ namespace TodoBackend.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Category>().Property(c => c.Priority).HasConversion<string>();
-            modelBuilder.Entity<Category>().HasIndex("Name", "OwnerId").IsUnique(true);
+            modelBuilder.Entity<Category>().HasIndex(nameof(Category.Name), "OwnerId").IsUnique(true);
+            modelBuilder.Entity<TodoItem>().HasIndex(nameof(TodoItem.Title), "CategoryId").IsUnique(true);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {

@@ -226,3 +226,94 @@ export default async function CategoryPage() {
 ```
 
 Die Errorbox ist global in **[src/app/globals.css](./Add_Form/src/app/globals.css)** definiert.
+
+## Übung
+
+Lade dir als Basis für die Implementierung die Datei [Add_Form20241125.zip](./Add_Form20241125.zip) und entpacke sie.
+Vergiss nicht, `npm install` auszuführen, damit die Dependencies geladen werden.
+Führe danach die folgende Ergänzung durch.
+
+### API Test
+
+Teste zuerst auf *https://localhost:5443/swagger/index.html* einen POST Request für */api/TodoItems* abzusetzen.
+Folgende Daten im Request Body legen ein Todo Item in der Kategorie *Work* (GUID 00000000-0000-0000-0000-000000000001) an:
+
+```json
+{
+  "title": "A new Item",
+  "description": "Created now",
+  "categoryGuid": "00000000-0000-0000-0000-000000000001",
+  "dueDate": "2030-01-15"
+}
+```
+
+Die API antwortet mit HTTP 201 Created und schickt die GUID des neuen Todo Items zurück.
+
+Versuche nun, mit folgenden Daten erneut ein Todo Item mit dem selben Titel in der selben Kategorie anzulegen:
+
+```json
+{
+  "title": "A new Item",
+  "description": "Should throw an error.",
+  "categoryGuid": "00000000-0000-0000-0000-000000000001",
+  "dueDate": "2030-01-15"
+}
+```
+
+Die API antwortet mit HTTP 400 Bad request und dem Text *SQLite Error 19: 'UNIQUE constraint failed: TodoItems.Title, TodoItems.CategoryId'.*.
+
+Wenn ein Property ungültig ist, sendet die API ein error Object mit der Fehlerbeschreibung.
+
+```json
+{
+  "title": "A new Item 2",
+  "description": "Should throw an error.",
+  "categoryGuid": "00000000-0000-0000-0000-000000000001",
+  "dueDate": "2024-01-15"
+}
+```
+
+führt zu folgender Antwort:
+
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "errors": {
+    "DueDate": [
+      "Due date must be in the future."
+    ]
+  },
+  "traceId": "00-df1f4899e7fa6d389419729246fa00f6-bba39ef9800a7463-00"
+}
+```
+
+### Implementierung mit Next.js
+
+Erstelle eine Add Page für Todo Items unter *src/app/todos/add*.
+Die Add Page soll folgende Formularfelder beinhalten:
+
+- Ein Dropdown Menü mit allen Kategorien.
+  Um das Menü aufzubauen, von der API vorher die Kategorien zu laden.
+  Beim Anlegen des neuen Todo Items muss der gewählte GUID Wert der Kategorie im Feld `CategoryGuid` übertragen werden.
+- Ein Textfeld für das Property `Title`.
+  Der Titel ist erforderlich und muss zwischen 1 und 255 Stellen lang sein.
+- Ein Textfeld für `Description`.
+  Die Description ist erforderlich und muss zwischen 1 und 255 Stellen lang sein.
+- Ein Feld vom Typ "date" für `DueDate`.
+  Das *DueDate* ist optional.
+  Wenn es angegeben wurde, dann muss es in der Zukunft liegen.
+- Verlinke in der Page *src/app/todos/TodosClient.tsx* auf die Add Page.
+
+Führe die Implementierung so durch:
+
+- Erstelle eine Datei *src/app/todos/todosApiClient.ts*.
+  Sie soll eine Methode `addTodoItem` beinhalten, die die Formulardaten an die API sendet.
+- Erstelle eine Page in *src/app/todos/add/page.tsx*.
+  Sie beinhaltet das Formular und ruft bei `onSubmit` die Methode `addTodoItem` auf.
+- Verwende den API Client in *src/app/utils/apiClient.ts*.
+  Er liefert dir im Fehlerfall ein Objekt vom Typ `ErrorResponse`.
+  Ordne property bezogene Fehler den entsprechenden Formularfeldern zu.
+  Allgemeine Fehler sollen mit *alert* ausgegeben werden.
+  Teste auch, wie sich die Applikation verhält, wenn die API nicht erreichbar ist.

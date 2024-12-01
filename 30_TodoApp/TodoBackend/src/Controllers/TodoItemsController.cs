@@ -71,7 +71,14 @@ namespace TodoBackend.Controllers
 
             var todoItem = new TodoItem(cmd.Title, cmd.Description, category, false, cmd.DueDate);
             _db.TodoItems.Add(todoItem);
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.InnerException?.Message ?? e.Message);
+            }
 
             return CreatedAtAction(nameof(AddTodoItem), new { guid = todoItem.Guid });
         }
