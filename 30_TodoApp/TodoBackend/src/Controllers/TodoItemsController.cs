@@ -60,6 +60,8 @@ namespace TodoBackend.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddTodoItem(AddTodoItemCmd cmd)
         {
             var username = Username;
@@ -84,6 +86,9 @@ namespace TodoBackend.Controllers
         }
 
         [HttpPut("{guid}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> EditTodoItem(Guid guid, EditTodoItemCmd cmd)
         {
             if (guid != cmd.Guid) return BadRequest();
@@ -102,11 +107,18 @@ namespace TodoBackend.Controllers
 
             todoItem.Title = cmd.Title;
             todoItem.Description = cmd.Description;
-            todoItem.IsCompleted = cmd.IsCompleted;
             todoItem.Category = category;
+            todoItem.IsCompleted = cmd.IsCompleted;
             todoItem.DueDate = cmd.DueDate;
             todoItem.UpdatedAt = DateTime.UtcNow;
-            await _db.SaveChangesAsync();
+            try
+            {
+                await _db.SaveChangesAsync();
+            }
+            catch (DbUpdateException e)
+            {
+                return BadRequest(e.InnerException?.Message ?? e.Message);
+            }
             return NoContent();
         }
 
