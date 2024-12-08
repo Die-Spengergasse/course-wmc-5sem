@@ -1,0 +1,46 @@
+
+.categories ul {
+    list-style-type: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15em, 1fr));
+    gap: 10px;
+    margin: 0 auto;
+  }
+  
+  .categories li {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .categories li h2 {
+    margin: 0;
+    font-size: 20px;
+    color: #0070f3;
+  }
+  
+  .categories li p {
+    margin: 5px 0;
+    color: #666;
+  }
+  
+   .categoryHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .editIcon {
+    font-size: 14px;
+    cursor: pointer;
+    color: #0070f3;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  
+  .editIcon:hover {
+    transform: scale(1.2);
+    color: #005bb5;
+  }
+  

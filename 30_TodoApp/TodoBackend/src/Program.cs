@@ -69,7 +69,7 @@ app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.UseStaticFiles();
+// app.UseStaticFiles();
 
 app.Start();
 var color = Console.ForegroundColor;

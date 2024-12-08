@@ -1,0 +1,71 @@
+/* Die Navigation */
+.nav {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 0.5em;
+    height: 50px; /* Feste Höhe, um Sprünge zu vermeiden */
+    align-items: center; /* Zentriert die Links vertikal */
+}
+
+/* Standardstil für die Links */
+.nav a {
+    padding: 0.5em;
+    border: 1px solid black;
+    border-radius: 5px;
+    min-width: 5em;
+    text-align: center;
+    font-weight: bold;
+    display: block;
+    text-decoration: none;
+    color: black;
+    background-color: white;
+    transition: all 0.3s ease; /* Sanfte Übergänge */
+}
+
+/* Hover-Effekt für alle Links */
+.nav a:hover {
+    color: white;
+    background-color: darkblue;
+    transform: translateY(-2px); /* Hebt den Button minimal an */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Stil für den aktiven Link */
+.nav .active {
+    color: white;
+    background-color: darkblue;
+    border: 2px solid darkblue;
+    text-decoration: none;
+    transform: scale(1.1) translateY(-2px); /* Vergrößert und hebt den Button leicht an */
+    transition: all 0.3s ease; /* Sanfter Übergang */
+    position: relative;
+}
+
+/* Glow-Effekt für den aktiven Link mit pseudo-element */
+.nav .active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 0, 255, 0.5); /* Leuchtender Effekt */
+    opacity: 0.7;
+    z-index: -1; /* Effekt hinter dem Button */
+    pointer-events: none; /* Interaktion mit dem Effekt verhindern */
+    animation: glow 1.5s infinite; /* Glow-Pulsieren */
+}
+
+/* Animation für den Glow-Effekt */
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px rgba(0, 0, 255, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(0, 0, 255, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(0, 0, 255, 0.3);
+    }
+}

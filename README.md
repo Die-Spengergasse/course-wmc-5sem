@@ -32,3 +32,5 @@ Siehe [software.md](software.md).
 - [Die erste App mit React und Next.js](30_TodoApp/02_FirstReactApp.md)
 - [Layout, Komponenten und Routen](30_TodoApp/10_Layout_Routing.md)
 - [Formulare und POST Requests: Daten einfügen](30_TodoApp/20_Add_Form.md)
+- [Daten editieren und Komponentenkommunikation](30_TodoApp/30_Edit.adoc)
+

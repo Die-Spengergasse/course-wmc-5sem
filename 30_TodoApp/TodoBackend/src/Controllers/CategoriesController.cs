@@ -40,6 +40,7 @@ namespace TodoBackend.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddCategory(AddCategoryCmd cmd)
         {
             var username = Username;
@@ -92,6 +93,7 @@ namespace TodoBackend.Controllers
 
         [HttpDelete("{guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteCategory(Guid guid)
         {
             var username = Username;

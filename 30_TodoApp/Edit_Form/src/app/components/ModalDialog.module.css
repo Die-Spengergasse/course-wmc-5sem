@@ -1,0 +1,138 @@
+/* Overlay: Dunkler Hintergrund mit Blur */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Dunkler Hintergrund */
+  backdrop-filter: blur(5px); /* Leichter Blur-Effekt */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+/* Modal: Dunkles Design mit leuchtendem Rahmen */
+.modal {
+  position: relative; /* Erforderlich für die Resize-Handle */
+  padding-bottom: 10px;
+  background-color: #1e1e1e; /* Dunkler Hintergrund für das Modal */
+  color: #f5f5f5; /* Helle Schriftfarbe */
+  border-radius: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.2); /* Subtiler weißer Rahmen */
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); /* Leichter Glow */
+  width: 70em;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  transform: scale(0.7);
+  opacity: 0;
+  animation: scaleUp 0.5s ease-in-out forwards;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  overflow: auto; /* Falls der Inhalt größer wird */
+}
+
+.modal:hover {
+  border-color: rgba(255, 255, 255, 0.4); /* Hellerer Rahmen beim Hover */
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); /* Stärkerer Glow beim Hover */
+}
+
+/* Header: Modernes dunkles Styling */
+.header {
+  border-bottom: 1px solid #333; /* Leicht sichtbare Trennlinie */
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffffff; /* Helle Schriftfarbe */
+}
+
+/* Content: Moderner Text */
+.content {
+  padding: 16px;
+  font-size: 1rem;
+  color: #dcdcdc; /* Etwas hellerer Text für bessere Lesbarkeit */
+}
+
+/* Footer: Modernisierte Buttons */
+.footer {
+  padding: 16px;
+  border-top: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* OK-Button: Neon-ähnliches Blau */
+.okButton {
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.okButton:hover {
+  transform: scale(1.1);
+  background-color: #005bb5;
+  box-shadow: 0 0 10px #0070f3; /* Neon-ähnlicher Effekt */
+}
+
+/* Cancel-Button: Neon-ähnliches Rot */
+.cancelButton {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cancelButton:hover {
+  transform: scale(1.1);
+  background-color: #b71c1c;
+  box-shadow: 0 0 10px #d32f2f; /* Neon-ähnlicher Effekt */
+}
+
+/* Resize Handle */
+.resizeHandle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.2); /* Dezente Anzeige */
+  cursor: nwse-resize; /* Resize-Cursor */
+  border-radius: 50%;
+}
+
+.resizeHandle:hover {
+  background: rgba(255, 255, 255, 0.4); /* Heller beim Hover */
+}
+
+/* Keyframes für Animationen */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
