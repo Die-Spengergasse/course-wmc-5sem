@@ -317,3 +317,7 @@ Führe die Implementierung so durch:
   Ordne property bezogene Fehler den entsprechenden Formularfeldern zu.
   Allgemeine Fehler sollen mit *alert* ausgegeben werden.
   Teste auch, wie sich die Applikation verhält, wenn die API nicht erreichbar ist.
+
+> [!IMPORTANT]
+> Der API Client wandelt alle Keys für die Validierung in Kleinbuchstaben um.
+> Die Validierung für das Feld `dueDate` ist unter `error.validations.duedate` abrufbar.
