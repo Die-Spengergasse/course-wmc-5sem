@@ -34,3 +34,5 @@ Siehe [software.md](software.md).
 - [Formulare und POST Requests: Daten einfügen](30_TodoApp/20_Add_Form.md)
 - [Daten editieren und Komponentenkommunikation](30_TodoApp/30_Edit.adoc)
 
+## Diplomarbeitsvorlage
+- [Next.js Projekt Template](./40_DiplomarbeitVorlage/README.md)

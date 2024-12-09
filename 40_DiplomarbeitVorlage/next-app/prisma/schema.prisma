@@ -1,0 +1,21 @@
+// TIPP: npx prisma generate erzeugt nach einer Schemaänderung den Client neu
+// Führe danach in VS Code mit CTRL+SHIFT+P den Befehl "Typescript: Restart TS Server" aus.
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../database/app-data.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Person {
+  id                  Int       @id @default(autoincrement())
+  guid                String    @default(dbgenerated("(hex(randomblob(16)))"))
+  firstname           String
+  lastname            String
+  birthDate           DateTime?
+  @@map("Person")
+}
+

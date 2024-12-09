@@ -1,0 +1,50 @@
+.navbar a {
+    color: hsl(50, 100%, 60%);
+    text-decoration: none;
+  
+  }
+  
+  .navbar .active {
+    color:white;
+    font-weight: bold;
+  }
+  
+.menu {
+    flex-grow: 1;
+}
+.menu ul {
+    display: flex;
+    column-gap: 1em;
+    padding: 0;
+}
+.menu li {
+    display: block;
+    font-size: larger;
+}
+
+.userinfo {
+}
+.notSignedIn a {
+
+}
+.notSignedIn {
+    display: inline-block;
+    padding: 0.5em 1em;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    animation: blinkingBorder 1.5s infinite;
+    text-align: center;
+}
+
+/* Keyframes für das Blinken */
+@keyframes blinkingBorder {
+    0% {
+        border-color: white;
+    }
+    50% {
+        border-color: transparent;
+    }
+    100% {
+        border-color: white;
+    }
+}

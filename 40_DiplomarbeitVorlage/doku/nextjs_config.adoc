@@ -1,0 +1,376 @@
+= Musterapp für eine Diplomarbeit
+:source-highlighter: rouge
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+== Azure AD Login
+
+=== Anlegen der App registration
+
+Auf *https://portal.azure.com* muss eine App mit folgender Konfiguration angelegt werden.
+
+Authentication::
+Authentication *Web* mit der Redirect URL `http://localhost:3000/api/auth/callback/microsoft-entra-id`
+
+Certificates & secrets::
+Generiere ein Client Zertifikat und kopiere es in die Datei `.env.local` (siehe unten).
+Es wird in Azure nicht wieder angezeigt!
+
+API permissions::
+Über Microsoft Graph werden die folgenden Berechtigungen benötigt:
+_email, offline_access, openid, profile, User.Read_
+
+=== Konfiguration der App
+
+In der Datei `.env.local` müssen die folgenden Werte gesetzt werden:
+----
+AZURE_AD_CLIENT_ID=xxxxxxxxxxxxxx
+AZURE_AD_CLIENT_SECRET=xxxxxxxxxxxxxx
+AZURE_AD_TENANT_ID=xxxxxxxxxxxxxx
+NEXTAUTH_SECRET=123
+----
+
+Die Werte für _Client ID_ und _Tenant ID_ müssen aus der Azure App registration (Seite _Overview_)  kopiert werden.
+
+IMPORTANT: Die Datei `.env.local` darf nicht in das Git Repository eingecheckt werden!
+
+== Die Authentifizierung mit NextAuth
+
+In der Next.js 15 Applikation wird das Paket `next-auth` verwendet.
+Da wir die Version 15 verwenden, brauchen wir die Version 5 von NextAuth.js, das aktuell noch in Beta ist.
+Die Installation erfolgt mit
+
+----
+npm install next-auth@beta
+----
+
+=== Layoutanpassung: Session Provider und Navbar
+
+NextAuth.js stellt einen Session Provider für React zur Verfügung, sodass wir in unseren Komponenten auf die Autheitifizierungsinformationen zugreifen können.
+Wir ändern unser Layout so, dass die Seite innerhalb des Session Providers gerendert wird.
+
+.src/app/layout.tsx
+[source,jsx,linenums]
+----
+import "./globals.css";
+import { ReactNode } from "react";
+import { SessionProvider } from "next-auth/react";
+import Navbar from "./components/navbar/Navbar";
+
+export default function RootLayout({ children, }: Readonly<{ children: ReactNode; }>) {
+  return (
+    <SessionProvider>
+      <html lang="de">
+      <body>
+        <Navbar />
+        <main>
+          <div className="container">{children}</div>
+        </main>
+      </body>
+      </html>
+    </SessionProvider>
+  );
+}
+
+----
+
+In der Komponente `Navbar` können wir nun auf die Session Informationen zugreifen.
+Ist der User angemeldet, dann ist die Variable `session` und `session.user` gesetzt.
+In diesem Fall zeigen wir eine Komponente `UserInfo` an, die die Informationen des Users anzeigt.
+Ist der User nicht angemeldet, dann zeigen wir einen Link zum Anmelden an.
+Beim Klick auf den Link wird die vordefinierte Methode `signIn()` aufgerufen.
+
+.src/app/components/navbar/Navbar.tsx
+[source,jsx,linenums]
+----
+"use client"
+import styles from "./Navbar.module.css";
+import { signIn, useSession } from 'next-auth/react';
+import UserInfo from "./Userinfo";
+
+export default function NavbarComponent() {
+    const { data: session } = useSession();
+
+    return (
+        <nav className={styles.navbar}>
+            <div className="container">
+                <div className={styles.menu}>
+                  {/* Menu links */}
+                </div>
+                <div className={styles.userinfo}>
+                    {session && session.user && <UserInfo user={session.user} />}
+                    {!session && (
+                        <div className={styles.notSignedIn}>
+                            <div>Nicht angemeldet</div>
+                            <div>
+                                <a
+                                    href={`/api/auth/signin`}
+                                    className={styles.buttonPrimary}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        signIn();
+                                    }}>Anmelden</a>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </nav>
+    );
+}
+----
+
+=== Konfiguration von NextAuth.js
+
+Nun muss NextAuth.js konfiguriert werden.
+Es gibt verschiedene _Provider_.
+Für eine Authentifizierung gegen das Azure Active Directory verwenden wir den Provider _microsoft-entra-id_.
+Entra ID ist der Nachfolger des Azure Active Directories, deswegen hat er diesen Namen.
+
+.src/app/utils/auth.ts
+[source,typescript,linenums]
+----
+import NextAuth from "next-auth";
+import getServerSession, { NextAuthConfig, Session } from "next-auth";
+import MicrosoftEntraId from 'next-auth/providers/microsoft-entra-id';
+
+const config: NextAuthConfig = {
+  providers: [
+    MicrosoftEntraId({
+      clientId: process.env.AZURE_AD_CLIENT_ID,
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
+      issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0`,
+      authorization: {
+        params: {
+          scope: "openid profile email User.Read",
+          prompt: 'select_account'
+        },
+      }
+    })
+  ],
+  callbacks: {
+    async jwt({ token, account }) {
+      if (account?.access_token) {
+        // Rufe zusätzliche Benutzerinformationen von Microsoft Graph API ab
+        const graphResponse = await fetch("https://graph.microsoft.com/v1.0/me", {    // <1>
+          headers: {
+            Authorization: `Bearer ${account.access_token}`,
+          },
+        });
+
+        const data = await graphResponse.json();
+        token.mobilePhone = data.mobilePhone;    // <2>
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.mobilePhone = String(token.mobilePhone);    // <3>
+      }
+      return session;
+    }
+  }
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth(config);
+
+
+declare module "next-auth" {    // <4>
+  interface User {
+      // Add your additional properties here:
+      mobilePhone: string;
+  }
+  interface Session {
+      // Add your additional properties here:
+      mobilePhone: string;
+  }    
+}
+
+----
+
+<1> Da wir beim Login nur grundlegende Informationen über den User bekommen, führen wir eine Abfrage bei _Microsoft Graph_ durch.
+Über den link:https://developer.microsoft.com/en-us/graph/graph-explorer[Graph Explorer] können die verschiedenen Endpoints getestet werden.
+In diesem Beispiel holen wir uns das Feld `mobilePhone` des Users.
+<2> Wenn der Benutzer mit einem gültigen Token die Seite besucht, wird keine erneute Graph Abfrage durchgeführt.
+Dafür müssen wir das Feld `mobilePhone` zusätzlich im Token speichern.
+<3> Damit wir in den einzelnen Pages zugriff auf die Daten haben, speichern wir sie in der Session ab.
+<4> Wir erweitern die Interfaces `User` und `Session` um das Property `mobilePhone`.
+Sonst würde TypeScript einen Fehler werfen, wenn wir versuchen, auf das Property zuzugreifen bzw. es zu setzen.
+
+TIP: Wenn du einzelne Seiten z. B. nur für Admins zugänglich machen möchtest, kannst du ein Property `isAdmin` hinzufügen.
+Dann kannst du in den Pages einfach prüfen, ob `session.user.isAdmin` gesetzt ist.
+
+=== Anlegen der signin und signout Routen
+
+Um den OAuth2 Flow zu starten, müssen wir die Routen `/api/auth/signin` und `/api/auth/signout` anlegen.
+Dies machen wir nicht händisch, denn NextAuth.js stellt uns die entsprechenden Handler zur Verfügung.
+Wir müssen nur unsere Konfiguration aus der Datei `auth.ts` importieren.
+
+In Next.js können wir im Ordner `api` serverseitige Routen anlegen.
+Wenn wir ein Verzeichnis `api/auth/[...nextauth]` und darin eine Datei `route.ts` anlegen, wird NextAuth.js automatisch die Routen `/api/auth/signin`, `/api/auth/signout` und `/api/auth/callback` anlegen.
+
+.src/app/api/auth/[...nextauth]/route.ts
+[source,typescript,linenums]
+----
+import { handlers } from "@/app/utils/auth"
+export const { GET, POST } = handlers
+----
+
+=== Anpassung der Pages
+
+In den Pages können wir nun auf die Funktion `auth()` zugreifen und feststellen, ob der User eingeloggt ist.
+
+.src/app/secret/page.tsx
+[source,jsx,linenums]
+----
+import { auth } from "@/app/utils/auth"
+import { redirect } from "next/navigation";
+
+export default async function SecretPage() {
+    const session = await auth();
+
+    if (!session || !session.user) {
+      // Redirect to login if the user is not authenticated
+      redirect("/api/auth/signin");
+    }
+
+    return (
+        <div>
+            <h1>Secret page</h1>
+            <p>Only available after authentication.</p>
+        </div>
+    );
+}
+----
+
+== Prisma
+
+Prisma ist ein OR Mapper für Node.js und Typescript.
+Er generiert aus einer Model Definition die Datenbank und auch die Typen für Typescript.
+Um Prisma zu verwenden, muss es installiert und initialisiert werden:
+
+----
+npm install prisma --save-dev
+npx prisma init
+----
+
+Wir legen nun ein einfaches Schema an.
+Die Möglichkeiten sind in der link:https://www.prisma.io/docs/orm/prisma-schema/overview[Prisma Dokumentation] beschrieben.
+Wir verwenden eine SQLite Datenbank, die in `database/app-data.db` gespeichert wird.
+
+.prisma/schema.prisma
+[source,linenums]
+----
+// TIPP: npx prisma generate erzeugt nach einer Schemaänderung den Client neu
+// Führe danach in VS Code mit CTRL+SHIFT+P den Befehl "Typescript: Restart TS Server" aus.
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../database/app-data.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Person {
+  id                  Int       @id @default(autoincrement())
+  guid                String    @default(dbgenerated("(hex(randomblob(16)))"))
+  firstname           String
+  lastname            String
+  birthDate           DateTime?
+  @@map("Person")
+}
+----
+
+Damit wir die Datenbank auch mit Musterdaten befüllen können, legen wir eine Datei `seed.ts` an.
+Die Datei befüllt die Tabelle `Person` mit Musterdaten.
+Um realistische Daten zu bekommen, verwenden wir das Paket link:https://fakerjs.dev[Faker.js].
+Es wird mit folgendem Befehl installiert:
+
+----
+npm install @faker-js/faker --save-dev
+----
+
+.prisma/seed.ts
+[source,typescript,linenums]
+----
+// TIPP: npx prisma generate erzeugt nach einer Schemaänderung den Client neu
+// Führe danach in VS Code mit CTRL+SHIFT+P den Befehl "Typescript: Restart TS Server" aus.
+import { Prisma, PrismaClient } from '@prisma/client'
+import { Faker, de, en } from '@faker-js/faker'
+
+const faker = new Faker({ locale: [de, en] })
+faker.seed(1406)
+const prisma = new PrismaClient()
+async function main() {
+  const personData: Prisma.PersonCreateInput[] = Array
+    .from({ length: 5 })
+    .map(() => ({
+      guid: faker.string.uuid(),
+      firstname: faker.person.firstName(),
+      lastname: faker.person.lastName(),
+      birthDate: Math.random() > 0.5 ? faker.date.birthdate() : undefined
+    }));
+
+  await prisma.person.createMany({
+    data: personData,
+  });
+  console.log("Database seeded.")
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect()
+  })
+  .catch(async (e) => {
+    console.error(e)
+    await prisma.$disconnect()
+    process.exit(1)
+  })
+----
+
+NOTE: Wenn das Schema in `schema.prisma` geändert wird, muss der Prisma Client neu generiert werden.
+Das geschieht mit `npx prisma generate`.
+Dadurch werden die Typescript Typen für die Datenbank neu erstellt und stehen im Seed Skript zur Verfügung.
+In VS Code musst du noch mit CTRL+SHIFT+P den Befehl "Typescript: Restart TS Server" ausführen.
+
+Damit die Seed Methode beim Erstellen der Datenbank aufgerufen wird, fügen wir in `package.json` den Key `prisma` hinzu.
+Die anderen Skripts und Einstellungen in `package.json` bleiben unverändert.
+
+.package.json
+[source,json]
+----
+"prisma": {
+  "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+}
+----
+
+Mit dem Befehl 
+
+----
+npx prisma migrate dev --name init
+----
+
+können wir die Datenbank erstellen lassen.
+Damit dies bei jedem Start des devservers automatisch passiert,
+erstellen wir ein Skript link:../next-app/scripts/dev.js[scripts/dev.js].
+
+Für die Initialisierung der Datenbank fügen wir ein weiteres Skript
+link:../next-app/scripts/init_db.js[scripts/init_db.js] hinzu.
+Die anderen Skripts und Einstellungen in `package.json` bleiben unverändert.
+
+.package.json
+[source,json]
+----
+  "scripts": {
+    "dev": "node scripts/dev.js",
+    "init_db": "node scripts/init_db.js",
+  }
+----

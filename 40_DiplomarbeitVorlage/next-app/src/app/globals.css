@@ -1,0 +1,53 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  flex-direction: column; /* Elemente untereinander anordnen */
+  height: 100vh; /* Vollständige Höhe des Viewports */
+  overflow: hidden; /* Verhindert, dass das Body-Element scrollt */
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+main {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex; /* Aktiviert Flexbox für zentrierten Inhalt */
+  justify-content: center; /* Zentriert horizontal */
+}
+
+main > .container {
+  max-width: 70em; /* Maximale Breite */
+  width: 100%; /* Passt sich kleineren Bildschirmen an */
+}
+
+nav {
+  display: flex;
+  background-color: hsl(130, 80%, 29%);
+  border-radius: 10px; /* Rundet die Ecken */
+  padding: 1em; /* Optional: Fügt etwas Innenabstand hinzu */
+  overflow: hidden; /* Stellt sicher, dass der Inhalt in die abgerundeten Ecken passt */
+  color: white;
+  flex-shrink: 0;
+  justify-content: center; /* Zentriert horizontal */
+
+}
+
+nav > .container {
+  display: flex;
+  max-width: 70em; /* Maximale Breite */
+  width: 100%; /* Passt sich kleineren Bildschirmen an */
+
+}
+
