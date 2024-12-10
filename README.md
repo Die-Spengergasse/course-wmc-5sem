@@ -37,3 +37,26 @@ Siehe [software.md](software.md).
 ## Diplomarbeitsvorlage
 - [Next.js Projekt Template](./40_DiplomarbeitVorlage/README.md)
 - [Microsoft Graph API abfragen](./40_DiplomarbeitVorlage/graph_api.adoc)
+
+## Debugging Next.js in VS Code
+
+Öffne den Ordner mit der Next.js App (nicht den Ordner darüber!) und wähle im Menü *Run* - *Add configuration*.
+Wähle *Node.js* als Konfiguration und ersetze den Inhalt der generierten Datei `.vscode/launch.json` durch folgenden Code:
+
+```json
+{
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Next.js App",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "dev"],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
+```
+
+Nun kannst du mit *F5* das Programm starten und Breakpoints setzen.
+In der *Debug Console* im unteren Bereich siehst du die Ausgaben.
