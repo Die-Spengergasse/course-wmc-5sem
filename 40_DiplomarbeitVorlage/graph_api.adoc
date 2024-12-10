@@ -1,0 +1,325 @@
+= Graph API abfragen
+:source-highlighter: rouge
+:icons: font
+:pdf-page-header: true
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+NOTE: Diese Anleitung bezieht sich auf Next.js 15 und Auth.js 5.
+
+Möchte man für eine Anwendung Daten aus diversen Microsoft Programmen (Azure AD, Entra ID, Office 365, Teams, etc.) abfragen, stellt Microsoft mit der Graph API eine allgemeine REST Schnittstelle zur Verfügung.
+Über diese Schnittstelle können auch POST Requests gesendet werden, um z. B. Accounts zu verwalten, Teams anzulegen oder E-Mails zu versenden.
+
+Mit dem *⧉ link:https://developer.microsoft.com/en-us/graph/graph-explorer[Graph Explorer]* können die Abfragen getestet werden.
+So liefert z. B. die Abfrage `https://graph.microsoft.com/v1.0/me` - wenn man mit dem Schulaccount angemeldet ist - folgende Daten:
+
+[source,json]
+----
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#users/$entity",
+    "@microsoft.graph.tips": "This request only returns a subset of the resource's properties. Your app will need to use $select to return non-default properties. To find out what other properties are available for this resource see https://learn.microsoft.com/graph/api/resources/user",
+    "businessPhones": [
+        "+4369912345678"
+    ],
+    "displayName": "Mustermann Max",
+    "givenName": "Max",
+    "jobTitle": "Lehrer",
+    "mail": "mustermann@spengergasse.at",
+    "mobilePhone": "+4369912345678",
+    "officeLocation": "LehrendeR",
+    "preferredLanguage": null,
+    "surname": "Mustermann",
+    "userPrincipalName": "mustermann@spengergasse.at",
+    "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+}
+----
+
+Die Antwort kann je nach Konfiguration der Organisation und der Berechtigungen variieren.
+
+== Permissions
+
+Um die Graph API verwenden zu können, muss die Anwendung entsprechende Berechtigungen haben.
+So benötigt z. B. `https://graph.microsoft.com/v1.0/groups` (Auflisten aller Gruppen in der Organisation) die folgenden Berechtigungen:
+
+[cols="3*", options="header"]
+|==========================================================================================================================================================
+| Permission type                        | Least privileged permissions | Higher privileged permissions                                                    
+| Delegated (work or school account)     | GroupMember.Read.All         | Group.ReadWrite.All, Directory.Read.All, Directory.ReadWrite.All, Group.Read.All 
+| Delegated (personal Microsoft account) | Not supported.               | Not supported.                                                                   
+| Application                            | GroupMember.Read.All         | Directory.Read.All, Directory.ReadWrite.All, Group.Read.All, Group.ReadWrite.All 
+|==========================================================================================================================================================
+
+Um die Berechtigungen zu setzen, muss der entsprechende _scope_ `GroupMember.Read.All` in der Anwendung registriert werden.
+
+== Auth.js und Graph API
+
+Um den access token in der Session zu speichern, wird die Datei `src/app/utils/auth.ts` durch folgenden Inhalt ersetzt:
+
+[source,typescript]
+----
+import NextAuth from "next-auth";
+import getServerSession, { NextAuthConfig, Session } from "next-auth";
+import { JWT } from "next-auth/jwt";
+import MicrosoftEntraId from 'next-auth/providers/microsoft-entra-id';
+
+interface Token extends JWT {
+  access_token: string;
+  refresh_token: string;
+  accessTokenExpires: number;
+  error?: string;
+}
+
+async function refreshAccessToken(token: Token): Promise<Token> {
+  try {
+    const url = `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/oauth2/v2.0/token`;    // <1>
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        client_id: process.env.AZURE_AD_CLIENT_ID as string,
+        client_secret: process.env.AZURE_AD_CLIENT_SECRET as string,
+        grant_type: "refresh_token",
+        refresh_token: token.refresh_token,
+      }),
+    });
+
+    if (!response.ok) throw new Error("Failed to refresh access token");
+    const refreshedTokens = await response.json();
+    return {
+      ...token,
+      access_token: refreshedTokens.access_token,
+      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,    // <2>
+      refresh_token: refreshedTokens.refresh_token || token.refresh_token, // Fallback auf alten Refresh Token
+    };
+  } catch (error) {
+    console.error("Error refreshing access token:", error);
+    return {
+      ...token,
+      error: "RefreshAccessTokenError",
+    };
+  }
+}
+
+const config: NextAuthConfig = {
+  providers: [
+    MicrosoftEntraId({
+      clientId: process.env.AZURE_AD_CLIENT_ID,
+      clientSecret: process.env.AZURE_AD_CLIENT_SECRET,
+      issuer: `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/v2.0`,
+      authorization: {
+        params: {
+          scope: "openid profile email offline_access User.Read",    // <3>
+          prompt: 'select_account'
+        },
+      }
+    })
+  ],
+  callbacks: {
+    async jwt({ token, account }) {    // <4>
+      // Bei Erst-Login speichere Token-Daten
+      if (account) {
+        // Rufe zusätzliche Benutzerinformationen von Microsoft Graph API ab
+        const graphResponse = await fetch("https://graph.microsoft.com/v1.0/me", {
+          headers: {
+            Authorization: `Bearer ${account.access_token}`,
+          },
+        });
+        const data = await graphResponse.json();
+        return {
+          ...token,
+          mobilePhone: data.mobilePhone,
+          access_token: account.access_token as string,
+          refresh_token: account.refresh_token as string,
+          accessTokenExpires: Date.now() + (account.expires_at || 0) * 1000,
+        }
+      }
+      // Access Token ist noch gültig
+      if (Date.now() < (token as Token).accessTokenExpires) {
+        return token as Token;
+      }
+
+      // Access Token ist abgelaufen, versuche zu erneuern
+      return await refreshAccessToken(token as Token);
+    },
+    async session({ session, token }) {    // <5>
+      return {
+        ...session,
+        mobilePhone: token.mobilePhone,
+        access_token: token.access_token,
+        error: token.error
+      }
+    }
+  }
+}
+
+export const { handlers, auth, signIn, signOut } = NextAuth(config);
+
+declare module "next-auth" {    // <6>
+  interface User {
+    // Add your additional properties here:
+    mobilePhone: string;
+  }
+  interface Session {
+    // Add your additional properties here:
+    mobilePhone: string;
+    access_token: string;
+    error?: string;
+  }
+}
+----
+
+Da der access token nur eine begrenzte Lebensdauer (unter 1 Stunde) hat, wird in der Funktion `refreshAccessToken` der Token erneuert, wenn er abgelaufen ist.
+Dafür müssen wir den Scope `offline_access` setzen, damit wir einen `refresh_token` erhalten.
+Wird nun mit `auth()` in Auth.js eine Session angefordert, wird der Token überprüft und ggf. erneuert.
+
+<1> Um einen neuen auth token zu erhalten, wird ein POST Request an die URL `https://login.microsoftonline.com/${process.env.AZURE_AD_TENANT_ID}/oauth2/v2.0/token` gesendet.
+    *Wichtig:* Es wird auch ein neuer refresh token zurückgegeben. Dieser muss gespeichert werden, da er sich bei jedem Refresh ändert.
+<2> Um festzustellen, wann der access token abläuft, speichern wir das Ablaufdatum in `accessTokenExpires`. 
+<3> Durch den scope `offline_access` erhalten wir einen refresh token.
+<4> Die Callback Methode `jwt` wird bei jedem Anfordern einer Session mit `auth()` aufgerufen.
+    Hier wird überprüft, ob der access token noch gültig ist und ggf. erneuert.
+    In dieser Methode wird ein JSON Web Token (JWT) erstellt, der den Inhalt im Cookie verschlüsselt speichert.footnote:[https://next-auth.js.org/configuration/options#jwt]
+<5> Die Callback Methode `session` wird aufgerufen, wenn eine Session mit `auth()` überprüft wird.
+    Möchten wir Felder des Tokens in der Session speichern, müssen wir sie hier auch zur Session hinzufügen.
+<6> Damit wir in Typescript die zusätzlichen Felder in den Interfaces für `User` und `Session` verwenden können, müssen wir sie hier deklarieren.
+    Dies wird _Module Augmentation_ genannt.footnote:[https://authjs.dev/getting-started/typescript]
+
+IMPORTANT: Der refresh token ist wie ein Passwort.
+Er ist langfristig gültig und sollte sicher gespeichert werden.
+Er darf nicht am Client gespeichert werden, da er sonst von Angreifern ausgelesen werden kann.
+Deswegen speichern wir auch nur den access token in der Session.
+
+== Graph API abfragen
+
+Nun erstellen wir im Ordner `src/app/utils/graphApiClient` die folgenden Dateien:
+
+=== Typedefinitionen in types.ts
+
+Da wir die Daten aus der Graph API in TypeScript verwenden, erstellen wir die Datei `types.ts` mit den Typdefinitionen:
+
+.types.ts
+[source,typescript]
+----
+export interface AzureUser {
+    id: string,
+    displayName: string,
+    givenName: string,
+    mail: string,
+    surname: string
+}
+----
+
+=== Helper Funktionen in helper.ts
+
+Beim Abfragen der Graph API müssen mehrere Dinge berücksichtigt werden:
+
+* Der access token muss in den Header eingefügt werden.
+* Die Graph API liefert oft paginierte Ergebnisse. Diese müssen alle geladen werden.
+* Wenn Fehhler auftreten, müssen diese behandelt werden.
+
+.helper.ts
+[source,typescript]
+----
+import { auth } from "../auth";
+import { Licence } from "./types";
+
+// Überladung: Für einzelne Elemente
+export async function sendGetRequest<T>(url: string): Promise<T>;
+// Überladung: Für Arrays
+export async function sendGetRequest<T>(url: string): Promise<T[]>;
+
+/**
+ * Sendet einen Request an die Graph API.
+ * Wenn eine Pagination vorhanden ist, werden alle Seiten geladen.
+ */
+export async function sendGetRequest<T>(url: string): Promise<T | T[]> {
+    const session = await auth();
+    if (!session) throw new Error("Invalid session.");
+    const headers = {
+        Authorization: `Bearer ${session.access_token}`,
+    };
+    async function get() {
+        const response = await fetch(url, { headers });
+        if (!response.ok) throw new Error(`Request failed with status ${response.status}. ${await response.text()}`);
+        const data = await response.json();
+        if (!data.value) throw new Error("Missing value in response.");
+        return data;
+    }
+
+    const data = await get();
+    if (!Array.isArray(data.value)) return data.value;
+
+    url = data['@odata.nextLink'] || null;
+    let results: T[] = data.value;
+    // Nächste Seiten laden, falls vorhanden
+    while (url) {
+        const data = await get();
+        results = results.concat(data.value);
+        url = data['@odata.nextLink'] || null;
+    }
+    return results;
+}
+----
+
+Die Funktion `sendGetRequest` sendet einen GET Request an die Graph API und gibt die Daten zurück.
+Mit `auth()` wird der access token aus der Session geholt und in den Header eingefügt.
+Da die Graph API oft paginierte Ergebnisse liefert, wird in der Funktion `sendGetRequest` die nächste Seite geladen, falls vorhanden.
+
+=== Methoden, die in den Pages aufgerufen werden können: clientMethods.ts
+
+.clientMethods.ts
+[source,typescript]
+----
+"use server"
+import { sendGetRequest } from "./helper";
+import { AzureUser } from "./types";
+
+/**
+ * Liest alle User aus dem Azure AD aus.
+ */
+export async function getAllUsers(): Promise<AzureUser[]> {
+    const users = await sendGetRequest<AzureUser[]>("https://graph.microsoft.com/v1.0/users?$select=id,displayName,givenName,mail,surname");
+    return users;
+}
+----
+
+=== Index, um die Methoden zu exportieren: index.ts
+
+.index.ts
+[source,typescript]
+----
+export * from './types';
+export * from './clientMethods';
+----
+
+
+== Einbinden in der Page
+
+Wollen wir nun in einer Page, Component, etc. in Next.js die Graph API verwenden, können wir die Methoden aus `src/app/utils/graphApiClient` verwenden.
+
+[source,jsx]
+----
+import { redirect } from "next/navigation";
+import { auth } from "@/app/utils/auth";
+import { getAllUsers } from "@/app/utils/graphApiClient";
+
+export default async function UserListPage() {
+    const session = await auth();
+
+    if (!session || !session.user) {
+        // Redirect to login if the user is not authenticated.
+        signIn();
+      }
+
+    const allUsers = await getAllUsers();
+    return <pre>{JSON.stringify(allUsers)}</pre>
+}
+----
+
