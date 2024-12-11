@@ -49,10 +49,30 @@ Wähle *Node.js* als Konfiguration und ersetze den Inhalt der generierten Datei 
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Next.js App",
+            "name": "⚙️ Internal: Server components",
             "runtimeExecutable": "npm",
-            "runtimeArgs": ["run", "dev"],
+            "runtimeArgs": [
+                "run",
+                "dev"
+            ],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "msedge",
+            "request": "launch",
+            "name": "⚙️ Internal: Client components",
+            "url": "http://localhost:3000",
+            "webRoot": "${workspaceFolder}",
+            "sourceMaps": true
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Debug Server and Client",
+            "configurations": [
+                "⚙️ Internal: Server components",
+                "⚙️ Internal: Client components"
+            ]
         }
     ]
 }

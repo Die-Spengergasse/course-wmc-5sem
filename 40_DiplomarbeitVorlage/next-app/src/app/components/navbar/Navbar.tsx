@@ -21,8 +21,8 @@ export default function NavbarComponent() {
                             <Link href="/persons" className={pathname === '/persons' ? styles.active : ''}>Personen</Link>
                         </li>
                         <li>
-                            <Link href="/secret" className={pathname === '/secret' ? styles.active : ''}>Geheime Seite</Link>
-                        </li>
+                            <Link href="/persons/add" className={pathname === '/persons/add' ? styles.active : ''}>Neue Person</Link>
+                        </li>                        
                         <li>
                             <Link href="/admin" className={pathname === '/admin' ? styles.active : ''}>Admin</Link>
                         </li>

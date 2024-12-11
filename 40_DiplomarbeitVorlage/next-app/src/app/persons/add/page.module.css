@@ -1,0 +1,111 @@
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, hsl(130, 80%, 29%), hsl(130, 80%, 44%));
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    margin: 2rem auto;
+    color: #fff;
+}
+
+.formContainer form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formContainer label {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #e0e0e0;
+}
+
+.formContainer input[type="text"],
+.formContainer input[type="date"] {
+    width: 100%;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.formContainer input[type="text"]:focus,
+.formContainer input[type="date"]:focus {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    outline: none;
+}
+
+.formContainer button {
+    padding: 0.8rem 1.5rem;
+    background: hsl(130, 80%, 10%);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.formContainer button:hover {
+    background: hsl(130, 80%, 50%);
+}
+
+.formContainer .errorMessage {
+    display: flex;
+    align-items: center;
+    color: hsl(0, 75%, 15%);
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.formContainer .errorMessage::before {
+    content: "⚠️";
+    margin-right: 0.5rem;
+    animation: blink 1s infinite;
+}
+
+.formContainer .errorContainer {
+    margin-top: 1rem;
+    background: rgba(255, 77, 77, 0.1);
+    padding: 1rem;
+    border: 1px solid #ff4d4d;
+    border-radius: 8px;
+    color: hsl(0, 79%, 16%);
+    font-size: 1rem;
+}
+
+.formContainer .errorContainer::before {
+    content: "⚠️ Error: ";
+    font-weight: bold;
+    margin-right: 0.5rem;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

@@ -1,4 +1,10 @@
-export default function AdminPage() {
+import { auth, signIn } from "../utils/auth";
+
+export default async function AdminPage() {
+    const session = await auth()
+ 
+    // Wir verwenden bei der serverseitigen Component die signIn Methode von utils/auth.
+    if (!session?.user) await signIn();
     return (
         <div>
             <h1>Admin</h1>
