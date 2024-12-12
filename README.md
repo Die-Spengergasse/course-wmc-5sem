@@ -37,6 +37,7 @@ Siehe [software.md](software.md).
 ## Diplomarbeitsvorlage
 - [Next.js Projekt Template](./40_DiplomarbeitVorlage/README.md)
 - [Microsoft Graph API abfragen](./40_DiplomarbeitVorlage/graph_api.adoc)
+- [Docker Container erstellen](./40_DiplomarbeitVorlage/docker.adoc)
 
 ## Debugging Next.js in VS Code
 

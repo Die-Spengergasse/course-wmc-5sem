@@ -1,0 +1,169 @@
+= Erstellen eines Docker Containers
+:source-highlighter: rouge
+:icons: font
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+== Konfiguration der Next.js Applikation für den Build
+
+Stelle sicher, dass in der Datei `next.config.ts` der Wert von `output` auf `standalone` gesetzt ist.
+Dadurch generiert Next.js einen Ordner `.next/standalone`, indem sich eine Datei `server.js` befindet.
+Diese Datei wird mit `node server.js` gestartet.
+Die Next.js Applikation ist also ihr eigener Server.
+Alternativ gibt es auch Lösungen, wo z. B. mit _nginx_ als Reverse Proxy gearbeitet wird.
+
+.next.config.ts
+[source,typescript]
+----
+import type { NextConfig } from "next";
+const nextConfig: NextConfig = {
+  output: "standalone"
+};
+export default nextConfig;
+----
+
+=== force-dynamic für Datenbankabfragen
+
+Die Page `src/app/persons/page.tsx` exportiert eine Konstante `dynamic` mit dem Wert `force-dynamic`.
+Wird die Next.js Applikation mit `npm run build` für die Produktion gebaut, generiert Next.js wenn möglich statische Seiten.
+Da wir die Daten nicht über `fetch()` laden, sondern über Prisma, müssen wir Next.js dazu zwingen, die Seite dynamisch zu generieren.
+Sonst würde die Seite nur die Daten anzeigen, die zum Zeitpunkt des Builds vorhanden waren.footnote:[https://www.prisma.io/docs/orm/more/help-and-troubleshooting/help-articles/nextjs-prisma-client-dynamic]
+
+[source,typescript]
+----
+export const dynamic = 'force-dynamic'
+----
+
+=== Konfiguration von Prisma für das Deployment
+
+Da der Container unter Linux läuft, muss der Prisma Client für OpenSSL unter Linux kompiliert werden.
+
+.prisma/schema.prisma
+[source]
+----
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]    // Für das Deployment mit docker
+}
+----
+
+== Das Dockerfile
+
+Im Verzeichnis `next-app` gibt es die Datei `Dockerfile`.
+Sie erledigt mehrere Aufgaben:
+
+. *Erstellen des Build-Containers*
+[arabic]
+  .. Kopieren der Dateien `package.json` und `package-lock.json` in den Container.
+  .. Ausführen von `npm install`, um die Abhängigkeiten zu installieren.
+  .. Kopieren der Applikation vom Host.
+  .. Optional: Generieren oder Kopieren des Zertifikats für HTTPS Verschlüsselung.
+  .. Generieren des Prisma Clients mit `npx prisma generate`.
+  .. Erstellen des Builds mit `npm run build`.
+. *Erstellen des Produktions-Containers*
+[arabic]
+  .. Kopieren der Dateien `package.json` und `package-lock.json` aus den Build Container.
+  .. Ausführen von `npm install --only=production`, um die Production Dependencies zu installieren.
+  .. Kopieren der Ordner `.next/standalone`, `prisma` und `public` aus den Build Container.
+  .. Kopieren des Skripts `server_http.mjs` aus `scripts/server_http.mjs` vom Host in den Container.
+     Dieses Skript startet den Server.
+  .. Setzen der Umgebungsvariablen `NODE_ENV` auf `production` und `PORT` auf `80`, Öffnen des Ports 80.
+  .. Starten der Applikation mit `node server_http.mjs`.
+
+.Dockerfile
+[source,dockerfile]
+----
+# Dockerfile für das Deployment der nextjs app.
+# See https://authjs.dev/getting-started/deployment
+
+# ##############################################################################################
+# build stage
+# ##############################################################################################
+FROM node:22-alpine AS builder
+RUN apk add --no-cache openssl
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm install
+COPY . .
+# Generiere ein selbstsigniertes Zertifikat.
+# Das ist nur für https nötig.
+# Für offizielle Zertifikate wird mit den folgenden Anweisungen statt dessen das Zertifikat kopiert:
+# COPY certs/server.crt /app/certs/server.crt
+# COPY certs/server.key /app/certs/server.key
+
+# RUN mkdir certs && \
+#     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+#     -keyout certs/server.key -out certs/server.crt \
+#     -subj "/CN=localhost"
+
+RUN npx prisma generate
+RUN npm run build
+
+# ##############################################################################################
+# production stage
+# ##############################################################################################
+FROM node:22-alpine
+# For prisma
+RUN apk add --no-cache openssl
+WORKDIR /app
+
+COPY --from=builder /app/package.json /app/package-lock.json ./
+RUN npm install --only=production
+
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/prisma ./prisma
+# COPY --from=builder /app/certs ./certs
+COPY --from=builder /app/public ./public
+COPY scripts/server_http.mjs server_http.mjs
+
+ENV NODE_ENV=production
+ENV PORT=80
+EXPOSE 80
+
+CMD ["node", "server_http.mjs"]
+----
+
+NOTE: Soll der Server mit HTTPS laufen, dann müssen die Zertifikate im Build-Container generiert werden.
+Verwende dann das Skript `scripts/server_https.mjs` anstelle von `scripts/server_http.mjs`.
+Bei selbst generierten Zertifikaten wird im Browser eine Warnung angezeigt, dass das Zertifikat nicht vertrauenswürdig ist.
+
+== Erstellen des Images und Starten des Containers
+
+Die Datei `create_container.cmd` (für Windows) bzw. `create_container.sh` (für macOS) erstellt das Image und startet den Container.
+Wenn du das Skript ausführst, siehst du in Docker Deskto am Ende das Image und den Container.
+
+Es wird dabei der folgende `docker run` Befehl verwendet:
+
+[source,shell]
+----
+docker run -d -p 80:80 --name $DOCKER_IMAGE \
+    --env-file .env.local \
+    -e "NEXTAUTH_URL=http://localhost" \
+    -e "AUTH_TRUST_HOST=true" \
+    -v "$DATABASE_PATH":/app/database \
+    $DOCKER_IMAGE
+----
+
+Die Portangabe `-p 80:80` leitet den Port 80 des Containers (2. Angabe) auf den Port 80 des Hosts (1. Angabe).
+Der Server ist am Host daher unter _http://localhost_ erreichbar.
+In der Datei `.env.local` müssen die Umgebungsvariablen für das single sign on (Tenant ID, Client ID, Client Secret) gesetzt werden.
+Der Parameter `AUTH_TRUST_HOST=true` ist notwendig, damit der Server die Anfragen von AuthJS akzeptiert.
+Der Parameter `NEXTAUTH_URL=http://localhost` ist notwendig, damit die Callback-URL korrekt gesetzt wird.
+Achte darauf, dass die URL zum eingestellten Port und zum Protokoll (http oder https) passt.
+Der Datenbankpfad wird als _Volume_ gemountet, damit die Datenbank auch nach dem Container-Neustart erhalten bleibt.
+Es wird das Verzeichnis `next-app/database` auf das Verzeichnis `/app/database` im Container gemountet.
+Achte darauf, dass vor dem Start des Containers die Datenbank in diesem Verzeichnis liegt.
+Mit `npm run init_db` kann die Datenbank neu erzeugt werden.
+
+IMPORTANT: Wir verwenden eine SQLite Datenbank, die nicht für den Produktiveinsatz geeignet ist.
+In Production sollte eine netzwerkfähige Datenbank wie SQL Server, PostgreSQL oder MySQL verwendet werden.
+Über eine Umgebungsvariable kann die Datenbankverbindung konfiguriert werden.
+In `prisma/schema.prisma` ist die Datenbankverbindung konfiguriert, diese Konfiguration muss dann entsprechend angepasst werden.
+

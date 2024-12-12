@@ -8,7 +8,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]    // Für das Deployment mit docker
+  binaryTargets = ["native", "linux-musl"]    // Für das Deployment mit docker
 }
 
 model Person {

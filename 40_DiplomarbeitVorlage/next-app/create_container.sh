@@ -10,13 +10,24 @@ if ! docker stats --no-stream; then
 fi
 
 DOCKER_IMAGE=nextjs-app
-
 docker rm -f $DOCKER_IMAGE
 docker build -t $DOCKER_IMAGE . 
-MSYS_NO_PATHCONV=1 docker run -d -p 443:443 --name $DOCKER_IMAGE \
+
+# Starte den Container
+# Achte darauf, dass NEXTAUTH_URL auf den richtigen Port gesetzt ist.
+DATABASE_PATH="$(pwd)/database"
+if [ ! -d "$DATABASE_PATH" ]; then
+    echo "[WARNING] Das Verzeichnis $DATABASE_PATH existiert nicht. Du kannst mit npm run init_db die Datenbank erstellen."
+fi
+if [ ! -f ".env.local" ]; then
+    echo "[ERROR] Die Datei .env.local, die docker run übergeben werden soll, existiert nicht."
+    exit 1
+fi
+
+docker run -d -p 80:80 --name $DOCKER_IMAGE \
     --env-file .env.local \
-    -e "NEXTAUTH_URL=https://localhost" \
+    -e "NEXTAUTH_URL=http://localhost" \
     -e "AUTH_TRUST_HOST=true" \
-    -v database:/app/database \
+    -v "$DATABASE_PATH":/app/database \
     $DOCKER_IMAGE
 

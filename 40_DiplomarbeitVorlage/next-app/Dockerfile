@@ -18,13 +18,15 @@ COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
 # Generiere ein selbstsigniertes Zertifikat.
+# Das ist nur für https nötig.
 # Für offizielle Zertifikate wird mit den folgenden Anweisungen statt dessen das Zertifikat kopiert:
-# COPY certs/server.crt /app/server.crt
-# COPY certs/server.key /app/server.key
-RUN mkdir certs && \
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout certs/server.key -out certs/server.crt \
-    -subj "/CN=localhost"
+# COPY certs/server.crt /app/certs/server.crt
+# COPY certs/server.key /app/certs/server.key
+
+# RUN mkdir certs && \
+#     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+#     -keyout certs/server.key -out certs/server.crt \
+#     -subj "/CN=localhost"
 
 RUN npx prisma generate
 RUN npm run build
@@ -43,12 +45,12 @@ RUN npm install --only=production
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/certs ./certs
+# COPY --from=builder /app/certs ./certs
 COPY --from=builder /app/public ./public
-COPY scripts/server.mjs server.mjs
+COPY scripts/server_http.mjs server_http.mjs
 
 ENV NODE_ENV=production
-ENV PORT=443
+ENV PORT=80
+EXPOSE 80
 
-CMD ["node", "server.mjs"]
-EXPOSE 443
+CMD ["node", "server_http.mjs"]
