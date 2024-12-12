@@ -37,6 +37,8 @@ NEXTAUTH_SECRET=123
 ----
 
 Die Werte für _Client ID_ und _Tenant ID_ müssen aus der Azure App registration (Seite _Overview_)  kopiert werden.
+Um ein Secret zu generieren, kannst du den Befehl `npx auth secret` ausführen.
+Er setzt den Wert von `NEXTAUTH_SECRET` in der Datei `.env.local`.footnote:[https://next-auth.js.org/configuration/options#nextauth_secret]
 
 IMPORTANT: Die Datei `.env.local` darf nicht in das Git Repository eingecheckt werden!
 
