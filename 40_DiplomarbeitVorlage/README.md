@@ -23,7 +23,10 @@ AZURE_AD_TENANT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 NEXTAUTH_SECRET=123
 ```
 
-Die Daten bekommst du von deinem WMC Lehrer.
+> Unter https://htlspengergasse-my.sharepoint.com/:u:/g/personal/schletz_spengergasse_at/EbqeiuHgjMVGtKc2T7qm71kBDh6JibTL5mBJKf2vTDtr-w?e=RuQVb0
+> kannst du eine `.env.local` Datei laden, die eine Anmeldung im Active Directory mit dem Schulaccount ermöglicht.
+> Benenne die Datei nach dem Download um, es wird der Name `env.download` für den Download generiert.
+
 Wenn du andere Authentifizierungsprovider in Auth.js nutzen willst, benötigst du diese Datei natürlich nicht.
 Löchte dann die Überprüfung, ob diese Datei existiert, aus `next-app/scripts/dev.js` heraus.
 
