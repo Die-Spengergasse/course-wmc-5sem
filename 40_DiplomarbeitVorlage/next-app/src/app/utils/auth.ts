@@ -1,5 +1,5 @@
 import NextAuth from "next-auth";
-import getServerSession, { NextAuthConfig, Session } from "next-auth";
+import { NextAuthConfig } from "next-auth";
 import MicrosoftEntraId from 'next-auth/providers/microsoft-entra-id';
 
 const config: NextAuthConfig = {

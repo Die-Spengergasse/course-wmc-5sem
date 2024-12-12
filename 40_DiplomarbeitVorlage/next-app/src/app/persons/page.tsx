@@ -1,3 +1,7 @@
+// Next.js erkennt - da wir die Daten mit Prisma direkt laden - nicht, dass es dynamische Inhalte sin.
+// Bei npm run build würde daraus eine statische Seite generiert werden, wenn wir nicht force-dynamic setzen.
+// Siehe https://nextjs.org/docs/app/building-your-application/rendering/server-components#dynamic-rendering
+export const dynamic = 'force-dynamic'
 import { getPersons } from "./actions";
 import styles from './page.module.css';
 

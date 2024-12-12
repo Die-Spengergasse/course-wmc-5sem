@@ -1,6 +1,6 @@
 # Musterapp für eine Diplomarbeit
 
-> **[Download der App](./next-app20241211.zip)**
+> **[Download der App](./next-app20241212.zip)**
 
 Im Verzeichnis `next-app` befindet sich ein Musterprogramm, das als Basis für die eigene Implementierung dienen kann.
 Es beinhaltet
