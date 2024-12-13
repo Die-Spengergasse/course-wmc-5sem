@@ -11,7 +11,7 @@ Am Ende der Installation sollte der Befehl *node --version* die aktuelle Version
 
 ```
 C:\Users\MyUser>node --version
-v20.xx.x
+v22.xx.x
 ```
 
 ## Visual Studio Code
