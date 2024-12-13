@@ -371,3 +371,6 @@ export default function CategoryEdit(props: CategoryEditProps) {
 ⧉ link:{app-path}/categories/CategoryEdit.module.css[CategoryEdit.module.css]
 
 
+== Übung
+
+Das ist mein entwickeltes Übungsbeispiel.
