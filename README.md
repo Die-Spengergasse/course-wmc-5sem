@@ -81,3 +81,6 @@ Wähle *Node.js* als Konfiguration und ersetze den Inhalt der generierten Datei 
 
 Nun kannst du mit *F5* das Programm starten und Breakpoints setzen.
 In der *Debug Console* im unteren Bereich siehst du die Ausgaben.
+Wenn der Browser startet, wird die Applikation noch gestartet.
+Deswegen kommt am Anfang einmal die Meldung, dass die Seite nicht zur Verfügung steht.
+Aktualisiere die Seite, wenn die App gestartet wurde.
