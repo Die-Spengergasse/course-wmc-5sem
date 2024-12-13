@@ -374,3 +374,5 @@ export default function CategoryEdit(props: CategoryEditProps) {
 == Übung
 
 Das ist ein nettes, schweres Übungsbeispiel.
+Das ist eine weitere Info.
+![](./todo_add_2006.png)
