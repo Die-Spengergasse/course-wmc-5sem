@@ -35,7 +35,7 @@ namespace TodoBackend.Controllers
                     && (!isCompleted.HasValue ? true : t.IsCompleted == isCompleted.Value))
                 .OrderBy(t => t.CreatedAt)
                 .Select(t => new AllTodoItemsDto(
-                    t.Guid, t.Title, t.Description, t.Category.Name, t.Category.Priority.ToString(), t.Category.IsVisible,
+                    t.Guid, t.Title, t.Description, t.Category.Guid, t.Category.Name, t.Category.Priority.ToString(), t.Category.IsVisible,
                     t.IsCompleted, t.DueDate, t.CreatedAt, t.UpdatedAt))
                 .ToListAsync();
             return Ok(todoItems);

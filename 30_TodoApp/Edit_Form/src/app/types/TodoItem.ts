@@ -2,6 +2,7 @@ export interface TodoItem {
     guid: string;
     title: string;
     description: string;
+    categoryGuid: string;
     categoryName: string;
     categoryPriority: string;
     categoryIsVisible: boolean;
@@ -17,6 +18,7 @@ export interface TodoItem {
       "guid" in item &&
       "title" in item &&
       "description" in item &&
+      "categoryGuid" in item &&
       "categoryName" in item &&
       "categoryPriority" in item &&
       "categoryIsVisible" in item &&

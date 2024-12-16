@@ -13,7 +13,7 @@ endif::[]
 image::./todo_edit_1328.png[]
 
 [.lead]
-_Link zum Programm: link:./Edit_Form20241212.zip[Edit_Form20241212.zip], im Repo unter 30_TodoApp/Edit_Form._
+_Link zum Programm: link:./Edit_Form20241216.zip[Edit_Form20241216.zip], im Repo unter 30_TodoApp/Edit_Form._
 
 
 == Die Komponente `ModalDialog`
@@ -371,3 +371,34 @@ export default function CategoryEdit(props: CategoryEditProps) {
 ⧉ link:{app-path}/categories/CategoryEdit.module.css[CategoryEdit.module.css]
 
 
+== Übung
+
+Lade als Basis für deine Implementierung die Todo App von link:./Edit_Form20241216.zip[Edit_Form20241216.zip].
+Auf der Seite Todos erscheint eine Liste aller Todos.
+Diese sollen editiert werden können.
+Gehe dabei so vor:
+
+* Baue in der Component `src/app/todos/TodosClient.tsx` einen Link zum Editieren ein.
+* Erstelle eine Component `src/app/todos/TodosEdit.tsx`, die in der Component _TodosClient_ bei Bedarf angezeigt wird.
+* Das Editierformular soll in der vorhandenen Komponente `src/app/components/ModalDialog.tsx` angezeigt werden.
+* Die folgenden Felder können editiert werden:
+  ** Title (input type text)
+  ** Description (input type text)
+  ** CategoryGuid (Kategorien als Dropdownliste)
+  ** IsCompleted (input type checkbox)
+  ** DueDate (input type datetime-local)
+* Gib Validierungsfehler der API aus. Todo Items können mittels PUT Request auf `/api/todoItems/(GUID)` aktualisiert werden.
+* Prüfe mit Swagger auf _https://localhost:5443/swagger/index.html_, ob du folgendes TodoItem aktualisieren kannst:
+
+.PUT /api/todoitems/3b33199e-bc34-7895-eb67-338383c35c99
+[source,json]
+----
+  {
+    "guid": "3b33199e-bc34-7895-eb67-338383c35c99",
+    "title": "Editierter Titel ohne Duplikat",
+    "description": "Editierte Beschreibung",
+    "categoryGuid": "00000000-0000-0000-0000-000000000003",
+    "isCompleted": true,
+    "dueDate": "2024-12-28"
+  }
+----

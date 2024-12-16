@@ -43,7 +43,7 @@ export default function TodosClient({ todoItems, categories }: Props) {
                     >
                         <h2>{item.title}</h2>
                         <p>{item.description}</p>
-                        <p>Kategorie: {item.categoryName}</p>
+                        <p>Kategorie: {item.categoryName} (GUID {item.categoryGuid})</p>
                         <p>Fällig am: {new Date(item.dueDate).toLocaleDateString()}</p>
                         <p>Status: {item.isCompleted ? "Abgeschlossen" : "Ausstehend"}</p>
                     </li>
