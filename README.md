@@ -79,7 +79,8 @@ Wähle *Node.js* als Konfiguration und ersetze den Inhalt der generierten Datei 
 }
 ```
 
-Nun kannst du mit *F5* das Programm starten und Breakpoints setzen.
+Nun kannst du über den Button _Run and Debug_ in der Werkzeugleiste links die Debug Palette öffnen.
+Wähle als Startkonfiguration _Debug Server and Client_ (nicht _⚙️ Internal: Server components_).
 In der *Debug Console* im unteren Bereich siehst du die Ausgaben.
 Wenn der Browser startet, wird die Applikation noch gestartet.
 Deswegen kommt am Anfang einmal die Meldung, dass die Seite nicht zur Verfügung steht.
