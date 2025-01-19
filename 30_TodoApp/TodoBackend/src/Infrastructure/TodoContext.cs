@@ -79,6 +79,14 @@ namespace TodoBackend.Infrastructure
             };
 
             Categories.AddRange(categories);
+            var categoryWithoutItems = new Category("Without Items", "Category without items", true, Priority.Low, user)
+            {
+                Guid = new Guid("00000000-0000-0000-0000-000000000006"),
+                CreatedAt = createdAt,
+                UpdatedAt = updatedAt
+            };
+            SaveChanges();
+            Categories.Add(categoryWithoutItems);
             SaveChanges();
 
             var todoItems = new Faker<TodoItem>().CustomInstantiator(f =>
@@ -96,6 +104,13 @@ namespace TodoBackend.Infrastructure
             })
             .Generate(50);
             TodoItems.AddRange(todoItems);
+            var todoItemWithoutTasks = new TodoItem("Without Tasks", "TodoItem without tasks", categories[0], false, null)
+            {
+                Guid = new Guid("00000000-0000-0000-0001-000000000001"),
+                CreatedAt = createdAt,
+                UpdatedAt = updatedAt
+            };
+            TodoItems.Add(todoItemWithoutTasks);
             SaveChanges();
 
             var todoTasks = new Faker<TodoTask>().CustomInstantiator(f =>

@@ -97,10 +97,12 @@ namespace TodoBackend.Controllers
         public async Task<IActionResult> DeleteCategory(Guid guid)
         {
             var username = Username;
-            var category = await _db.Categories.FirstOrDefaultAsync(c => c.Owner.Name == username && c.Guid == guid);
+            var category = await _db.Categories
+                .FirstOrDefaultAsync(c => c.Owner.Name == username && c.Guid == guid);
             if (category == null) return NoContent();
-            category.IsVisible = false;
-            category.UpdatedAt = DateTime.UtcNow;
+            if (_db.TodoItems.Any(t => t.Category.Id == category.Id))
+                return BadRequest("Category has tasks.");
+            _db.Categories.Remove(category);
             try
             {
                 await _db.SaveChangesAsync();

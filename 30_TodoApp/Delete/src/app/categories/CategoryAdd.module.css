@@ -1,0 +1,84 @@
+.categoryAdd {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 10px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+
+}
+
+.categoryAdd > div > div:first-child {
+    font-weight: bold;
+    align-self: center;
+}
+
+.categoryAdd > div > div:last-child {
+    display: flex;
+    align-items: center;
+}
+
+.categoryAdd input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.categoryAdd input[type="checkbox"] {
+    transform: scale(1.5);
+}
+
+.categoryAdd label {
+    margin-right: 10px;
+}
+
+.categoryAdd input[type="radio"] {
+    margin-left: 5px;
+}
+
+.categoryAdd button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.categoryAdd button:hover {
+    background-color: #45a049;
+}
+
+.error {
+    color: hsl(45, 100%, 60%);
+    position: relative; /* Ermöglicht die Positionierung des Pseudo-Elements */
+    padding-left: 20px; /* Platz für das Warnsymbol */
+    font-size: 16px;
+}
+
+.error::before {
+    content: "⚠️"; /* Warnsymbol */
+    color: hsl(45, 100%, 60%); /* Gelbe Warnfarbe */
+    font-size: 12px;
+    position: absolute;
+    left: 0; /* Links vom Text */
+    top: 50%;
+    transform: translateY(-50%); /* Vertikal zentrieren */
+    animation: blink 1s infinite; /* Blinkende Animation */
+}
+
+/* Animation für das Blink-Blink */
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1); /* Normal */
+    }
+    50% {
+        opacity: 0.5;
+        transform: translateY(-50%) scale(1.2); /* Vergrößert */
+    }
+}

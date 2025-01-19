@@ -111,31 +111,35 @@ namespace TodoBackend.Controllers
             todoItem.IsCompleted = cmd.IsCompleted;
             todoItem.DueDate = cmd.DueDate;
             todoItem.UpdatedAt = DateTime.UtcNow;
-            try
-            {
-                await _db.SaveChangesAsync();
-            }
-            catch (DbUpdateException e)
-            {
-                return BadRequest(e.InnerException?.Message ?? e.Message);
-            }
+
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.InnerException?.Message ?? e.Message); }
             return NoContent();
         }
 
         [HttpDelete("{guid}")]
-        public async Task<IActionResult> DeleteTodoItem(Guid guid)
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> DeleteTodoItem(Guid guid, [FromQuery] bool deleteTasks = false)
         {
             var username = Username;
             var todoItem = await _db.TodoItems
                 .Where(t => t.Category.Owner.Name == Username && t.Guid == guid)
                 .FirstOrDefaultAsync();
             if (todoItem == null)
-                return NotFound();
+                return NoContent();
 
-            _db.TodoTasks.RemoveRange(_db.TodoTasks.Where(t => t.TodoItem.Guid == guid));
-            await _db.SaveChangesAsync();
+            var todoTasks = _db.TodoTasks.Where(t => t.TodoItem.Id == todoItem.Id).ToList();
+            if (!deleteTasks && todoTasks.Any())
+                return BadRequest("TodoItem has tasks.");
+            _db.TodoTasks.RemoveRange(todoTasks);
+
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.InnerException?.Message ?? e.Message); }
             _db.TodoItems.Remove(todoItem);
-            await _db.SaveChangesAsync();
+            try { await _db.SaveChangesAsync(); }
+            catch (DbUpdateException e) { return BadRequest(e.InnerException?.Message ?? e.Message); }
+
             return NoContent();
         }
     }

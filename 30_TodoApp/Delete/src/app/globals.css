@@ -1,0 +1,80 @@
+
+/* Dark Theme */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #121212; /* Dark background */
+  color: #e0e0e0; /* Light text */
+}
+
+/* Reset styles */
+* {
+  box-sizing: border-box;
+}
+
+/* Content styles */
+.content {
+  padding: 2rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Header */
+h1, h2, h3 {
+  color: #bb86fc;
+  text-align: center;
+}
+
+/* Utility */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.errorbox {
+  color: red;
+  border: 2px solid red; /* Dickere Linie für besseren Kontrast */
+  padding: 1em 1em 1em 3em;
+  border-radius: 8px; /* Runde Ecken */
+  background-color: rgba(255, 0, 0, 0.1); /* Leichter roter Hintergrund */
+  position: relative; /* Für das Pseudo-Element */
+  overflow: hidden; /* Verhindert das Überlappen von Animationen */
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5); /* Leuchtender Rand */
+  animation: pulse 2s infinite; /* Animation für einen pulsierenden Effekt */
+}
+
+.errorbox::before {
+  content: "⚠️"; /* Warnsymbol */
+  position: absolute;
+  top: 50%;
+  left: 0.5em; /* Platz für das Symbol innerhalb der Box */
+  transform: translateY(-50%) scale(1); /* Zentriere das Symbol */
+  font-size: 1.5em;
+  animation: bounce 1s infinite; /* Animation für ein leichtes Hüpfen */
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-50%) scale(1);
+  }
+  50% {
+    transform: translateY(-55%) scale(1.1); /* Leicht nach oben springen und vergrößern */
+  }
+}

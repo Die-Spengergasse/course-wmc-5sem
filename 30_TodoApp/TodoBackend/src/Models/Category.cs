@@ -29,6 +29,6 @@ namespace TodoBackend.Models
         public User Owner { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public List<TodoItem> TaskItems { get; } = new();
+        public List<TodoItem> TodoItems { get; } = new();
     }
 }

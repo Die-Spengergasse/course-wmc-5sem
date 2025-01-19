@@ -1,0 +1,91 @@
+.categoryEdit {
+    display: grid;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+
+    --grid-layout-gap: 10px;
+    --grid-column-count: 2;
+    --grid-item--min-width: 30em;
+
+    --gap-count: calc(var(--grid-column-count) - 1);
+    --total-gap-width: calc(var(--gap-count) * var(--grid-layout-gap));
+    --grid-item--max-width: calc((100% - var(--total-gap-width)) / var(--grid-column-count));
+
+    grid-template-columns: repeat(auto-fill, minmax(max(var(--grid-item--min-width), var(--grid-item--max-width)), 1fr));
+    gap: var(--grid-layout-gap);
+
+}
+
+.categoryEdit>div>div:first-child {
+    font-weight: bold;
+    align-self: center;
+}
+
+.categoryEdit>div>div:last-child {
+    display: flex;
+    align-items: center;
+}
+
+.categoryEdit input[type="text"],
+.categoryEdit textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.categoryEdit input[type="checkbox"] {
+    transform: scale(1.5);
+}
+
+.categoryEdit label {
+    margin-right: 10px;
+}
+
+.categoryEdit input[type="radio"] {
+    margin-left: 5px;
+}
+
+.error {
+    color: hsl(45, 100%, 60%);
+    position: relative;
+    /* Ermöglicht die Positionierung des Pseudo-Elements */
+    padding-left: 20px;
+    /* Platz für das Warnsymbol */
+    font-size: 16px;
+}
+
+.error::before {
+    content: "⚠️";
+    /* Warnsymbol */
+    color: hsl(45, 100%, 60%);
+    /* Gelbe Warnfarbe */
+    font-size: 12px;
+    position: absolute;
+    left: 0;
+    /* Links vom Text */
+    top: 50%;
+    transform: translateY(-50%);
+    /* Vertikal zentrieren */
+    animation: blink 1s infinite;
+    /* Blinkende Animation */
+}
+
+/* Animation für das Blink-Blink */
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: translateY(-50%) scale(1);
+        /* Normal */
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: translateY(-50%) scale(1.2);
+        /* Vergrößert */
+    }
+}
