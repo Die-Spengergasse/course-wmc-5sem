@@ -15,9 +15,31 @@ image::todo_delete_1559.png[]
 [.lead]
 _Link zum Programm: link:./Delete20250119.zip[Delete20250119.zip], im Repo unter 30_TodoApp/Delete._
 
+=== Der DELETE Request in der API
+
+Um Daten zu löschen, wird in der API ein DELETE Request verwendet.
+Unser Backend stellt einen Endpunkt _DELETE /api/categories/{guid}_ zur Verfügung, um eine Kategorie zu löschen.
+Er erwartet keine Parameter, da mit der GUID die Kategorie eindeutig identifiziert wird.
+Als Antwort wird im Erfolgsfall HTTP 204 No Content zurückgegeben.
+Hat eine Kategorie Todo Items, wird HTTP 400 Bad Request zurückgegeben.
+Um den Endpunkt aufzurufen, erweitern wir zuerst die Datei _categoryApiClient_:
+
+.src/app/categories/categoryApiClient.ts
+[source,typescript]
+----
+export async function deleteCategory(guid: string): Promise<ErrorResponse | undefined> {
+    try {
+        await axiosInstance.delete(`categories/${guid}`);
+        revalidatePath("/categories");
+    } catch (e) {
+        return createErrorResponse(e);
+    }
+}
+----
+
 === `useReducer` in React
 
-In der Komponente `categories/CategoryList.js` wurde der State `selectedCategory` verwendet, um beim Klick auf den Edit Button die ausgewählte Kategorie zu speichern.
+In der Komponente _categories/CategoryList.tsx_ wurde der State `selectedCategory` verwendet, um beim Klick auf den Edit Button die ausgewählte Kategorie zu speichern.
 Diese Kategorie wird dann in einem Modal Dialog angezeigt, in dem die Kategorie bearbeitet werden kann.
 Das Einblenden des Modal Dialogs erfolgt über die Bedingung `{selectedCategory && ...}`.
 
@@ -25,23 +47,16 @@ Das Einblenden des Modal Dialogs erfolgt über die Bedingung `{selectedCategory 
 ----
 export default function CategoryList({ categories }: { categories: Category[] }) {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  // ...
+  /* ... */
   return (
     <div className={styles.categories}>
       <ul>
         {categories.map(category => (
           <li key={category.guid}>
-            <div className={styles.categoryHeader}>
-              <h2>{category.name}</h2>
-              <span
-                className={styles.editIcon}
-                onClick={() => setSelectedCategory(category)}
-                title="Edit"
-              >
-                ✏️
-              </span>
-            </div>
-            <p>{category.description}</p>
+              { /* ... */ }
+              <span title="Edit" className={styles.editIcon}
+                onClick={() => setSelectedCategory(category)}>✏️</span>
+              { /* ... */ }
           </li>
         ))}
       </ul>
@@ -50,8 +65,7 @@ export default function CategoryList({ categories }: { categories: Category[] })
         <ModalDialog title={`Edit ${selectedCategory.name}`}
           onOk={() => categoryEditRef.current?.startSubmit()}
           onCancel={() => setSelectedCategory(null)}>
-          <CategoryEdit category={selectedCategory}
-            ref={categoryEditRef}
+          <CategoryEdit category={selectedCategory} ref={categoryEditRef}
             onSubmitted={() => setSelectedCategory(null)} />
         </ModalDialog>
       )}
@@ -60,7 +74,7 @@ export default function CategoryList({ categories }: { categories: Category[] })
 }
 ----
 
-Nun möchten wir einen Buttom zum Löschen von Kategorien hinfügen.
+Nun möchten wir einen Button zum Löschen von Kategorien hinzufügen.
 Der erste Ansatz wäre einen zweiter State `deleteCategory` zu verwenden, der die zu löschende Kategorie speichert.
 Je mehr States wir haben, desto mehr Probleme ergeben sich allerdings im State Management:
 - Es darf nicht der Edit und Löschen Dialog gleichzeitig eingeblendet werden.
@@ -85,14 +99,14 @@ import styles from "./CategoryList.module.css";
 import CategoryDelete from "./CategoryDelete";
 
 // Discriminated unions in typescript
-type EditDeleteReducerAction =
-  | { type: null; category: null }                   // Wenn actionType null ist, ist category null
-  | { type: "edit" | "delete"; category: Category }; // Wenn actionType "edit" oder "delete" ist, ist category vom Typ Category
-type EditDeleteState =
+type EditDeleteReducerAction =                       // <1>
+  | { type: null; category: null }
+  | { type: "edit" | "delete"; category: Category };
+type EditDeleteState =                               // <2>
   | { actionType: null; category: null }
   | { actionType: "edit" | "delete"; category: Category };
 
-function editDeleteReducer(
+function editDeleteReducer(                          // <3>
   state: EditDeleteState,
   action: EditDeleteReducerAction): EditDeleteState {
   switch (action.type) {
@@ -153,7 +167,24 @@ export default function CategoryList({ categories }: { categories: Category[] })
 }
 ----
 
+<1> Als Parameter für die Methode `selectedCategoryDispatch` gibt es 2 Möglichkeiten:
+* Wir übergeben den Typ `null`, wenn kein Dialog angezeigt werden soll.
+  Die Kategorie soll dann ebenfalls `null` sein.
+* Wir übergeben den Typ `"edit"` oder `"delete"` und die Kategorie, die bearbeitet oder gelöscht werden soll.
+  Die Kategorie darf natürlich dann nicht `null` sein.
++
+Mit _discriminated unions_ in Typescript können wir diese Fälle exakt definieren.
+Dadurch kann nicht aus versehen ein falscher Typ oder eine leere Kategorie übergeben werden.
+
+<2> Der State `selectedCategory` bekommt nun auch einen Typ.
+    Hier verwenden wir ebenfalls eine discriminated union, um die möglichen Zustände zu definieren.
+
+<3> Der `editDeleteReducer` liefert - je nach übergebenen Action Parameter - den neuen State zurück.
+    Er könnte auch - wenn nötig - andere States setzen.
+    Somit ist der Reducer eine zentrale Technik für komplexeres State Management.
+
 In der Komponente `CategoryDelete` wird der Modale Dialog eingeblendet, um nochmals die Bestätigung zum Löschen der Kategorie zu erhalten.
+
 
 .src/app/categories/CategoryDelete.tsx
 [source,tsx]
@@ -166,8 +197,8 @@ import { deleteCategory } from "./categoryApiClient";
 
 type CategoryDeleteProps = {
     category: Category;
-    onCancel: () => void;
-    onDeleted: () => void;
+    onCancel: () => void;           // <1>
+    onDeleted: () => void;          // <2>
 }
 async function handleSubmit(
     categoryGuid: string,
@@ -178,7 +209,7 @@ async function handleSubmit(
     if (isErrorResponse(response)) {
         setError(response);
     } else {
-        onDeleted();
+        onDeleted();    // <3>
     }
 }
 
@@ -204,6 +235,9 @@ export default function CategoryDelete({ category, onCancel, onDeleted }: Catego
 }
 ----
 
+<1> Die Methode `onCancel` wird von der parent component übergeben und wird aufgerufen, wenn der Benutzer den Dialog abbricht.
+<2> Die Methode `onDeleted` wird von der parent component übergeben und signalisiert, dass die Kategorie erfolgreich gelöscht wurde.
+<3> Nur wenn die Kategorie erfolgreich gelöscht wurde, wird die Methode `onDeleted` aufgerufen.
 
 == Übung
 
