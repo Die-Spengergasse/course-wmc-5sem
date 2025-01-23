@@ -13,7 +13,7 @@ endif::[]
 image::todo_delete_1559.png[]
 
 [.lead]
-_Link zum Programm: link:./Delete20250119.zip[Delete20250119.zip], im Repo unter 30_TodoApp/Delete._
+_Link zum Programm: link:./Delete20250123.zip[Delete20250123.zip], im Repo unter 30_TodoApp/Delete._
 
 === Der DELETE Request in der API
 
@@ -241,7 +241,7 @@ export default function CategoryDelete({ category, onCancel, onDeleted }: Catego
 
 == Übung
 
-Lade als Basis für deine Implementierung die Todo App von link:./Delete20250119.zip[Delete20250119.zip].
+Lade als Basis für deine Implementierung die Todo App von link:./Delete20250123.zip[Delete20250123.zip].
 Auf der Seite Todos erscheint eine Liste aller Todos.
 Diese sollen gelöscht werden können.
 Gehe dabei so vor:
