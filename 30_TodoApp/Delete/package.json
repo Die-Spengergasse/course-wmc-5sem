@@ -10,9 +10,9 @@
     "upgrade": "node scripts/upgrade.js"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "^4.0.0",
-    "axios": "^1.7.9",
-    "next": "^15.1.6",
+    "@tailwindcss/postcss": "^4.0.14",
+    "axios": "^1.8.3",
+    "next": "^15.2.2",
     "react": "19.0.0",
     "react-dom": "19.0.0"
   },
@@ -21,9 +21,9 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "15.1.6",
-    "postcss": "^8.5.1",
-    "tailwindcss": "^4.0.0",
+    "eslint-config-next": "15.2.2",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.14",
     "typescript": "^5"
   }
 }

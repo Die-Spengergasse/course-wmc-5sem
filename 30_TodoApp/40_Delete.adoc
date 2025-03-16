@@ -13,9 +13,9 @@ endif::[]
 image::todo_delete_1559.png[]
 
 [.lead]
-_Link zum Programm: link:./Delete20250123.zip[Delete20250123.zip], im Repo unter 30_TodoApp/Delete._
+_Link zum Programm: link:./Delete20250316.zip[Delete20250316.zip], im Repo unter 30_TodoApp/Delete._
 
-=== Der DELETE Request in der API
+== Der DELETE Request in der API
 
 Um Daten zu löschen, wird in der API ein DELETE Request verwendet.
 Unser Backend stellt einen Endpunkt _DELETE /api/categories/{guid}_ zur Verfügung, um eine Kategorie zu löschen.
@@ -37,211 +37,112 @@ export async function deleteCategory(guid: string): Promise<ErrorResponse | unde
 }
 ----
 
-=== `useReducer` in React
+== _useReducer()_ in React
 
-In der Komponente _categories/CategoryList.tsx_ wurde der State `selectedCategory` verwendet, um beim Klick auf den Edit Button die ausgewählte Kategorie zu speichern.
-Diese Kategorie wird dann in einem Modal Dialog angezeigt, in dem die Kategorie bearbeitet werden kann.
-Das Einblenden des Modal Dialogs erfolgt über die Bedingung `{selectedCategory && ...}`.
+Wir möchten nun einen Fehlerzustand in der Komponente _CategoryList_ einfügen.
+Wenn ein User eine Kategorie editieren möchte, die nicht sichtbar ist (die Eigenschaft _isVisible_ ist _false_), so soll eine Fehlermeldung angezeigt werden.
+Mit dem bisherigen Ansatz, nämlich der Verwendung von _useState_, müssen wir einiges beachten:
 
+* Wir möchten auch einen Delete Button einfügen.
+  Also brauchen wir einen State für die Kategorie, die gelöscht werden soll.
+* Klickt ein User auf Delete, so darf natürlich keine Kategorie zum Editieren angewählt werden.
+* Beim Klicken auf Edit muss die Sichtbarkeit der Kategorie vorher geprüft werden.
+* Ist sie nicht sichtbar, wird mit _useState()_ der State _errorState_ gesetzt.
+
+Wir sehen, dass bereits bei 3 möglichen Zuständen (_categoryToEditState_, _categoryToDeleteState_ und _errorState_) eine Menge an Logik brauchen, um die Applikation nicht in einen "unmöglichen" State zu bringen.
+Das würde sich dadurch zeigen, dass z. B. der Editier- und der Löschdialog gleichzeitig geöffnet werden.
+
+=== Modellierung des States als komplexen Type in Typescript
+
+Der erste Schritt besteht darin, nicht 3 getrennte Variablen für den State zu deklarieren, sondern diesen State mit _einer_ Variable zu verwalten.
+Natürlich ist diese Variante ein Object mit mehreren Properties.
+Wir definieren folgenden Typ:
+
+[source,typescript]
+----
+type CategoryListState =
+  | { dialogType: "" }
+  | { dialogType: "error"; error: string }
+  | { dialogType: "edit" | "delete"; category: Category };
+----
+
+Dies zeigt eine sogenannte _discriminated union_ in Typescript.
+Ein Discriminator ist ein Property, anhand dessen unterschieden wird.
+Es ist in jeder einzelnen Variante vorhanden. 
+Hier ist es das Property _dialogType_.
+
+* Ist der _dialogType_ leer, so ist die Komponente im "Grundzustand".
+  Es wird kein Dialog angezeigt.
+* Wird der _dialogType_ auf _error_ gesetzt, so wird eine Fehlermeldung angezeigt.
+* Wird der _dialogType_ auf _edit_ oder _delete_ gesetzt, brauchen wir auch eine betreffende Kategorie.
+
+Durch diese Technik ist es durch das Typsystem von Typescript nicht möglich, unmögliche States zu setzen.
+
+Wir können bereits diesen State mit _useState()_ direkt setzen und schon einige Vorteile daraus ziehen.
+
+=== Der reducer als Funktion, die den Übergang steuert
+
+Wir möchten jedoch auch prüfen, ob die Kategorie, die wir editieren möchten, auch sichtbar ist.
+Mit _useState()_ wird der State direkt, also ohne Prüfung gesetzt.
+Wenn wir Logik vor dem Setzen des neuen States einfügen möchten, gibt es in React die Funktion _useReducer()_.
+
+.CategoryList.tsx
 [source,tsx]
 ----
-export default function CategoryList({ categories }: { categories: Category[] }) {
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  /* ... */
-  return (
-    <div className={styles.categories}>
-      <ul>
-        {categories.map(category => (
-          <li key={category.guid}>
-              { /* ... */ }
-              <span title="Edit" className={styles.editIcon}
-                onClick={() => setSelectedCategory(category)}>✏️</span>
-              { /* ... */ }
-          </li>
-        ))}
-      </ul>
-
-      {selectedCategory && (
-        <ModalDialog title={`Edit ${selectedCategory.name}`}
-          onOk={() => categoryEditRef.current?.startSubmit()}
-          onCancel={() => setSelectedCategory(null)}>
-          <CategoryEdit category={selectedCategory} ref={categoryEditRef}
-            onSubmitted={() => setSelectedCategory(null)} />
-        </ModalDialog>
-      )}
-    </div>
-  );  
-}
-----
-
-Nun möchten wir einen Button zum Löschen von Kategorien hinzufügen.
-Der erste Ansatz wäre einen zweiter State `deleteCategory` zu verwenden, der die zu löschende Kategorie speichert.
-Je mehr States wir haben, desto mehr Probleme ergeben sich allerdings im State Management:
-- Es darf nicht der Edit und Löschen Dialog gleichzeitig eingeblendet werden.
-- Wenn der Edit Button geklickt wird, muss der State `deleteCategory` zurückgesetzt werden.	
-- Wenn der Löschen Button geklickt wird, muss der State `selectedCategory` zurückgesetzt werden.
-
-Bei größeren Applikationen wird das State Management schnell unübersichtlich.
-Mit `useReducer` können wir den State in einem Objekt zusammenfassen und die Änderungen in einem Reducer verwalten.
-Dadurch können wir die Logik für das State Management zentral an einer Stelle verwalten.
-
-image::reducer_1613.svg[]
-
-.src/app/categories/CategoryList.tsx
-[source,tsx]
-----
-"use client";
-import React, { useReducer, useRef } from "react";
-import { Category } from "@/app/types/Category";
-import ModalDialog from "@/app/components/ModalDialog";
-import CategoryEdit, { CategoryEditRef } from "./CategoryEdit";
-import styles from "./CategoryList.module.css";
-import CategoryDelete from "./CategoryDelete";
-
 // Discriminated unions in typescript
-type EditDeleteReducerAction =                       // <1>
-  | { type: null; category: null }
-  | { type: "edit" | "delete"; category: Category };
-type EditDeleteState =                               // <2>
-  | { actionType: null; category: null }
-  | { actionType: "edit" | "delete"; category: Category };
+type CategoryListState =
+  | { dialogType: "" }
+  | { dialogType: "error"; error: string }
+  | { dialogType: "edit" | "delete"; category: Category };
 
-function editDeleteReducer(                          // <3>
-  state: EditDeleteState,
-  action: EditDeleteReducerAction): EditDeleteState {
-  switch (action.type) {
+type ReducerAction =
+  | { resetState: true }
+  | { resetState?: false; intent: "edit" | "delete"; category: Category };
+
+function reducer(                                         // <2>
+  state: CategoryListState,
+  action: ReducerAction): CategoryListState {
+  if (action.resetState) return { dialogType: "" }
+  switch (action.intent ) {
     case "edit":
-      return { category: action.category, actionType: "edit" };
+      if (action.category.isVisible)
+        return { category: action.category, dialogType: "edit" };
+      else
+        return { dialogType: "error", error: "You cannot edit an invisible category." }
     case "delete":
-      return { category: action.category, actionType: "delete" };
+      return { category: action.category, dialogType: "delete" };
     default:
-      return { category: null, actionType: null };
+      return { dialogType: "" };
   }
 }
+
 export default function CategoryList({ categories }: { categories: Category[] }) {
-  const [selectedCategory, selectedCategoryDispatch] = useReducer(editDeleteReducer, { category: null, actionType: null });
-  const categoryEditRef = useRef<CategoryEditRef>(null);
+  const [state, dispatcher] = useReducer(reducer, { dialogType: "" });     // <1>
+  /* .... */
   return (
-    <div className={styles.categories}>
-      <ul>
-        {categories.map(category => (
-          <li key={category.guid}>
-            <div className={styles.categoryHeader}>
-              <h2>{category.name}</h2>
-              <span
-                className={styles.editIcon}
-                onClick={() => selectedCategoryDispatch({ type: "edit", category: category })}
-                title="Edit"
-              >
-                ✏️
-              </span>
-              <span
-                className={styles.editIcon}
-                onClick={() => selectedCategoryDispatch({ type: "delete", category: category })}
-                title="Delete"
-              >
-                🗑️
-              </span>
-            </div>
-            <p>{category.description}</p>
-          </li>
-        ))}
-      </ul>
-
-      {selectedCategory.actionType == "edit" && (
-        <ModalDialog title={`Edit ${selectedCategory.category.name}`}
-          onOk={() => categoryEditRef.current?.startSubmit()}
-          onCancel={() => selectedCategoryDispatch({ type: null, category: null })}>
-          <CategoryEdit category={selectedCategory.category}
-            ref={categoryEditRef}
-            onSubmitted={() => selectedCategoryDispatch({ type: null, category: null })} />
-        </ModalDialog>
-      )}
-      {selectedCategory.actionType == "delete" && (
-        <CategoryDelete category={selectedCategory.category}
-          onCancel={() => selectedCategoryDispatch({ type: null, category: null })}
-          onDeleted={() => selectedCategoryDispatch({ type: null, category: null })} />
-      )}
-    </div>
-  );
+    <span
+    className={styles.editIcon}
+    onClick={() => dispatcher({ intent: "edit", category: category })}     // <3>
+    title="Edit">✏️</span>
+  )
 }
 ----
 
-<1> Als Parameter für die Methode `selectedCategoryDispatch` gibt es 2 Möglichkeiten:
-* Wir übergeben den Typ `null`, wenn kein Dialog angezeigt werden soll.
-  Die Kategorie soll dann ebenfalls `null` sein.
-* Wir übergeben den Typ `"edit"` oder `"delete"` und die Kategorie, die bearbeitet oder gelöscht werden soll.
-  Die Kategorie darf natürlich dann nicht `null` sein.
-+
-Mit _discriminated unions_ in Typescript können wir diese Fälle exakt definieren.
-Dadurch kann nicht aus versehen ein falscher Typ oder eine leere Kategorie übergeben werden.
+<1> _useReducer()_ liefert 2 Parameter zurück: Den _state_, den wir in unserer Komponente verwenden können und eine _dispatcher_ Funktion.
+Diese Funktion wird verwendet, um den neuen State zu setzen.
+<2> Die Funktion _reducer_ bekommt 2 Argumente: den alten State und die _action_.
+Aufgrund der _action_ wird entschieden, wie der State gesetzt wird.
+<3> Beim Klick auf den Edit Button wird nicht der neue State direkt gesetzt, sondern der Parameter _action_ der Funktion _dispatcher_ übergeben.
+Sie entscheidet dann, welcher neue State gesetzt wird.
 
-<2> Der State `selectedCategory` bekommt nun auch einen Typ.
-    Hier verwenden wir ebenfalls eine discriminated union, um die möglichen Zustände zu definieren.
+Grafisch lässt sich das Zusammenspiel wie folgt darstellen:
 
-<3> Der `editDeleteReducer` liefert - je nach übergebenen Action Parameter - den neuen State zurück.
-    Er könnte auch - wenn nötig - andere States setzen.
-    Somit ist der Reducer eine zentrale Technik für komplexeres State Management.
+image::reducer_1347.svg[]
 
-In der Komponente `CategoryDelete` wird der Modale Dialog eingeblendet, um nochmals die Bestätigung zum Löschen der Kategorie zu erhalten.
-
-
-.src/app/categories/CategoryDelete.tsx
-[source,tsx]
-----
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import ModalDialog from "../components/ModalDialog";
-import { Category } from "../types/Category";
-import { createEmptyErrorResponse, ErrorResponse, isErrorResponse } from "../utils/apiClient";
-import { deleteCategory } from "./categoryApiClient";
-
-type CategoryDeleteProps = {
-    category: Category;
-    onCancel: () => void;           // <1>
-    onDeleted: () => void;          // <2>
-}
-async function handleSubmit(
-    categoryGuid: string,
-    setError: Dispatch<SetStateAction<ErrorResponse>>,
-    onDeleted: () => void
-) {
-    const response = await deleteCategory(categoryGuid);
-    if (isErrorResponse(response)) {
-        setError(response);
-    } else {
-        onDeleted();    // <3>
-    }
-}
-
-
-export default function CategoryDelete({ category, onCancel, onDeleted }: CategoryDeleteProps) {
-    const [error, setError] = useState<ErrorResponse>(createEmptyErrorResponse());
-    useEffect(() => {
-        if (error.message) {
-            alert(error.message);
-        }
-    }, [error]);
-    return (
-        <div>
-            <ModalDialog
-                title={`Delete Category ${category.name}`}
-                onCancel={onCancel}
-                onOk={() => handleSubmit(category.guid, setError, onDeleted)}>
-                <p>Möchtest du die Kategorie {category.name} wirklich löschen?</p>
-            </ModalDialog>
-        </div>
-    );
-
-}
-----
-
-<1> Die Methode `onCancel` wird von der parent component übergeben und wird aufgerufen, wenn der Benutzer den Dialog abbricht.
-<2> Die Methode `onDeleted` wird von der parent component übergeben und signalisiert, dass die Kategorie erfolgreich gelöscht wurde.
-<3> Nur wenn die Kategorie erfolgreich gelöscht wurde, wird die Methode `onDeleted` aufgerufen.
 
 == Übung
 
-Lade als Basis für deine Implementierung die Todo App von link:./Delete20250123.zip[Delete20250123.zip].
+Lade als Basis für deine Implementierung die Todo App von link:./Delete20250316.zip[Delete20250316.zip].
 Auf der Seite Todos erscheint eine Liste aller Todos.
 Diese sollen gelöscht werden können.
 Gehe dabei so vor:
