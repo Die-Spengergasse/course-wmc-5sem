@@ -156,5 +156,21 @@ Gehe dabei so vor:
   ** Beispiel (liefert HTTP 400): `DELETE https://localhost:5443/api/TodoItems/3b33199e-bc34-7895-eb67-338383c35c99?deleteTasks=false`
   ** Beispiel 2 (liefert no content): `DELETE https://localhost:5443/api/TodoItems/3b33199e-bc34-7895-eb67-338383c35c99?deleteTasks=true`
 * Baue eine Checkbox in die Komponente `TodosDelete` ein, damit der User auswählen kann, ob auch die verbundenen Tasks gelöscht werden sollen.
-* Wählt der User die Checkbox nicht aus, und das löschen schlägt fehl, soll das natürlich rückgemeldet werden.
+* Wählt der User die Checkbox nicht aus, und das Löschen schlägt fehl, soll die Meldung in der Component `TodosClient.tsx` ausgegeben werden.
 * Tipp: Du kannst einen _ref_ verwenden, um auf den Wert der Checkbox zuzugreifen.
+
+Ein Screenshot des modalen Dialoges zum Löschen der Todo Items und die Fehlerausgabe in der Komponente _TodosClient_ könnte so aussehen:
+
+image::delete_exercise_2234.png[]
+
+NOTE: Du kannst den State für die Komponente _TodosClient_ wie folgt modellieren.
+Ob du einen eigenen Reducer verwendest, bleibt dir überlassen.
+Übergib den setter bzw. dispatcher an die Komponente _TodosDelete_.
+
+[source,typescript]
+----
+type TodosClientState =
+    | { action: "" }
+    | { action: "error"; error: string }
+    | { action: "delete"; todoItem: TodoItem };
+----
