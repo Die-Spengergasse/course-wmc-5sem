@@ -35,7 +35,9 @@ Siehe [software.md](software.md).
 - [Daten editieren und Komponentenkommunikation](30_TodoApp/30_Edit.adoc)
 - [Daten löschen, reducer in React](./30_TodoApp/40_Delete.adoc)
 - [Globale States, *useContext()* in React](./30_TodoApp/50_State_Provider.adoc)
-
+## 4 Authentication
+- [Grundlagen zu Authentication](./50_Authentication/10_AuthenticationPrinciples/README.md)
+- [OAuth Programmbeispiel](./50_Authentication/20_Oauth/README.adoc)
 ## Diplomarbeitsvorlage
 - [Next.js Projekt Template](./40_DiplomarbeitVorlage/README.md)
 - [Microsoft Graph API abfragen](./40_DiplomarbeitVorlage/graph_api.adoc)

@@ -1,0 +1,17 @@
+= OAuth Demo App
+:source-highlighter: rouge
+:app-path: Edit_Form/src/app
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+== Starten des Programmes
+
+Klone das Repository auf deinen Rechner und gehe in den Ordner _50_Authentication/20_Oauth/AzureAdDemo_.
+Du brauchst die Datei _appsettings.json_.
+Lade sie von https://htlspengergasse-my.sharepoint.com/:u:/g/personal/schletz_spengergasse_at/ESvpeAgFJu5EvqUMis7D0IoBvhSpWSVKI3u1Ig3pEIX-LQ?e=s0oTk1 und kopiere sie in den oben genannten Ordner.
