@@ -1,4 +1,4 @@
-# WMC im 5. Semester AIF/KIF, 7. Semester BIF/CIF und 4. JG HIF
+# WMC im 5. und 6. Semester AIF/KIF, 7. und 8. Semester BIF/CIF und 4./5. JG HIF
 
 ## Installation der Software
 
