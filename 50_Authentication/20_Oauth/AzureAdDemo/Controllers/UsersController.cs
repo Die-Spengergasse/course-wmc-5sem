@@ -20,7 +20,7 @@ namespace AzureAdDemo.Controllers
     [AllowAnonymous]
     public class UsersController : ControllerBase
     {
-        private readonly IConfiguration _config;
+        private readonly IConfiguration _config;     // Kann Einstellungen aus appsettings.json lesen.
         private readonly AzureAdClient _adClient;
         private string LoginRedirectUrl => $"https://{HttpContext.Request.Host}/users/authorize";
 
@@ -51,15 +51,16 @@ namespace AzureAdDemo.Controllers
             var (authToken, refreshToken) = await _adClient.GetToken(code, LoginRedirectUrl);
 
             if (string.IsNullOrEmpty(refreshToken))
-            {
                 return BadRequest("No refresh token in payload.");
-            }
 
+            // Liest über Microsoft Graph zusätzliche Informationen über den User aus.
             var graph = AzureAdClient.GetGraphServiceClientFromToken(authToken);
             var me = await graph.Me.Request().Select("UserPrincipalName,EmployeeId,GivenName,Surname,OfficeLocation")
                 .GetAsync();
             var claims = new List<Claim>
             {
+                new Claim(ClaimTypes.GivenName, me.GivenName),
+                new Claim(ClaimTypes.Surname, me.Surname),
                 new Claim(ClaimTypes.Name, me.UserPrincipalName),
                 new Claim(ClaimTypes.Role, "admin")
             };
@@ -101,18 +102,19 @@ namespace AzureAdDemo.Controllers
         }
 
         [HttpGet("me")]
+        // Wichtig, denn der Controller hat [AllowAnonymous].
+        // Sonst ist HttpContext.User.Identity leer.
+        [Authorize]
         public IActionResult GetUserDetails()
         {
             var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
             if (!authenticated) { return Unauthorized(); }
-            var firstname = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "given_name")?.Value;
-            var lastname = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "family_name")?.Value;
-            var email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+            var firstname = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
+            var lastname = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
             return Ok(new
             {
                 firstname,
                 lastname,
-                email,
                 Username = HttpContext.User.Identity?.Name,
                 IsAdmin = HttpContext.User.IsInRole("admin"),
             });

@@ -8,10 +8,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Graph;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace AzureAdDemo.Extenstions
 {
@@ -81,11 +84,24 @@ namespace AzureAdDemo.Extenstions
             authenticationBuilder
              .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
              {
-                 // configuring cookie options
-                 options.Cookie.Name = "oidc";
-                 options.Cookie.SameSite = SameSiteMode.None;
+                 options.Cookie.SameSite = builder.Environment.IsDevelopment()
+                        ? SameSiteMode.None
+                        : SameSiteMode.Strict;
                  options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                  options.Cookie.IsEssential = true;
+                 options.Events = new CookieAuthenticationEvents
+                 {
+                     OnRedirectToLogin = ctx =>
+                     {
+                         ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                         return Task.CompletedTask;
+                     },
+                     OnRedirectToAccessDenied = ctx =>
+                     {
+                         ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                         return Task.CompletedTask;
+                     }
+                 };
              })
              .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
              {
@@ -97,15 +113,60 @@ namespace AzureAdDemo.Extenstions
 
                  options.Prompt = "select_account";
 
+                 options.Scope.Add("openid");
+                 options.Scope.Add("profile");  // Damit Vor- und Zuname abgefragt werden.
+
                  options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                  options.ResponseType = OpenIdConnectResponseType.Code;
 
                  options.SaveTokens = true;
+                 // Dadurch holt ASP.NET Core zusätzliche Claims wie Vorname und Zuname vom UserInfo Endpoint ab.
                  options.GetClaimsFromUserInfoEndpoint = true;
 
-                 options.MapInboundClaims = false;
+                 options.MapInboundClaims = false;  // Wir verwenden OnTokenValidated um die Keye zu setzen.
                  options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
                  options.TokenValidationParameters.RoleClaimType = "roles";
+
+                 // Um genauere Inforationen über den angemeldeten User herauszufinden, fragen wir
+                 // über den Microsoft Graph Client das AD ab.
+                 // Das brauchen wir nur bei einer Azure AD Authentifizierung. Bei anderen Providern ist es vielleicht anders.
+                 options.Events = new OpenIdConnectEvents
+                 {
+                     OnRedirectToIdentityProvider = ctx =>
+                     {
+                         if (ctx.Request.Path == "/oauth/login") return Task.CompletedTask;
+                         ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                         ctx.HandleResponse();
+                         return Task.CompletedTask;
+                     },
+                     OnTokenValidated = async ctx =>
+                     {
+                         var identity = ctx.Principal?.Identity as ClaimsIdentity;
+                         if (identity is null) return;
+
+                         var token = ctx.TokenEndpointResponse?.AccessToken;
+                         if (!string.IsNullOrEmpty(token))
+                         {
+                             var authProvider = new DelegateAuthenticationProvider(request =>
+                             {
+                                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
+                                 return Task.CompletedTask;
+                             });
+                             var graphClient = new GraphServiceClient(authProvider);
+                             var me = await graphClient.Me
+                                .Request()
+                                .Select("UserPrincipalName,EmployeeId,GivenName,Surname,OfficeLocation")
+                                .GetAsync();
+
+                             if (!string.IsNullOrEmpty(me.GivenName))
+                                 identity.AddClaim(new Claim(ClaimTypes.GivenName, me.GivenName));
+
+                             if (!string.IsNullOrEmpty(me.Surname))
+                                 identity.AddClaim(new Claim(ClaimTypes.Surname, me.Surname));
+                         }
+                     }
+                 };
+
              });
         }
     }

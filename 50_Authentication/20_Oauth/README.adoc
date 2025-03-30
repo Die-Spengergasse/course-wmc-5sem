@@ -14,4 +14,235 @@ endif::[]
 
 Klone das Repository auf deinen Rechner und gehe in den Ordner _50_Authentication/20_Oauth/AzureAdDemo_.
 Du brauchst die Datei _appsettings.json_.
-Lade sie von https://htlspengergasse-my.sharepoint.com/:u:/g/personal/schletz_spengergasse_at/ESvpeAgFJu5EvqUMis7D0IoBvhSpWSVKI3u1Ig3pEIX-LQ?e=s0oTk1 und kopiere sie in den oben genannten Ordner.
+Lade sie von https://htlspengergasse-my.sharepoint.com/:u:/g/personal/schletz_spengergasse_at/ESvpeAgFJu5EvqUMis7D0IoBvhSpWSVKI3u1Ig3pEIX-LQ?e=s0oTk1 und kopiere sie in den oben genannten Ordner. Starte danach das Projekt in _AzureAdDemo.csproj_.
+
+=== Der OAuth Flow
+
+Das Programm zeigt den OAuth Flow und macht ihn mit dem Debugger nachvollziehbarer.
+Es wird ein Endpunkt _/users/login_ angeboten.
+Dieser Endpunkt prüft, ob ein Cookie oder Token übermittelt wurde.
+Falls nicht, leitet er an den OAuth Provider weiter und startet das Login.
+Das Sequenzdiagramm sieht so aus:
+
+[link=https://editor.plantuml.com/uml/hP8nQyCm48Lt_ugRiaLkOtSnk8q3IIaKOd37GZ3oEHQnTK4w4UYlhsAxJPl1PCZwz7JlUoSjBPU6NTS6AqCdYmRcpv3bRmcyhZyWT5wnOKjxfGElmjoVZiO4eeS5RCZf2awA6tWdMR8Y_Qbxl-YKD6IfPjAjqYWaTQ4GOcQmKWObxvnHQSDyj4de8sJPDcGvUOhZQCmj7JTar1TUu7p-DlFom7V_e7xupJMdHhr8gZ1zN4JnF_hhtVxwPnV_pwR7flcscAWwK9ql_u7lKp8fqLfWEk3jhmTKGv5dmH9rTVuMtm00]
+image::https://img.plantuml.biz/plantuml/svg/hLBBQiD03BpxAtJApUiaTY-6F1n8Gw1WWtii5BEMwwNsgkngCVJhwrTV5vD3hgEHPaRIqN9XsBMDTpBKMJJW-tj8iciCb_Cp1Aw7RD3Gcz9UZuxLcHb3kDx28pbTGgUuXYUI1IlIBthaYrP9GvOg9jqeZK9I6mWXLWPBPL3ogpDgLpD_s3Ze9MJHr6GvVeYYSDOj7DTar2V-SvScFJpvkx_GEFpcc4kZ3f9At6ssORIusn_-wfV_lUavQPRc2r4dLqFp7_EZIY8bMWjCxtZxzO0goBF4Ew8kXx_u0W00[]
+
+Die API ist unsere ASP.NET Core Applikation.
+Fordern wir mit dem Browser die Seite _/users/login_ an, wird von ASP geprüft, ob ein Cookie übermittelt wurde.
+Falls nicht, sendet der Controller einen HTTP Redirect (_302 Found_) zurück.
+Der Browser folgt diesem Redirect und leitet auf _login.microsoftonline.com_ weiter.
+Dort kommt der gewohnte Eingabedialog für Benutzername und Kennwort.
+Stimmen die Zugangsdaten, sendet der OAuth Provider (_login.microsoftonline.com_) einen Header mit einem HTTP Redirect auf eine bestimmte URL.
+Diese URL haben wir in Schritt (3) als Query Parameter _redirect_uri_ übermittelt.
+Der Browser ruft nun diese Adresse auf.
+Diese Adresse ist ein Endpunkt in unserer API.
+Mit dem Code fragt die API beim OAuth Provider nach, ob er auch gültig ist.
+Falls ja, bekommen wir einen Access Token, mit dessen Hilfe wir weitere Infos abfragen können.
+Unsere API sendet am Ende wieder ein Redirect zu einer Adresse, dies kann z. B. die URL der Next.js App sein.
+
+=== Das Nuget Paket _Microsoft.AspNetCore.Authentication.OpenIdConnect_
+
+Das Musterprogramm beinhaltet auch eine OAuth Implementierung mit dem Nuget Paket _Microsoft.AspNetCore.Authentication.OpenIdConnect_.
+Für Produktionsanwendungen wird dieses Paket verwendet, da es die erforderlichen Endpunkte für das OAuth Verfahren selbst bereitstellt.
+Es kann in der Datei _Programm.cs_ aktiviert werden:
+
+.Program.cs
+[source,csharp]
+----
+// Variante 1: OAuth mit manuellem Service.
+// NICHT FÜR PRODUCTION PROJEKTE, nur zur Demonstration für den Flow.
+// builder.ConfigureAuthentication();
+// Variante 2: OAuth mit Microsoft.AspNetCore.Authentication.OpenIdConnect
+// Bevorzugte Variante für OAuth Projekte
+builder.ConfigureOpenIdAuthentication();
+----
+
+Die Extension Methode _ConfigureOpenIdAuthentication_ führt die notwendigen Schritte der Konfiguration durch.
+Stelle sicher, dass in der Datei _appsettings.json_ gültige Werte für _OpenIDConnectSettings_ enthalten sind.
+Sie haben folgenden Aufbau:
+
+[source,json]
+----
+"OpenIDConnectSettings": {
+    "Authority": "https://login.microsoftonline.com/c61e66aa-01c3-4775-a319-71a07f3c67a4/v2.0",
+    "ClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "ClientSecret": "xxxxxxxxxxxxxxxxxxxxxxxx"
+},
+----
+
+Der Wert _c61e66aa-01c3-4775-a319-71a07f3c67a4_ ist die _Tenant ID_ der Schule.
+In diesem Azure AD muss die App angelegt werden.
+Dort können die Werte für _ClientId_ und _ClientSecret_ abgerufen werden.
+Es können nur User mit der Rolle _Applikationsentwickler_ Apps anlegen.
+
+Die Extension Methode liest diese Parameter aus und konfiguriert das Paket:
+
+.Extenstions/WebApplicationBuilderExtension.cs
+[source,csharp]
+----
+public static void ConfigureOpenIdAuthentication(this WebApplicationBuilder builder)
+{
+    var authenticationBuilder = builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
+    });
+    authenticationBuilder
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.Cookie.SameSite = builder.Environment.IsDevelopment()
+                ? SameSiteMode.None
+                : SameSiteMode.Strict;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.IsEssential = true;
+            options.Events = new CookieAuthenticationEvents
+            {
+                OnRedirectToLogin = ctx =>
+                {
+                    ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                },
+                OnRedirectToAccessDenied = ctx =>
+                {
+                    ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return Task.CompletedTask;
+                }
+            };
+        })
+        .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, options =>
+        {
+            var oidcConfig = builder.Configuration.GetSection("OpenIDConnectSettings");
+
+            options.Authority = oidcConfig["Authority"];
+            options.ClientId = oidcConfig["ClientId"];
+            options.ClientSecret = oidcConfig["ClientSecret"];
+
+            options.Prompt = "select_account";
+
+            options.Scope.Add("openid");
+            options.Scope.Add("profile");
+
+            options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.ResponseType = OpenIdConnectResponseType.Code;
+
+            options.SaveTokens = true;
+            options.GetClaimsFromUserInfoEndpoint = true;
+            // Wir verwenden OnTokenValidated um die Keye zu setzen.
+            options.MapInboundClaims = false;
+            options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.Name;
+            options.TokenValidationParameters.RoleClaimType = "roles";
+
+            // Um genauere Inforationen über den angemeldeten User herauszufinden, fragen wir
+            // über den Microsoft Graph Client das AD ab.
+            // Das brauchen wir nur bei einer Azure AD Authentifizierung.
+            // Bei anderen Providern ist es vielleicht anders.
+            options.Events = new OpenIdConnectEvents
+            {
+                OnRedirectToIdentityProvider = ctx =>
+                {
+                    if (ctx.Request.Path == "/oauth/login") return Task.CompletedTask;
+                    ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    ctx.HandleResponse();
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = async ctx =>
+                {
+                    var identity = ctx.Principal?.Identity as ClaimsIdentity;
+                    if (identity is null) return;
+
+                    var token = ctx.TokenEndpointResponse?.AccessToken;
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        var authProvider = new DelegateAuthenticationProvider(request =>
+                        {
+                            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
+                            return Task.CompletedTask;
+                        });
+                        var graphClient = new GraphServiceClient(authProvider);
+                        var me = await graphClient.Me
+                        .Request()
+                        .Select("UserPrincipalName,EmployeeId,GivenName,Surname,OfficeLocation")
+                        .GetAsync();
+
+                        if (!string.IsNullOrEmpty(me.GivenName))
+                            identity.AddClaim(new Claim(ClaimTypes.GivenName, me.GivenName));
+
+                        if (!string.IsNullOrEmpty(me.Surname))
+                            identity.AddClaim(new Claim(ClaimTypes.Surname, me.Surname));
+                    }
+                }
+            };
+
+        });
+}
+
+----
+
+==== Der OAuth Controller
+
+In der Programmversion mit dem Paket _OpenIdConnect_ wird der _UsersController_ nicht verwendet.
+Er dient nur zur Demonstration des OAuth Flows.
+Stattdessen gibt es einen Controller _OauthController_, der für die Kommunikation mit einer SPA nützlich ist.
+Er stellt 3 Endpunkte bereit:
+
+* *GET /oauth/login* leitet auf die Loginseite des OAuth Providers (z. B. login.microsoftonline.com) weiter.
+* *GET /auth/logout* sendet dem Browser einen Header, der das Cookie löscht.
+* *GET /oauth/me* sendet die Informationen aus dem übermittelten Cookie an den Client, damit z. B. die SPA beim Start prüfen kann, ob der User schon ein gültiges Cookie besitzt.
+
+.Controllers/OauthController.cs
+[source,csharp]
+----
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Threading.Tasks;
+
+namespace AzureAdDemo.Controllers
+{
+    [Route("[controller]")]
+    [ApiController]
+    [Authorize]
+    public class OauthController : ControllerBase
+    {
+        [HttpGet("login")]
+        [AllowAnonymous]
+        public IActionResult Login(string? returnUrl = "/")
+        {
+            return Challenge(new AuthenticationProperties
+            {
+                RedirectUri = returnUrl
+            }, OpenIdConnectDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme);
+            return Redirect("/"); // oder wohin du willst
+        }
+
+        [HttpGet("me")]
+        public IActionResult GetUserDetails()
+        {
+            var authenticated = HttpContext.User.Identity?.IsAuthenticated ?? false;
+            if (!authenticated) { return Unauthorized(); }
+            var firstname = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
+            var lastname = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
+            return Ok(new
+            {
+                firstname,
+                lastname,
+                Username = HttpContext.User.Identity?.Name,
+                IsAdmin = HttpContext.User.IsInRole("admin"),
+            });
+        }
+    }
+}
+
+----
