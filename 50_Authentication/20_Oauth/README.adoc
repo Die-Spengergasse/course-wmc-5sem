@@ -10,6 +10,9 @@ ifdef::env-github[]
 :warning-caption: :warning:
 endif::[]
 
+In diesem Kapitel wird die paktische Umsetzung von OAuth mit ASP.NET Core als Backend demonstriert.
+Die Grundlagen sind immer gleich, egal ob ein OAuth Paket wie _Auth.js_ oder ein anderer Provider wie Google, Apple, etc. verwendet wird.
+
 == Starten des Programmes
 
 Klone das Repository auf deinen Rechner und gehe in den Ordner _50_Authentication/20_Oauth/AzureAdDemo_.
