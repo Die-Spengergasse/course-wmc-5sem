@@ -114,7 +114,8 @@ namespace AzureAdDemo.Extenstions
                  options.Prompt = "select_account";
 
                  options.Scope.Add("openid");
-                 options.Scope.Add("profile");  // Damit Vor- und Zuname abgefragt werden.
+                 options.Scope.Add("profile");    // Damit Vor- und Zuname abgefragt werden.
+                 options.Scope.Add("user.read");  // Consent, dass die App den Usernamen und das Profil lesen kann.
 
                  options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                  options.ResponseType = OpenIdConnectResponseType.Code;
