@@ -22,11 +22,11 @@ namespace AzureAdDemo.Controllers
     {
         [HttpGet("login")]
         [AllowAnonymous]
-        public IActionResult Login(string? returnUrl = "/")
+        public IActionResult Login(string? redirectUri = "/")
         {
             return Challenge(new AuthenticationProperties
             {
-                RedirectUri = returnUrl
+                RedirectUri = redirectUri
             }, OpenIdConnectDefaults.AuthenticationScheme);
         }
         [HttpGet("logout")]

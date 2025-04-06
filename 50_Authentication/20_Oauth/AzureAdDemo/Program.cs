@@ -7,10 +7,10 @@ using System;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 // Variante 1: OAuth mit manuellem Service.
 // NICHT FÜR PRODUCTION PROJEKTE, nur zur Demonstration für den Flow.
-builder.ConfigureAuthentication();
+//builder.ConfigureAuthentication();
 // Variante 2: OAuth mit Microsoft.AspNetCore.Authentication.OpenIdConnect
 // Bevorzugte Variante für OAuth Projekte
-//builder.ConfigureOpenIdAuthentication();
+builder.ConfigureOpenIdAuthentication();
 
 builder.Services.AddControllers();
 if (builder.Environment.IsDevelopment())
