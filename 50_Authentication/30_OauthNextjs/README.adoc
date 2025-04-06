@@ -1,0 +1,255 @@
+= Verbindung von Next.js mit der ASP.NET Core API
+:source-highlighter: rouge
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+[.lead]
+_Link zum Programm: link:./Nextjs_ASP_Auth20250406.zip[Nextjs_ASP_Auth20250406.zip], im Repo unter _50_Authentication/0_OauthNextjs_.
+
+
+Im vorigen Kapitel haben wir ASP.NET Core so konfiguriert, dass die Controller nur nach einer Authentifizierung aufgerufen werden können.
+Als Authentifizierungsprovider verwendeten wir das Paket _OpenIdConnect_, um die Authentifizierung über das Azure AD (Entra ID) zu ermöglichen.
+Nun müssen wir unsere Next.js App so konfigurieren, dass es bei jedem API Request auch die nötigen Authentifizierungsdaten mit übergibt.
+
+Die ASP.NET Core API sendet nach erfolgreicher Authentifizierung über _oauth/login_ einen response header, der ein Cookie setzt.
+Wir müssen daher Axios so konfigurieren, dass es die übermittelten Cookies mit jedem Request an die API sendet.
+Das ist jedoch nicht so leicht, denn in Next.js gibt es client- und serverseitige Komponenten.
+
+== Konfigurieren der ASP.NET Core API
+
+Erstelle im Verzeichnis _30_TodoApp/TodoBackend/src eine Datei mit dem Namen _appsettings.Development.json_.
+Füge einen Key _OpenIDConnectSettings_ hinzu.
+Die Datei soll folgendes Format haben:
+
+[source,json]
+----
+{
+  "OpenIDConnectSettings": {
+    "Authority": "https://login.microsoftonline.com/c61e66aa-01c3-4775-a319-71a07f3c67a4/v2.0",
+    "ClientId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "ClientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  }
+}
+----
+
+Die konkreten Werte für _ClientId_ und _ClientSecret_ kannst du über folgendne Links abrufen:
+https://htlspengergasse-my.sharepoint.com/:u:/g/personal/schletz_spengergasse_at/ESvpeAgFJu5EvqUMis7D0IoBvhSpWSVKI3u1Ig3pEIX-LQ?e=s0oTk1 
+
+== Anpassen der Axios Konfiguration
+
+Wir entfernen in der Datei _src/app/utils/apiClient.ts_ den Export des Objektes _axiosInstance_.
+Dafür erstellen wir eine Funktion _getAxiosInstance()_, die eine neue Instanz von Axios zurückgibt.
+Sie wird in 2 Versionen erstellt, einmal für den Client und einmal für den Server.
+
+Die serverseitige Version sieht so aus:
+
+.src/app/utils/getAxiosInstance-server.ts
+[source,typescript]
+----
+"use server"
+import https from "https"
+import axios from 'axios';
+import { cookies } from "next/headers";
+
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
+
+// Erstelle eine Axios-Instanz mit Basis-URL und anderen Optionen
+export async function getAxiosInstance() {
+    const cookieStore = await cookies();     // <1>
+    const cookie = cookieStore.toString();
+    return axios.create({
+        baseURL: 'https://localhost:5443',
+        timeout: 10000,
+        headers: {
+            Cookie: cookie,                  // <2>
+            'Content-Type': 'application/json',
+        },
+        httpsAgent: agent,
+        withCredentials: true                // <3>
+    });
+}
+----
+
+<1> Next.js ist gleichzeitig Client und Server.
+Während der Client (Browser) keinen Zugriff auf die Cookies hat, können wir in einer serverseitigen Komponente die Cookies auslesen.
+<2> Im Request senden wir das Cookie, das vom Browser an den Next.js Server gesendet wird, an die API weiter.
+<3> Mit _withCredentials: true_ wird sichergestellt, dass Cookies mit dem Request gesendet werden.
+Dies ist jedoch nur mit spezieller Konfiguration der API möglich. Sie muss im CORS Header den Wert _Access-Control-Allow-Credentials_ setzen.
+Wenn die API den _SameSite_ Wert des Cookies auf _None_ setzt, muss die API über HTTPS erreichbar sein.
+_SameSite=None_ ist notwendig, da der Devserver von Next.js und die ASP.NET Core API auf unterschiedlichen Ports laufen.
+
+Einfacher ist die Variante für den Client, da der Browser die Cookies selbst verwaltet:
+
+.src/app/utils/getAxiosInstance-browser.ts
+[source,typescript]
+----
+import axios from 'axios';
+
+export function getAxiosInstance() {
+    return axios.create({
+        baseURL: 'https://localhost:5443',
+        withCredentials: true,
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+}
+----
+
+IMPORTANT: Achte immer darauf, die richtige Version in deinen Komponenten zu importieren.
+
+== Hilfsfunktion für die Erkennung des Authentifizierungsstatus
+
+Wird eine servergerenderte Page über die Datei _page.tsx_ aufgerufen, so ist es hilfreich zu wissen, ob der Benutzer bereits authentifiziert ist.
+Nur dann kann die Page erfolgreich Anfragen an die API senden.
+Dafür erstellen wir eine Hilfsfunktion _redirectIfNotAuthenticated()_.
+Sie sendet einen Request an die API mit _GET /oauth/me_ und prüft, ob der Benutzer authentifiziert ist.
+Liefert die API Unauthorized (401) zurück, wird der Benutzer auf die Login-Seite umgeleitet.
+Da wir eine serverseitige Komponente verwenden, nutzen wir _redirect()_ statt _window.location.href_.
+
+.src/app/utils/redirectIfNotAuthenticated.ts
+[source,typescript]
+----
+'use server';
+
+import { redirect } from 'next/navigation';
+import { getAxiosInstance } from './getAxiosInstance-server';
+
+export async function redirectIfNotAuthenticated(redirectUri: string) {
+    const axiosInstance = await getAxiosInstance();
+    try {
+        await axiosInstance.get('/oauth/me'); // Cookies werden mitgeschickt
+    }
+    catch (error: any) {
+        if (error.response?.status === 401)
+            redirect(`https://localhost:5443/oauth/login?redirectUri=${redirectUri}`);
+    }
+}
+----
+
+== Ergänzungen im TodoAppStateProvider
+
+Mit der vorigen Hilfsfunktion können _serverseitige_ Komponenten prüfen, ob der Benutzer authentifiziert ist.
+Wie sieht es jedoch mit _clientseitigen_ Komponenten aus?
+In der vorigen Übung haben wir einen _TodoAppStateProvider_ erstellt, der den Zustand der Anwendung verwaltet.
+Nun ergänzen wir ihn um 2 Methoden:
+
+.src/app/context/TodoAppContext.tsx
+[source,typescript]
+----
+type TodoAppStateActions = {
+    setError: (value: string) => void;
+    setActiveUser: (value: string) => void;
+    logout: () => Promise<void>;              // <1>
+    isAuthenticated: () => boolean;           // <2>
+};
+----
+
+<1> Mit dieser Methode kann eine clientseitige Komponente einen Abmeldelink anbieten und diese Methode aufrufen.
+<2> Dies ist für die Prüfung des Authentifizierungsstatus auf der Clientseite notwendig.
+
+In der Funktion _TodoAppStateProvider_ werden nun die Methoden implementiert.
+Weiters wollen wir beim Laden des Providers prüfen, ob der Benutzer bereits authentifiziert ist.
+Daher verwenden wir _useEffect()_, um einen Request an _/oauth/me_ zu senden.
+Damit wird schon zu Beginn der richtige State für die Variable _activeUser_ gesetzt.
+
+.src/app/context/TodoAppContext.tsx
+[source,typescript]
+----
+export function TodoAppStateProvider({ children }: { children: ReactNode }) {
+    const [state, setState] = useState<TodoAppState>({ error: "", activeUser: "" });
+    const setError = (value: string) => setState(prev => ({ ...prev, error: value }));
+    const setActiveUser = (value: string) => setState(prev => ({ ...prev, activeUser: value }));
+    const isAuthenticated = () => !!state.activeUser;
+    const logout = async () => {
+        setState(prev => ({ ...prev, activeUser: "" }));
+        try {
+            const axios = await getAxiosInstance();
+            await axios.get("/oauth/logout");
+            window.location.href = "/";
+        } catch (err) {
+            console.error("Logout failed", err);
+        }
+    };
+    
+        
+    useEffect(() => {
+        async function fetchUser() {
+            try {
+                const axiosInstance = await getAxiosInstance();
+                const response = await axiosInstance.get("/oauth/me");
+                if (response.status === 200 && response.data?.username) {
+                    setActiveUser(response.data.username);
+                } else {
+                    setActiveUser("");
+                }
+            } catch (error: any) {
+                setActiveUser("");
+            }
+        }
+        fetchUser();
+    }, []);
+
+    return (
+        <TodoAppContext.Provider value={{ ...state, actions: { setError, setActiveUser, logout, isAuthenticated } }}>
+            {children}
+        </TodoAppContext.Provider>
+    );
+}
+----
+
+
+== Abfragen der Authentifizierungsinfos
+
+In der Kompomente _src/app/categories/page.tsx_ (serverseitige Komponente) kann mit der Funktion _redirectIfNotAuthenticated()_ geprüft werden, ob der Benutzer authentifiziert ist.
+
+[source.tsx]
+----
+export default async function CategoryPage() {
+  await redirectIfNotAuthenticated("http://localhost:3000/categories");
+  const response = await getCategories();
+
+  return (
+    <div>
+      <h1>Categories</h1>
+      {!isErrorResponse(response) ? (
+        <div>
+          <CategoryList categories={response} />
+          <h2>Add category</h2>
+          <CategoryAdd />
+        </div>
+      )
+        : <div className="errorbox">{response.message}</div>}
+
+    </div>
+  );
+}
+----
+
+In einer clientseitigen Komponente wie unserer Navbar in _src/app/components/Navbar.tsx_ können wir den App State verwenden:
+
+[source.tsx]
+----
+export default function Navbar() {
+    const pathname = usePathname(); // Aktuellen Pfad abrufen
+    const todoAppState = useTodoAppState(); // Zustand des Todo-App-Kontexts abrufen
+    return (
+            {/* ... */}
+            {todoAppState.actions.isAuthenticated() && (
+                <div>
+                    <p>Angemeldet als {todoAppState.activeUser}</p>
+                    <p className={styles.link} onClick={() =>
+                        todoAppState.actions.logout()}>Logout</p>
+                </div>)}
+    );
+}
+----
+

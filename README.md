@@ -38,6 +38,7 @@ Siehe [software.md](software.md).
 ## 4 Authentication
 - [Grundlagen zu Authentication](./50_Authentication/10_AuthenticationPrinciples/README.md)
 - [OAuth Programmbeispiel](./50_Authentication/20_Oauth/README.adoc)
+- [Next.js mit ASP.NET Core Authentication verbinden](./50_Authentication/30_OauthNextjs/README.adoc)
 ## Diplomarbeitsvorlage
 - [Next.js Projekt Template](./40_DiplomarbeitVorlage/README.md)
 - [Microsoft Graph API abfragen](./40_DiplomarbeitVorlage/graph_api.adoc)
