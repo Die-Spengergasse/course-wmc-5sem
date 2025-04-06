@@ -9,7 +9,6 @@ namespace TodoBackend.Infrastructure
 {
     public class TodoContext : DbContext
     {
-        public DbSet<User> Users => Set<User>();
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<TodoItem> TodoItems => Set<TodoItem>();
         public DbSet<TodoTask> TodoTasks => Set<TodoTask>();
@@ -19,7 +18,6 @@ namespace TodoBackend.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Category>().Property(c => c.Priority).HasConversion<string>();
-            modelBuilder.Entity<Category>().HasIndex(nameof(Category.Name), "OwnerId").IsUnique(true);
             modelBuilder.Entity<TodoItem>().HasIndex(nameof(TodoItem.Title), "CategoryId").IsUnique(true);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
@@ -56,30 +54,25 @@ namespace TodoBackend.Infrastructure
         {
             Randomizer.Seed = new Random(808);
 
-            var user = User.GenerateUserWithPassword("guest", "guest");
-            user.Guid = new Guid("00000000-0000-0000-0000-000000000001");
-            Users.Add(user);
-            SaveChanges();
-
             var createdAt = new DateTime(2024, 1, 24, 12, 0, 0, DateTimeKind.Utc);
             var updatedAt = new DateTime(2024, 1, 24, 12, 0, 0, DateTimeKind.Utc);
             // Add 5 Categories
             var categories = new Category[]
             {
-                new Category("Work", "Tasks related to your professional or business activities.", true, Priority.High, user)
+                new Category("Work", "Tasks related to your professional or business activities.", true, Priority.High, "guest")
                 { Guid = new Guid("00000000-0000-0000-0000-000000000001"), CreatedAt = createdAt, UpdatedAt = updatedAt  },
-                new Category("Personal", "Tasks related to personal life, not connected to work.", true, Priority.Medium, user)
+                new Category("Personal", "Tasks related to personal life, not connected to work.", true, Priority.Medium, "guest")
                 { Guid = new Guid("00000000-0000-0000-0000-000000000002"), CreatedAt = createdAt, UpdatedAt = updatedAt  },
-                new Category("Health", "Tasks focused on health, fitness, or medical appointments.", true, Priority.Medium, user)
+                new Category("Health", "Tasks focused on health, fitness, or medical appointments.", true, Priority.Medium, "guest")
                 { Guid = new Guid("00000000-0000-0000-0000-000000000003"), CreatedAt = createdAt, UpdatedAt = updatedAt  },
-                new Category("Home", "Tasks related to household chores, repairs, or home improvement projects.", true, Priority.Low, user)
+                new Category("Home", "Tasks related to household chores, repairs, or home improvement projects.", true, Priority.Low, "guest")
                 { Guid = new Guid("00000000-0000-0000-0000-000000000004"), CreatedAt = createdAt, UpdatedAt = updatedAt  },
-                new Category("Finance", "Tasks concerning personal or business finances and budgeting.", true, Priority.Low, user)
+                new Category("Finance", "Tasks concerning personal or business finances and budgeting.", true, Priority.Low, "guest")
                 { Guid = new Guid("00000000-0000-0000-0000-000000000005"), CreatedAt = createdAt, UpdatedAt = updatedAt  },
             };
 
             Categories.AddRange(categories);
-            var categoryWithoutItems = new Category("Without Items", "Category without items", true, Priority.Low, user)
+            var categoryWithoutItems = new Category("Without Items", "Category without items", true, Priority.Low, "guest")
             {
                 Guid = new Guid("00000000-0000-0000-0000-000000000006"),
                 CreatedAt = createdAt,

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,7 +14,8 @@ namespace TodoBackend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TodoTasksController : TodoControllerBase
+    [Authorize]
+    public class TodoTasksController : ControllerBase
     {
         private readonly TodoContext _db;
 
@@ -25,8 +27,8 @@ namespace TodoBackend.Controllers
         [HttpGet]
         public async Task<ActionResult<TodoTaskWithItemDto>> GetAllTodoTasks()
         {
-            var username = Username;
-            var todoTasks = await _db.TodoTasks.Where(t => t.TodoItem.Category.Owner.Name == username)
+            var username = HttpContext.User.Identity?.Name;
+            var todoTasks = await _db.TodoTasks.Where(t => t.TodoItem.Category.Owner == username)
                 .OrderBy(t => t.CreatedAt)
                 .Select(t => new TodoTaskWithItemDto(
                     t.TodoItem.Guid, t.TodoItem.Title, t.TodoItem.IsCompleted, t.TodoItem.DueDate,
@@ -38,9 +40,9 @@ namespace TodoBackend.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTodoTask(AddTodoTaskCmd cmd)
         {
-            var username = Username;
+            var username = HttpContext.User.Identity?.Name;
             var todoItem = await _db.TodoItems
-                .Where(t => t.Category.Owner.Name == username && t.Guid == cmd.TodoItemGuid)
+                .Where(t => t.Category.Owner == username && t.Guid == cmd.TodoItemGuid)
                 .FirstOrDefaultAsync();
             if (todoItem == null)
                 return NotFound();
@@ -54,9 +56,9 @@ namespace TodoBackend.Controllers
         public async Task<IActionResult> EditTodoTask(Guid guid, EditTodoTaskCmd cmd)
         {
             if (guid != cmd.Guid) return BadRequest();
-            var username = Username;
+            var username = HttpContext.User.Identity?.Name;
             var todoTask = await _db.TodoTasks
-                .Where(t => t.TodoItem.Category.Owner.Name == username && t.Guid == cmd.Guid)
+                .Where(t => t.TodoItem.Category.Owner == username && t.Guid == cmd.Guid)
                 .FirstOrDefaultAsync();
             if (todoTask == null)
                 return NotFound();
@@ -71,9 +73,9 @@ namespace TodoBackend.Controllers
         [HttpDelete("{guid}")]
         public async Task<IActionResult> DeleteTodoTask(Guid guid)
         {
-            var username = Username;
+            var username = HttpContext.User.Identity?.Name;
             var todoTask = await _db.TodoTasks
-                .Where(t => t.TodoItem.Category.Owner.Name == username && t.Guid == guid)
+                .Where(t => t.TodoItem.Category.Owner == username && t.Guid == guid)
                 .FirstOrDefaultAsync();
             if (todoTask == null)
                 return NoContent();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -14,7 +15,8 @@ namespace TodoBackend.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController : TodoControllerBase
+    [Authorize]
+    public class CategoriesController : ControllerBase
     {
 
         private readonly TodoContext _db;
@@ -28,11 +30,11 @@ namespace TodoBackend.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<AllCategoriesDto>> GetAllCategories()
         {
-            var username = Username;
+            var username = HttpContext.User.Identity?.Name;
             var categories = await _db.Categories
-                .Where(c => c.Owner.Name == username)
+                .Where(c => c.Owner == username)
                 .OrderBy(c => c.CreatedAt)
-                .Select(c => new AllCategoriesDto(c.Guid, c.Name, c.Description, c.IsVisible, c.Priority.ToString(), c.Owner.Name))
+                .Select(c => new AllCategoriesDto(c.Guid, c.Name, c.Description, c.IsVisible, c.Priority.ToString(), c.Owner))
                 .ToListAsync();
             return Ok(categories);
         }
@@ -43,15 +45,13 @@ namespace TodoBackend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> AddCategory(AddCategoryCmd cmd)
         {
-            var username = Username;
-            var user = await _db.Users.FirstOrDefaultAsync(u => u.Name == username);
-            if (user == null) return Forbid();
+            var username = HttpContext.User.Identity?.Name ?? "guest";
             var category = new Category(
                 name: cmd.Name,
                 description: cmd.Description,
                 isVisible: cmd.IsVisible,
                 priority: Enum.Parse<Priority>(cmd.Priority),
-                owner: user
+                owner: username
             );
             _db.Categories.Add(category);
             try
@@ -72,8 +72,8 @@ namespace TodoBackend.Controllers
         public async Task<IActionResult> EditCategory(Guid guid, EditCategoryCmd cmd)
         {
             if (guid != cmd.Guid) return BadRequest();
-            var username = Username;
-            var category = await _db.Categories.FirstOrDefaultAsync(c => c.Owner.Name == username && c.Guid == guid);
+            var username = HttpContext.User.Identity?.Name;
+            var category = await _db.Categories.FirstOrDefaultAsync(c => c.Owner == username && c.Guid == guid);
             if (category == null) return NotFound();
             category.Name = cmd.Name;
             category.Description = cmd.Description;
@@ -96,9 +96,9 @@ namespace TodoBackend.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> DeleteCategory(Guid guid)
         {
-            var username = Username;
+            var username = HttpContext.User.Identity?.Name;
             var category = await _db.Categories
-                .FirstOrDefaultAsync(c => c.Owner.Name == username && c.Guid == guid);
+                .FirstOrDefaultAsync(c => c.Owner == username && c.Guid == guid);
             if (category == null) return NoContent();
             if (_db.TodoItems.Any(t => t.Category.Id == category.Id))
                 return BadRequest("Category has tasks.");

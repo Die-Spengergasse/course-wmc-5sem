@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+using AzureAdDemo.Extenstions;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +10,24 @@ using System.Linq;
 using TodoBackend.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+// Im Kapitel OAuth konfigurieren wir das Paket OpenIDConnect, das die Authentifizierung mit OAuth 2.0 und OpenID Connect ermöglicht.
+// Ist kein Eintrag für das App Service im Azure AD konfiguriert (für die Übungen vor Authentication), wird immer guest als Benutzername verwendet
+// und ein gültiges Login angenommen.
+var oidcConfig = builder.Configuration.GetSection("OpenIDConnectSettings");
+if (oidcConfig.Exists())
+{
+    builder.ConfigureOpenIdAuthentication(oidcConfig);
+}
+else 
+{
+    Console.WriteLine($"[INFO] No OpenIDConnectSettings provided in appsettings.json. We use guest as username.");
+    if (builder.Environment.IsDevelopment())
+    {
+        builder.Services.AddAuthentication("GuestScheme")
+               .AddScheme<AuthenticationSchemeOptions, GuestAuthenticationHandler>("GuestScheme", null);
+    }
+}
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -18,36 +36,17 @@ builder.Services.AddDbContext<TodoContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("Default"),
         o => o.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery)));
 
-// For cross origin cookies we need a secure cookie (https only) and samesite None in dev mode.
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    options.OnAppendCookie = cookieContext =>
-    {
-        cookieContext.CookieOptions.Secure = true;
-        cookieContext.CookieOptions.SameSite = builder.Environment.IsDevelopment() ? SameSiteMode.None : SameSiteMode.Strict;
-    };
-});
-
-// Configure cookie. By default ASP sends a redirect to the login page. This makes no sense with a SPA,
-// so we send 401 if we try to request a protected route.
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(o =>
-    {
-        o.Events.OnRedirectToLogin = context =>
-        {
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return System.Threading.Tasks.Task.CompletedTask;
-        };
-    });
-
 // Set CORS mode for vue devserver.
-builder.Services.AddCors(options =>
+if (builder.Environment.IsDevelopment())
 {
-    options.AddPolicy("AllowDevserver",
-        builder => builder.SetIsOriginAllowed(origin => new System.Uri(origin).IsLoopback)
-            .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
-});
-
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowDevserver",
+            builder => builder
+                .SetIsOriginAllowed(origin => true)
+                .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
+    });
+}
 
 var app = builder.Build();
 
@@ -56,14 +55,18 @@ using (var scope = app.Services.CreateScope())
 {
     using (var db = scope.ServiceProvider.GetRequiredService<TodoContext>())
     {
-        db.Initialize(deleteDatabase: true);
+        db.Initialize(deleteDatabase: app.Environment.IsDevelopment());
         db.Seed();
     }
 }
 
-app.UseSwagger();
-app.UseSwaggerUI();
-app.UseCors("AllowDevserver");
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseCors("AllowDevserver");
+}
+
 app.UseHttpsRedirection();
 app.UseCookiePolicy();
 app.UseAuthentication();
