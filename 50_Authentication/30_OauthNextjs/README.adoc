@@ -23,7 +23,7 @@ Das ist jedoch nicht so leicht, denn in Next.js gibt es client- und serverseitig
 
 == Konfigurieren der ASP.NET Core API
 
-Erstelle im Verzeichnis _30_TodoApp/TodoBackend/src eine Datei mit dem Namen _appsettings.Development.json_.
+Erstelle im Verzeichnis _30_TodoApp/TodoBackend/src_ eine Datei mit dem Namen _appsettings.Development.json_.
 Füge einen Key _OpenIDConnectSettings_ hinzu.
 Die Datei soll folgendes Format haben:
 
