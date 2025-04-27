@@ -67,7 +67,7 @@ if (app.Environment.IsDevelopment())
     app.UseCors("AllowDevserver");
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
