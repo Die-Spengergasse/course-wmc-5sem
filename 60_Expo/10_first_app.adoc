@@ -342,3 +342,39 @@ export default function CategoriesIndexScreen() {
 Wir verwenden zum Laden den Hook _useFocusEffect_.
 Wenn wir _useEffect_ verwenden, wird die Funktion nur einmal beim ersten Rendern aufgerufen.
 Navigiert der User über die Tabs von der Seite weg und wieder zurück, werden die Daten nicht erneut geladen.
+
+== Übung
+
+In der ursprünglichen App wurden die Todo Items mit einem Filterfeld (Dropdown mit allen Kategorien) angezeigt.
+Das Backend liefert mit _GET api/TodoItems_ eine Liste aller Todo Items:
+
+[source,json]
+----
+[
+  {
+    "guid": "00000000-0000-0000-0001-000000000001",
+    "title": "Without Tasks",
+    "description": "TodoItem without tasks",
+    "categoryGuid": "00000000-0000-0000-0000-000000000001",
+    "categoryName": "Work",
+    "categoryPriority": "High",
+    "categoryIsVisible": true,
+    "isCompleted": false,
+    "dueDate": null,
+    "createdAt": "2024-01-24T12:00:00",
+    "updatedAt": "2024-01-24T12:00:00"
+  }
+]
+----
+
+Es soll eine View erstellt werden, die alle Todo Items als Liste anzeigt.
+In der Liste sollen Titel (_title_) und Description angezeigt werden.
+Über der Liste soll mit einem Picker die Kategorie ausgewählt werden können.
+Verwende dafür den Picker aus React Native, siehe https://docs.expo.dev/versions/latest/sdk/picker/
+
+Hinweise zur Umsetzung:
+
+* Füge die View zum Hauptlayout als Tab mit dem Titel _Todo Items_ hinzu.
+* Erstelle einen Ordner _app/(todoItems)_ um eine Gruppe zu erstellen.
+  Definiere analog zu den Kategorien das Layout und die Index Page.
+* Erstelle einen Ordner _utils/todoItems_ und erstelle dort einen entsprechenden API Client.
