@@ -43,6 +43,7 @@ Siehe [software.md](software.md).
 
 ## 5 Expo (React native)
 - [Installation und erste App](./60_Expo/10_first_app.adoc)
+- [Löschen und Hinzufügen mit der API](./60_Expo/20_add_delete.adoc)
 
 ## Diplomarbeitsvorlage
 - [Next.js Projekt Template](./40_DiplomarbeitVorlage/README.md)
