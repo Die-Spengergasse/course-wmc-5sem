@@ -7,12 +7,12 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # TODO: Adapt the directories!
-COPY src TodoBackend
+COPY src DrivingExamBackend
 
 # Compile the app
-RUN dotnet restore "TodoBackend"
-RUN dotnet build   "TodoBackend" -c Release -o /app/build
-RUN dotnet publish "TodoBackend" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet restore "DrivingExamBackend"
+RUN dotnet build   "DrivingExamBackend" -c Release -o /app/build
+RUN dotnet publish "DrivingExamBackend" -c Release -o /app/publish /p:UseAppHost=false
 
 # App container. Only needs runtime (smaller image)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
@@ -21,4 +21,4 @@ EXPOSE 443
 WORKDIR /app
 
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "TodoBackend.dll"]
+ENTRYPOINT ["dotnet", "DrivingExamBackend.dll"]
