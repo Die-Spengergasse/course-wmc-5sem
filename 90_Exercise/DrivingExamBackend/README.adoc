@@ -234,3 +234,60 @@ Der Server antwortet mit den GUID Werten der neuen Frage und der Antworten:
   ]
 }
 ----
+
+== Übungsaufgabe zum Backend "Führerscheinprüfung"
+
+Sie können wählen, ob sie eine Next.js oder eine Expo App erstellen.
+Es können alle Tools (Chat GPT, ...) verwendet werden.
+Kopieren Sie das Backend von _90_Exercise/DrivingExamBackend_ in Ihren Feature branch.
+
+=== Kriterien für Genügend
+
+* Scaffolding des Projektes
+* Eine Liste der Module von _api/Modules_ wird angezeigt.
+* Beim Klick auf ein Modul werden die Kategorien (Topics) von _api/Topics?assignedModule=(moduleGuid)_ angezeigt.
+* Beim Klick auf ein Topic werden die Fragen des Modules des entsprechenden Topics samt Antwortmöglichkeiten angezeigt.
+
+Es müssen keine Antworten ausgewählt werden.
+Es soll parametrisiertes Routing und ein API Client verwendet werden.
+
+=== Kriterien für Befriedigend
+
+Zusätzlich zu den oberen Punkten:
+
+* Soll jede Frage angezeigt und ausgefüllt werden können.
+* Ist die Frage falsch beantwortet, werden die falschen Antworten hervorgehoben.
+* Mit einem Button gelangt man zur nächsten Frage.
+
+=== Kriterien für Gut
+
+*Entweder*
+
+* Ein Punkt _Prüfungssimulation_ zeigt eine Liste aller Module an.
+* Es werden zufällig 20 Fragen aus dem Katalog gewählt.
+  Dafür implementieren Sie eine geeignete Route im Backend im _QuestionsController_.
+  Beispiel: GET _/api/exam/(moduleGuid)?count=20_ liefert die Liste der Fragen.
+* Es soll eine Prüfung vom Client ausgefüllt und bewertet werden.
+
+*oder*
+
+* Es sollen neue Module oder Topics eingefügt werden können.
+* Sie können dafür die entsprechenden POST Endpunkte verwenden.
+* Validierungsfehler sollen im Client entsprechend angezeigt werden.
+
+=== Kriterien für Sehr gut
+
+* Anpassung des Backends, sodass die Konfiguration unseres Azure AD in _appsettings.Development.json_ hinterlegt wird.
+  Dafür kopieren Sie sich den Key _OpenIDConnectSettings_ von https://htlspengergasse-my.sharepoint.com/:u:/g/personal/schletz_spengergasse_at/ESvpeAgFJu5EvqUMis7D0IoBvhSpWSVKI3u1Ig3pEIX-LQ?e=s0oTk1.
+* Die Client App wird Auth.js konfiguriert, siehe _https://github.com/Die-Spengergasse/course-wmc-5sem/blob/main/50_Authentication/30_OauthNextjs/README.adoc_.
+* Mit einem Azure AD User kann sich in der Client App angemeldet werden.
+
+*Entweder*
+
+* Die Prüfungsergebnisse sollen auf einer Seite "Meine Prüfungen" sichtbar werden.
+  Die Ergebnisse können lokal (z. B. im _localStorage_) gespeichert werden.
+
+*oder*
+
+* Nur ein definierter User kann Module oder Topics hinzufügen.
+  Passe die Rollenzuweisung im Backend an, der Admin kann auch "hardcoded" eingetragen werden.
