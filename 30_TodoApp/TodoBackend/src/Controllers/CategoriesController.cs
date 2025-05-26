@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TodoBackend.Cmd;
@@ -28,7 +29,7 @@ namespace TodoBackend.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<AllCategoriesDto>> GetAllCategories()
+        public async Task<ActionResult<List<AllCategoriesDto>>> GetAllCategories()
         {
             var username = HttpContext.User.Identity?.Name;
             var categories = await _db.Categories
@@ -36,6 +37,22 @@ namespace TodoBackend.Controllers
                 .OrderBy(c => c.CreatedAt)
                 .Select(c => new AllCategoriesDto(c.Guid, c.Name, c.Description, c.IsVisible, c.Priority.ToString(), c.Owner))
                 .ToListAsync();
+            return Ok(categories);
+        }
+
+        [HttpGet("{guid}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AllCategoriesDto>> GetCategoryByGuid(Guid guid)
+        {
+            var username = HttpContext.User.Identity?.Name;
+            var categories = await _db.Categories
+                .Where(c => c.Owner == username && c.Guid == guid)
+                .OrderBy(c => c.CreatedAt)
+                .Select(c => new AllCategoriesDto(c.Guid, c.Name, c.Description, c.IsVisible, c.Priority.ToString(), c.Owner))
+                .FirstOrDefaultAsync();
+            if (categories is null)
+                return Problem("Category not found", statusCode: 404);
             return Ok(categories);
         }
 
