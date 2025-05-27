@@ -19,7 +19,8 @@ async function addCategoryHandler(
           message: message as string,
         });
       });
-    } else {
+    }
+    if (result.message) {
       alert(result.message);
     }
     return;

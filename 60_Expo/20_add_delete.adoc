@@ -12,7 +12,7 @@ endif::[]
 image::add_delete_screen_2156.png[width=50%]
 
 [.lead]
-_Link zum Programm: link:./add_delete20250511.zip[add_delete20250511.zip], im Repo unter 60_Expo/add_delete._
+_Link zum Programm: link:./add_delete20250527.zip[add_delete20250527.zip], im Repo unter 60_Expo/add_delete._
 
 == Installation von zusätzlichen Paketen
 
@@ -380,3 +380,30 @@ export default function CreateCategoryScreen() {
   );
 }
 ----
+
+== Übung: Erfassung eines Todo Items
+
+Verwende als Vorlage für die Implementierung die Vorlage in link:./add_delete20250527.zip[add_delete20250527.zip].
+Erstelle jedoch im Repo keine neue App, sondern ergänze die App aus der vorigen Übung um dieses Feature!
+Starte das Backend, sodass der API Explorer unter _http://localhost:5080/swagger/index.html_ aufrufbar ist.
+
+* Füge in der Indexpage der Todo Items (vorige Übung) ein + Icon ein, mit dessen Hilfe ein neues Todo Item angelegt werden kann.
+* Der Request _POST /api/todoitems_ bekommt folgenden Payload:
+
+[source,json]
+----
+{
+  "title": "Lernen für das AM Kolloquium",
+  "description": "Description",
+  "categoryGuid": "00000000-0000-0000-0000-000000000001",
+  "dueDate": "2025-08-27T10:38:37.678Z"
+}
+----
+
+* Bilde die Daten in einem react hook form ab.
+  Verwende für die Auswahl der Kategorien einen Picker.
+  Eine entsprechende Methode im API Client soll alle verfügbaren Kategorien vom Server laden.
+  Lege im API Client einen entsprechenden Type _NewTodoItemFormData_ an.
+
+* Validierungsfehler sollen natürlich im Formular angezeigt werden.
+* Konnte das Todo Item erfolgreich gespeichert werden, soll auf die Liste der Todo Items zurückgeroutet werden.
