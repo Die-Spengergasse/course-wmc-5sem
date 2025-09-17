@@ -375,7 +375,8 @@ Verwende dann die untenstehende *app.ts* Datei, um deine Implementierung vorzune
 
 **src/app.ts**
 ```typescript
-// 1. Definiere das Enum 'Party' für die verschiedenen Parteien
+// 1. Definiere ein String Enum 'Party' für die verschiedenen Parteien.
+//    Auf https://www.typescriptlang.org/docs/handbook/enums.html#string-enums findest du Infos, wie ein string enum in TS definiert wird.
 
 
 // 2. Definiere das Interface 'Voter' für Wählerinformationen
@@ -392,13 +393,14 @@ Verwende dann die untenstehende *app.ts* Datei, um deine Implementierung vorzune
 //    Die Funktion bekommt ein Array von voters und gibt einen Record mit dem Key der Patei und der Anzahl als Wert zurück.
 //    Lies nach, wie ein Record in Typescript definiert ist und wie er erstellt werden kann.
 //    Hinweis: Erstelle zuerst einen Record mit allen Parteien mit der Anzahl 0 und verwende dann reduce.
+//    Hinweis2: Mit Object.values() können die enum Strings iteriert werden. Verwende reduce, um den record mit Anzahl 0 aufzubauen.
 
 // =============== TESTS (nicht verändern) ===============
 
 // Test-Wähler erstellen
-let voter1 = createVoter(1, "Max Mustermann");
-let voter2 = createVoter(2, "Anna Musterfrau");
-let voter3 = createVoter(3, "Hans Testmann");
+const voter1 = createVoter(1, "Max Mustermann");
+const voter2 = createVoter(2, "Anna Musterfrau");
+const voter3 = createVoter(3, "Hans Testmann");
 
 // Stimmen abgeben
 vote(voter1, Party.OEVP);
@@ -408,6 +410,8 @@ vote(voter1, Party.SPOE); // Sollte nichts zuweisen.
 
 // Wahlergebnisse berechnen und ausgeben
 const result = calculateResults([voter1, voter2, voter3]);
+
+// Erwartete Ausgabe { 'ÖVP': 1, 'SPÖ': 0, 'FPÖ': 1, 'Grüne': 1, NEOS: 0 }
 console.log(result);
 ```
 
