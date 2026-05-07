@@ -1,0 +1,61 @@
+= Umsetzungsideen als "Showcase" für dein Repo
+:source-highlighter: rouge
+:icons: font
+:lang: DE
+:hyphens:
+:figure-caption!:
+ifndef::root_dir[:root_dir: .]
+ifndef::github_url[:github_url: ..]
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+== Android bzw. React Native Frontend
+
+Nutze das bestehende Backend des Fahrprüfungs-Simulators von link:https://github.com/Die-Spengergasse/course-wmc-5sem/blob/main/90_Exercise/DrivingExamBackend/README.adoc[DrivingExamBackend] und entwickle eine *eigene Fahrschul-App* als Frontend.
+
+Implementiere dabei folgende Kernfunktionen:
+
+*   *Single Sign-on (SSO):* Integriere die WMC Demo-App in Azure für die Authentifizierung. Das Backend unterstützt bereits OpenID Connect; nutze die bereitgestellten Einstellungen. Die OpenID-Konfigurationsdetails der WMC Demo-App in Azure sind unter diesem Link abrufbar: link:https://htlspengergasse-my.sharepoint.com/:u:/g/personal/schletz_spengergasse_at/ESvpeAgFJu5EvqUMis7D0IoBvhSpWSVKI3u1Ig3pEIX-LQ?e=s0oTk1[OpenID Settings].
+*   *Prüfungssimulation:* Ermögliche es dem Benutzer, eine Probeprüfung für eine ausgewählte Führerscheinklasse zu absolvieren. Der erzielte Punktestand soll lokal in der App gespeichert werden.
+*   *Erweiterungen:* Implementiere zusätzliche Funktionen wie das gezielte Trainieren von Fragen oder andere sinnvolle Ergänzungen.
+*   *Technologische Basis:* Wähle zwischen *Kotlin* (für native Android-Entwicklung) oder *React Native* (für plattformübergreifende Entwicklung).
+
+== Frontend für einen OpenAI Chat Server
+
+Stelle einen *OpenAI-kompatiblen LLM-Endpunkt* bereit. Dies kann entweder über einen Cloud-Anbieter (z.B. Google Gemini) oder lokal erfolgen. Eine Anleitung zur Einrichtung findest du hier: link:https://github.com/Die-Spengergasse/course-pos-csharp_basics/blob/master/07%20Asciidoctor/04_adoc_productivity.adoc[LLM-Endpunkt einrichten].
+
+Entwickle eine *Single Page Application (SPA)* als Frontend für diesen Endpunkt mit folgenden möglichen Anwendungsfällen:
+
+*   *Übersetzungstool:* Ähnlich wie link:https://www.deepl.com/de/translator[DeepL Translator].
+*   *Rechtschreib- und Grammatikprüfung:* Ein Tool zur Korrektur von Texten.
+*   *Code-Kommentierung:* Automatische Generierung von Kommentaren (z.B. JSDoc) für Programmcode.
+
+Sende das gesamte Dokument zusammen mit einem geeigneten System-Prompt an den Endpunkt. Die Implementierung sollte auf *Single Shots* basieren.
+
+== Agentic AI
+
+[NOTE]
+Dieses Projekt ist nur für Studierende mit *NVIDIA-GPUs (mind. 16 GB VRAM)* oder *Macs mit Unified Memory* geeignet.
+
+Nutze die bereitgestellte API und das Demo-Frontend von link:https://github.com/schletz/ai_chat[AI Chat Repository] als Basis. Konzipiere *LLM-Tools*, die der Agent eigenständig aufrufen kann. Beispiele hierfür sind:
+
+*   *Nachrichten-Abruf:* Abrufen und Zusammenfassen von Inhalten einer News-Seite.
+*   *Stundenplan-Abfrage:* Zugriff auf und Verarbeitung von Stundenplandaten.
+*   *Weitere individuelle Ideen.*
+
+Ein konkreter Vorschlag wäre ein *Terminagent*, der Termine koordiniert und dabei *autonom mit dem Benutzer interagiert*.
+
+== Arbeitszeit
+
+Nutze die vorgesehenen WMC-Stunden im Mai und Juni, um deine gewählten Ideen umzusetzen und die Fortschritte *sauber in deinem persönlichen Repository zu committen*.
+
+== Beurteilung
+
+*   *Befriedigend:* Wird erreicht, wenn alle obligatorischen WMC-Abgaben (01_edit_form, 02_reducer, 03_context, 04_oauth) fristgerecht eingereicht wurden.
+*   *Sehr gut* oder *Gut:* Für diese Noten ist die erfolgreiche Umsetzung einer der oben genannten Projektideen erforderlich. Die Implementierung eines Frontends für einen OpenAI-kompatiblen Endpunkt wird hierbei als die *am einfachsten umsetzbare Option* empfohlen.
