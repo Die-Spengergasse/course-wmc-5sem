@@ -125,7 +125,7 @@ Einstellungen in die Datei ein und speichere sie ab:
 ## Prompt
 
 Statt die Befehle oben selbst einzutippen, kannst du auch einen KI-Coding-Assistenten (z. B.
-Claude Code, GitHub Copilot Chat) damit beauftragen. Verwende dazu folgenden Prompt:
+Claude Code, OpenAI Codex, GitHub Copilot Chat) damit beauftragen. Verwende dazu folgenden Prompt:
 
 ```
 Lade https://raw.githubusercontent.com/Die-Spengergasse/course-wmc-5sem/refs/heads/main/software.md
