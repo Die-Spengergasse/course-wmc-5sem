@@ -98,6 +98,7 @@ unter Windows und macOS identisch):
 
 ```
 code --install-extension dbaeumer.vscode-eslint
+code --install-extension GitHub.vscode-pull-request-github
 code --install-extension yzhang.markdown-all-in-one
 code --install-extension asciidoctor.asciidoctor-vscode
 code --install-extension schletz.asciidoc-productivity
