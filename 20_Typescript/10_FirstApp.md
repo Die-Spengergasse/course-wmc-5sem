@@ -42,9 +42,30 @@ Hier installieren wir den Typescript Compiler und den Linter (ESLint) in unser P
 Technisch gesehen wird nur eine Zeile in die Datei *package.json* geschrieben.
 
 ```bash
-npm install --save-dev typescript @types/node
-npm install --save-dev eslint globals typescript-eslint 
+npm install --save-dev typescript@~6.0.3 @types/node
+npm install --save-dev eslint globals typescript-eslint
 ```
+
+> **Warum nicht einfach `typescript`?**
+> Ohne Versionsangabe installiert npm die neueste Version (derzeit TypeScript 7).
+> Das Paket *typescript-eslint* unterstützt aber nur Versionen `>=4.8.4 <6.1.0`.
+> npm bricht dann mit einem Fehler (*ERESOLVE unable to resolve dependency tree*) ab.
+> Welche Versionen ein Paket voraussetzt, zeigt der Befehl `npm view typescript-eslint peerDependencies`.
+
+### Versionsangaben: ~ und ^
+
+Nach der Installation stehen die Pakete in der *package.json* unter *devDependencies*, z. B. `"typescript": "~6.0.3"`.
+Eine Versionsnummer besteht aus *Major.Minor.Patch* (Semantic Versioning).
+Das Zeichen davor legt fest, welche Updates *npm install* später nehmen darf:
+
+| Angabe   | Erlaubte Versionen | Bedeutung                                              |
+| -------- | ------------------ | ------------------------------------------------------ |
+| `6.0.3`  | nur 6.0.3          | Exakt diese Version.                                   |
+| `~6.0.3` | >=6.0.3 <6.1.0     | Nur Patch-Updates (Bugfixes).                          |
+| `^6.0.3` | >=6.0.3 <7.0.0     | Minor- und Patch-Updates (Standard bei *npm install*). |
+
+Mit `^6.0.3` dürfte npm auch TypeScript 6.1 installieren, das von *typescript-eslint* nicht mehr unterstützt wird.
+Deshalb verwenden wir hier `~`.
 
 Erstelle nun im Verzeichnis *first_app* die Konfigurationsdateien für den Typescript Compiler und den Linter.
 Achte genau auf die Dateinamen.
@@ -86,7 +107,7 @@ export default [
 ];
 ```
 
-## Niemals node_moules einchecken
+## Niemals node_modules einchecken
 
 Die Module werden in den Ordner *node_modules* geschrieben.
 Dieser Ordner darf nie in das Repo geladen werden, da jeder Client die Pakete selbst laden muss.
