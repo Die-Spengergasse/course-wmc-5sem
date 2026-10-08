@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 470" width="900" height="470" font-family="'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="898" height="468" rx="18" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="450" y="46" text-anchor="middle" font-size="26" font-weight="700" fill="#1e293b">Vom TypeScript zum JavaScript</text>
+
+  <!-- app.ts -->
+  <rect x="30" y="80" width="250" height="180" rx="12" fill="#eff6ff" stroke="#3178c6" stroke-width="2"/>
+  <rect x="30" y="80" width="250" height="36" rx="12" fill="#3178c6"/>
+  <rect x="30" y="104" width="250" height="12" fill="#3178c6"/>
+  <text x="155" y="104" text-anchor="middle" font-size="17" font-weight="700" fill="#ffffff">app.ts</text>
+  <g font-family="Consolas, 'Cascadia Mono', monospace" font-size="15" fill="#1e293b">
+    <text x="44" y="146">function add(</text>
+    <text x="60" y="168">a<tspan fill="#3178c6" font-weight="700">: number</tspan>,</text>
+    <text x="60" y="190">b<tspan fill="#3178c6" font-weight="700">: number</tspan></text>
+    <text x="44" y="212">)<tspan fill="#3178c6" font-weight="700">: number</tspan> {</text>
+    <text x="60" y="234">return a + b;</text>
+    <text x="44" y="254">}</text>
+  </g>
+
+  <!-- tsc -->
+  <line x1="284" y1="170" x2="336" y2="170" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="340" y="80" width="220" height="180" rx="12" fill="#f8fafc" stroke="#475569" stroke-width="2"/>
+  <text x="450" y="114" text-anchor="middle" font-size="22" font-weight="700" fill="#1e293b">tsc</text>
+  <text x="450" y="136" text-anchor="middle" font-size="13" fill="#64748b">TypeScript Compiler</text>
+  <circle cx="366" cy="172" r="13" fill="#3178c6"/><text x="366" y="177" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">1</text>
+  <text x="388" y="178" font-size="16" fill="#1e293b">Typen <tspan font-weight="700">prüfen</tspan></text>
+  <circle cx="366" cy="216" r="13" fill="#3178c6"/><text x="366" y="221" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">2</text>
+  <text x="388" y="222" font-size="16" fill="#1e293b">Typen <tspan font-weight="700">löschen</tspan></text>
+
+  <!-- app.js -->
+  <line x1="564" y1="170" x2="616" y2="170" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="620" y="80" width="250" height="180" rx="12" fill="#fefce8" stroke="#ca8a04" stroke-width="2"/>
+  <rect x="620" y="80" width="250" height="36" rx="12" fill="#f7df1e"/>
+  <rect x="620" y="104" width="250" height="12" fill="#f7df1e"/>
+  <text x="745" y="104" text-anchor="middle" font-size="17" font-weight="700" fill="#1e293b">app.js</text>
+  <g font-family="Consolas, 'Cascadia Mono', monospace" font-size="15" fill="#1e293b">
+    <text x="634" y="146">function add(</text>
+    <text x="650" y="168">a,</text>
+    <text x="650" y="190">b</text>
+    <text x="634" y="212">) {</text>
+    <text x="650" y="234">return a + b;</text>
+    <text x="634" y="254">}</text>
+  </g>
+
+  <!-- runtime -->
+  <line x1="745" y1="264" x2="745" y2="306" stroke="#475569" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="640" y="310" width="210" height="56" rx="28" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="745" y="335" text-anchor="middle" font-size="16" font-weight="700" fill="#166534">läuft im Browser</text>
+  <text x="745" y="355" text-anchor="middle" font-size="14" fill="#166534">oder mit Node.js</text>
+
+  <!-- error branch -->
+  <line x1="450" y1="264" x2="450" y2="306" stroke="#dc2626" stroke-width="3" marker-end="url(#arrowRed)"/>
+  <text x="462" y="290" font-size="14" fill="#dc2626" font-weight="600">Typfehler?</text>
+  <rect x="250" y="310" width="370" height="56" rx="12" fill="#fef2f2" stroke="#dc2626" stroke-width="2"/>
+  <text x="435" y="335" text-anchor="middle" font-size="14" font-family="Consolas, 'Cascadia Mono', monospace" fill="#b91c1c">add(1, "2")</text>
+  <text x="435" y="355" text-anchor="middle" font-size="14" fill="#7f1d1d">→ error TS2345 in der Konsole</text>
+
+  <!-- key message -->
+  <rect x="30" y="392" width="840" height="58" rx="12" fill="#1e293b"/>
+  <text x="450" y="428" text-anchor="middle" font-size="18" fill="#ffffff">Typen gibt es nur <tspan font-weight="700" fill="#93c5fd">beim Programmieren</tspan>. Im JavaScript sind sie weg.</text>
+</svg>

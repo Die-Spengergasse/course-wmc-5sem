@@ -1,52 +1,96 @@
-# Typescript Basics
+# TypeScript Basics
 
-TypeScript wurde 2012 von Microsoft entwickelt, um die Entwicklungsprozesse mit JavaScript zu verbessern. Die Hauptmotivation war, die Schwächen von JavaScript bei der Entwicklung großer, skalierbarer Anwendungen zu beheben. JavaScript, ursprünglich für kleine Skripte konzipiert, wurde zunehmend in großen Projekten verwendet, wo die fehlende Typensicherheit und schwache Tools zu Problemen führten. TypeScript führt statische Typisierung ein, was Entwicklern hilft, Fehler frühzeitig zu erkennen und die Codewartung zu erleichtern. Es ist vollständig kompatibel mit JavaScript, wodurch bestehender Code einfach migriert werden kann.
+In diesem Kapitel lernst du:
 
-TypeScript ist kein Compiler im klassischen Sinne, da es den Code nicht direkt in maschinenlesbare Form (wie ein typischer Compiler) übersetzt. Stattdessen wandelt es TypeScript-Code in standardkonformes JavaScript um, das von jedem Browser und JavaScript-Laufzeitsystem verstanden wird. Diese Übersetzung hilft Entwicklern, moderne Features und Typensicherheit zu nutzen, während die resultierende Ausgabe weiterhin in jedem JavaScript-Umfeld lauffähig ist. TypeScript agiert also eher als „Transpiler“, der den Quellcode in eine andere Version der gleichen Sprache überführt.
+- warum es TypeScript gibt und was der Compiler macht,
+- die wichtigsten Datentypen,
+- wie du mit **Interfaces** die Form von Objekten beschreibst,
+- wie du **verschachtelte JSON-Daten** von einer REST API typisierst,
+- wie dir der Compiler hilft, Fehler zu finden.
 
-### Die Versionen von Typescript
+> [!TIP]
+> **Wichtige Wörter in diesem Kapitel**
+>
+> | Wort | Bedeutung |
+> | ---- | --------- |
+> | **Typ** | Die Art eines Wertes, z. B. Zahl (`number`) oder Text (`string`). |
+> | **Property** | Ein Feld in einem Objekt, z. B. `name` in `{ name: "Lena" }`. |
+> | **Interface** | Ein Bauplan für Objekte. Es sagt, welche Properties ein Objekt hat. |
+> | **Compiler** | Ein Programm, das deinen Code prüft und übersetzt. Bei TypeScript heißt es `tsc`. |
+> | **Laufzeit** | Die Zeit, in der das Programm läuft (in Node.js oder im Browser). |
+> | **optional** | Darf fehlen. |
 
-- **TypeScript 1.0 (2014)**: Die erste stabile Version mit grundlegender Typprüfung und Unterstützung für ES5.
-- **TypeScript 2.0 (2016)**: Einführung von Nulltypen (null und undefined), Kontrollflussanalyse und verbesserter Unterstützung von Module Imports.
-- **TypeScript 3.0 (2018)**: Tuple-Verbesserungen, Projektreferenzen und erweiterte Generics.
-- **TypeScript 4.0 (2020)**: Variadic Tuple Types, Editor-Hilfen und verbesserte Kontrollflussanalyse.
-- **TypeScript 5.0 (2023)**: Unterstützung für Dekoratoren und erweiterte ESM-Unterstützung.
+## Warum TypeScript?
+
+JavaScript wurde für kleine Skripte auf Webseiten erfunden.
+Heute schreiben wir damit große Anwendungen.
+Dabei gibt es ein Problem: JavaScript prüft die Typen erst, **wenn das Programm läuft**.
+Ein Tippfehler wie `song.titel` statt `song.title` liefert einfach `undefined`.
+Du merkst den Fehler oft erst viel später, oder ein User findet ihn für dich.
+
+Microsoft hat deshalb 2012 **TypeScript** entwickelt.
+TypeScript ist JavaScript **plus Typen**.
+Jeder gültige JavaScript-Code ist auch gültiger TypeScript-Code.
+Du kannst also bestehenden Code Schritt für Schritt umstellen.
+
+![Zeitachse: TypeScript zeigt einen Tippfehler schon beim Schreiben im Editor. JavaScript zeigt ihn erst beim Ausführen als undefined oder Absturz.](assets/ts-fehler-frueh-finden.svg)
+
+### Die Versionen von TypeScript
+
+| Version | Jahr | Was ist neu? |
+| ------- | ---- | ------------ |
+| 1.0 | 2014 | Erste stabile Version mit Typprüfung. |
+| 2.0 | 2016 | `null` und `undefined` als eigene Typen. Der Compiler versteht `if`-Abfragen (Kontrollflussanalyse). |
+| 3.0 | 2018 | Bessere Tuples und Generics. |
+| 4.0 | 2020 | Variadic Tuple Types, bessere Hilfe im Editor. |
+| 5.0 | 2023 | Dekoratoren, bessere Unterstützung für ES-Module. |
+| 6.0 / 7.0 | 2026 | Der Compiler wird in Go neu geschrieben und ist dadurch viel schneller. |
 
 ## Unterschiede zwischen JavaScript und TypeScript
 
-### JavaScript:
-- JavaScript ist eine dynamisch typisierte Sprache, was bedeutet, dass Variablen zur Laufzeit jeden Datentyp annehmen können.
-- Es gibt keine Überprüfung von Typen während der Entwicklung, was zu Laufzeitfehlern führen kann.
-- Kein direkter Support für Interfaces, Typen oder Klassen während der Entwicklung (obwohl JavaScript ab ES6 Klassen unterstützt).
+| | JavaScript | TypeScript |
+| - | ---------- | ---------- |
+| **Typen** | dynamisch: Eine Variable kann jeden Typ annehmen. | statisch: Du legst den Typ beim Programmieren fest. |
+| **Typfehler findest du ...** | erst beim Ausführen. | schon im Editor und beim Kompilieren. |
+| **Interfaces, Enums, Generics** | gibt es nicht. | gibt es. |
+| **Ausführen** | direkt im Browser oder mit Node.js. | Zuerst muss der Compiler den Code in JavaScript übersetzen. |
 
-### TypeScript:
-- TypeScript ist eine **statisch typisierte** Obermenge von JavaScript. Das bedeutet, dass der Datentyp von Variablen während der Entwicklungszeit explizit festgelegt wird.
-- TypeScript bietet eine **Typüberprüfung** zur Kompilierzeit, um potenzielle Fehler bereits vor der Ausführung zu erkennen.
-- Unterstützung für **Interfaces, Enums, Generics**, und andere Features, die die Strukturierung von Code verbessern.
-- TypeScript muss in JavaScript transpiliert werden, bevor es in einer Laufzeitumgebung ausgeführt werden kann.
+## Die Aufgabe des Compilers
 
-## Die Aufgabe des Transpilers
+Browser und Node.js können kein TypeScript ausführen.
+Deshalb übersetzt der **TypeScript Compiler** (`tsc`) deinen Code in normales JavaScript.
+Dabei macht er zwei Dinge:
 
-Ein **Transpiler** (in TypeScript meist der `tsc`, der TypeScript-Compiler) ist dafür zuständig, den TypeScript-Code in regulären JavaScript-Code umzuwandeln, da Browser und Laufzeitumgebungen wie Node.js nativ kein TypeScript ausführen können.
+1. Er **prüft die Typen**. Findet er einen Fehler, bekommst du eine Fehlermeldung.
+2. Er **löscht die Typen**. Übrig bleibt JavaScript, das überall läuft.
 
-Der TypeScript-Compiler überprüft auch die Typen und gibt während der Kompilierung Hinweise, wenn Typinkonsistenzen oder Fehler gefunden werden. 
+![Ablauf: app.ts geht in den Compiler tsc. Der Compiler prüft die Typen und löscht sie. Heraus kommt app.js, das im Browser oder mit Node.js läuft. Bei einem Typfehler gibt es eine Fehlermeldung.](assets/ts-transpiler.svg)
 
-Nach der Transpilierung wird JavaScript generiert, das in jeder modernen JavaScript-Umgebung lauffähig ist.
+> [!NOTE]
+> Weil `tsc` TypeScript in eine andere Form der *gleichen* Sprache übersetzt, nennt man ihn auch **Transpiler**.
+> Ein klassischer Compiler übersetzt dagegen in Maschinencode.
+
+> [!IMPORTANT]
+> **Typen gibt es nur beim Programmieren.**
+> Im fertigen JavaScript sind sie weg.
+> Das heißt: TypeScript kann nur prüfen, was es beim Kompilieren sieht.
+> Daten, die erst zur Laufzeit kommen (z. B. von einer API), prüft es **nicht**.
+> Dazu mehr im Abschnitt [Interfaces für REST APIs](#interfaces-für-rest-apis).
 
 ## Datentypen in TypeScript
 
-TypeScript bietet eine Vielzahl von Datentypen, die in verschiedenen Situationen verwendet werden können. Einige der wichtigsten sind:
-
-- **`number`**: Repräsentiert sowohl Ganzzahlen als auch Gleitkommazahlen.
-- **`string`**: Repräsentiert Textwerte.
-- **`boolean`**: Repräsentiert Wahrheitswerte (true/false).
-- **`array`**: Ein Array von Werten eines bestimmten Typs, definiert durch `T[]` oder `Array<T>`.
-- **`tuple`**: Ein Array mit einer festen Anzahl und Typen von Elementen.
-- **`enum`**: Eine Sammlung von benannten Konstanten.
-- **`any`**: Ein Typ, der jede Art von Wert akzeptiert (vermeiden, wenn möglich).
-- **`void`**: Wird verwendet, wenn eine Funktion keinen Wert zurückgibt.
-- **`null` und `undefined`**: Repräsentieren nicht vorhandene oder undefinierte Werte.
-- **`object`**: Repräsentiert nicht-primitive Typen.
+| Typ | Beispiel | Bedeutung |
+| --- | -------- | --------- |
+| `number` | `25`, `3.14` | Ganze Zahlen und Kommazahlen. |
+| `string` | `"Hallo"` | Text. |
+| `boolean` | `true`, `false` | Wahr oder falsch. |
+| `number[]` oder `Array<number>` | `[90, 85, 80]` | Ein Array. Alle Elemente haben den gleichen Typ. |
+| `[string, number]` | `["John", 30]` | Ein **Tuple**: ein Array mit fester Länge. Jede Position hat einen eigenen Typ. |
+| `enum` | `Color.Green` | Eine Liste von benannten Konstanten. |
+| `null`, `undefined` | `null` | „Kein Wert“. |
+| `object` | `{ name: "John" }` | Alles, was kein einfacher Wert ist. |
+| `void` | – | Eine Funktion gibt nichts zurück. |
+| `any` | alles | Schaltet die Typprüfung aus. **Vermeide `any`!** |
 
 ```typescript
 let age: number = 25;
@@ -54,36 +98,47 @@ let name: string = "Alice";
 let isDone: boolean = true;
 let scores: number[] = [90, 85, 80];
 let person: [string, number] = ["John", 30];
-enum Color {Red, Green, Blue};
+enum Color { Red, Green, Blue }
 let c: Color = Color.Green;
 
 let randomValue: any = 10;
-randomValue = "Hallo";
-
-function logMessage(message: string): void {
-    console.log(message);
-}
+randomValue = "Hello";        // no error: any allows everything
 
 let u: undefined = undefined;
 let n: null = null;
-let person: object = { name: "John", age: 30 };
+let user: object = { name: "John", age: 30 };
 ```
 
-## Datentypen in Funktionsargumenten und Rückgabetypen
+### Typinferenz: Der Compiler denkt mit
 
-In TypeScript kann man sowohl die **Argumente** als auch den **Rückgabewert** einer Funktion typisieren.
+Du musst nicht überall einen Typ hinschreiben.
+Wenn du eine Variable sofort mit einem Wert anlegst, erkennt TypeScript den Typ selbst.
+Das nennt man **Typinferenz**.
 
 ```typescript
+let age = 25;     // TypeScript knows: age is a number
+age = "old";      // error TS2322: Type 'string' is not assignable to type 'number'.
+```
+
+> [!TIP]
+> Fahre in VS Code mit der Maus über eine Variable.
+> Dann siehst du, welchen Typ TypeScript erkannt hat.
+
+## Funktionen typisieren
+
+Bei einer Funktion gibst du die Typen der **Parameter** und den Typ des **Rückgabewertes** an.
+
+```typescript
+//              parameter types        return type
 function add(a: number, b: number): number {
     return a + b;
 }
+
+add(1, 2);      // OK
+add(1, "2");    // error TS2345: Argument of type 'string' is not assignable to parameter of type 'number'.
 ```
 
-In diesem Beispiel:
-- `a` und `b` sind Argumente vom Typ `number`.
-- Der Rückgabewert der Funktion ist ebenfalls vom Typ `number`.
-
-Wenn eine Funktion keinen Wert zurückgeben soll, wird der Rückgabetyp mit `void` markiert:
+Gibt eine Funktion nichts zurück, ist der Rückgabetyp `void`:
 
 ```typescript
 function logMessage(message: string): void {
@@ -91,11 +146,16 @@ function logMessage(message: string): void {
 }
 ```
 
-### Bedeutung von unknown und never
+> [!TIP]
+> Schreib den Rückgabetyp immer dazu.
+> Dann prüft der Compiler, ob deine Funktion wirklich das zurückgibt, was du versprichst.
+> Vergisst du ein `return`, bekommst du sofort einen Fehler.
 
-#### unknown
+### unknown und never
 
-*unknown* ist der sicherste Typ in TypeScript, wenn man den Typ einer Variablen nicht kennt. Er zwingt dich dazu, den Typ vor der Verwendung zu überprüfen. Anders als bei any verhindert *unknown*, dass du eine Variable direkt verwendest, ohne vorherige Typprüfung.
+**`unknown`** verwendest du, wenn du den Typ eines Wertes noch nicht kennst.
+Anders als bei `any` darfst du den Wert erst verwenden, wenn du den Typ geprüft hast.
+`unknown` ist also die **sichere** Variante von `any`.
 
 ```typescript
 let value: unknown;
@@ -103,315 +163,607 @@ let value: unknown;
 value = "Hello";
 value = 42;
 
+value.toUpperCase();          // error: 'value' is of type 'unknown'.
 if (typeof value === "string") {
-    console.log(value.toUpperCase());  // Typprüfung erforderlich
+    console.log(value.toUpperCase());   // OK: inside the if, value is a string
 }
 ```
 
-Hier wird value als unknown deklariert, und es ist notwendig, den Typ mit *typeof* zu überprüfen, bevor der Wert als String verwendet wird.
-
-#### never
-
-*never* ist ein Typ, der verwendet wird, wenn eine Funktion niemals einen Wert zurückgibt oder wenn etwas unmöglich ist. Er tritt auf, wenn eine Funktion entweder eine Endlosschleife ist oder immer einen Fehler wirft.
-
-Beispiel:
+**`never`** bedeutet: „Das passiert nie.“
+Eine Funktion mit dem Rückgabetyp `never` kommt nie zu einem Ende.
+Sie wirft immer einen Fehler oder läuft endlos.
 
 ```typescript
 function throwError(message: string): never {
-    throw new Error(message);  // Diese Funktion gibt niemals einen Wert zurück
+    throw new Error(message);   // this function never returns a value
 }
-
-function infiniteLoop(): never
 ```
 
-### Das type keyword
+## Das type-Keyword
 
+Mit `type` gibst du einem Typ einen eigenen Namen (ein **Alias**).
 
-Das *type*-Keyword in TypeScript wird verwendet, um Alias-Typen zu erstellen. Hier sind einige reale Anwendungsfälle:
+**Mehrere Typen erlauben (Union Type):** Das Zeichen `|` bedeutet „oder“.
 
-**Primitive Typen gruppieren:**
 ```typescript
 type ID = string | number;
 let userId: ID = 123;
+userId = "abc-123";      // also OK
 ```
 
-**Funktionssignaturen definieren:**
+**Nur bestimmte Werte erlauben (Literal Type):** Das ist besonders praktisch für Status-Felder aus einer API.
+
+```typescript
+type Mood = "chill" | "party" | "focus";
+let mood: Mood = "chill";
+mood = "sad";            // error TS2322: Type '"sad"' is not assignable to type 'Mood'.
+```
+
+**Funktionstypen:**
+
 ```typescript
 type MathFunction = (a: number, b: number) => number;
 const add: MathFunction = (x, y) => x + y;
 ```
 
-**Unions und Intersections:**
+**Typen kombinieren (Intersection Type):** Das Zeichen `&` bedeutet „und“.
 
 ```typescript
-type Status = "success" | "error";
 type AdminUser = User & { isAdmin: boolean };
 ```
 
-### Variadic Tuple Types
+## Interfaces: Baupläne für Objekte
 
-Variadic Tuple Types in TypeScript, eingeführt mit Version 4.0, ermöglichen es, Tuples flexibler zu gestalten.
-Sie erlauben es, eine beliebige Anzahl von Elementen am Ende eines Tuples hinzuzufügen oder zu verarbeiten.
-Diese Funktion ist besonders nützlich bei der Arbeit mit Typen, die mehrere Argumente aufnehmen können.
-
-```typescript
-type Tuple = [string, ...number[]];
-const example: Tuple = ["TypeScript", 1, 2, 3];
-```
-
-Hier kann das Tuple mit einem festen string starten, gefolgt von beliebig vielen number-Werten.
-Das sorgt für mehr Flexibilität bei der Definition von Typen und Funktionen.
+Das ist der wichtigste Teil dieses Kapitels.
+Fast alle Daten von einer REST API sind JSON-Objekte.
+Mit einem **Interface** beschreibst du, welche Properties so ein Objekt hat und welchen Typ jede Property hat.
 
 ```typescript
-function logValues<T extends unknown[]>(...args: [...T, string]) {
-    console.log(args);
+interface Song {
+    title: string;
+    durationSec: number;
+    explicit?: boolean;    // the ? means: this property is optional
 }
 
-logValues(1, true, "last"); // Gültig
-logValues("hello", "world", "last"); // Gültig
-```
-
-In diesem Beispiel verlangt die Funktion logValues, dass der letzte Parameter ein string ist, während vorher beliebig viele Werte beliebiger Typen kommen können.
-
-
-## Typisierte JSON-Objekte mit Interfaces
-
-TypeScript bietet die Möglichkeit, **Interfaces** zu definieren, die eine Struktur von Objekten beschreiben. Dies ist besonders nützlich, wenn man mit JSON-Daten arbeitet.
-
-Beispiel für ein einfach typisiertes JSON-Objekt:
-
-```typescript
-interface Person {
-    name: string;
-    age: number;
-    email?: string; // Das Fragezeichen bedeutet, dass dieses Feld optional ist
-}
-
-const personData: Person = {
-    name: "John Doe",
-    age: 30
+const song: Song = {
+    title: "Lofi Loop",
+    durationSec: 182
 };
 ```
 
-> Hinweis: Wir können auch mit dem *type* keyword den Typ für Person erstellen.
-> Da Person aber ideomatisch für ein Objekt steht, verwenden wir hier ein Interface, obwohl wir
-> nicht davon ableiten und es erweitern.
+![Ein Interface Song als Bauplan. Zwei Objekte passen zum Bauplan. Ein Objekt hat einen string statt einer number. Ein Objekt hat einen Tippfehler im Property-Namen.](assets/ts-interface-bauplan.svg)
 
-### Verwendung von Mehrfachtypen (Union Types) im Interface
+### Was prüft der Compiler?
 
-In TypeScript ist es möglich, dass ein Feld in einem Interface mehr als einen Typ haben kann. Dazu verwendet man das `|`-Symbol, das sogenannte **Union Types** erstellt. Damit kann ein Feld beispielsweise entweder vom Typ `string` oder `number` sein.
+Der Compiler vergleicht jedes Objekt mit dem Interface.
+Das sind die häufigsten Fehlermeldungen.
+Lerne, sie zu lesen: Sie sagen dir genau, was falsch ist.
 
-#### Beispiel:
+| Code | Fehlermeldung (gekürzt) | Was ist falsch? |
+| ---- | ----------------------- | --------------- |
+| `{ title: "404 Love", durationSec: "3:20" }` | `TS2322: Type 'string' is not assignable to type 'number'.` | Falscher Typ: `"3:20"` ist ein string. |
+| `{ durationSec: 150 }` | `TS2741: Property 'title' is missing ...` | Eine Pflicht-Property fehlt. |
+| `{ titel: "Byte Me", durationSec: 150 }` | `TS2561: ... 'titel' does not exist in type 'Song'. Did you mean to write 'title'?` | Tippfehler im Objekt. |
+| `song.titel` | `TS2551: Property 'titel' does not exist on type 'Song'. Did you mean 'title'?` | Tippfehler beim Lesen. |
+| `song.explicit.toString()` | `TS18048: 'song.explicit' is possibly 'undefined'.` | Die Property ist optional. Du musst zuerst prüfen, ob sie da ist. |
+
+> [!NOTE]
+> Für Objekte kannst du statt `interface` auch `type` verwenden:
+> `type Song = { title: string; durationSec: number; }`.
+> In diesem Kurs gilt: **Objekte beschreiben wir mit `interface`.**
+> Für Unions wie `"chill" | "party"` verwenden wir `type`.
+
+### Optionale Properties und null
+
+Bei einer API fehlen manchmal Felder, oder sie haben den Wert `null`.
+Das sind zwei verschiedene Dinge:
+
+| Schreibweise | Bedeutung | Beispiel im JSON |
+| ------------ | --------- | ---------------- |
+| `explicit?: boolean` | Die Property kann **fehlen**. | `{ "title": "..." }` |
+| `explicit: boolean \| null` | Die Property ist **immer da**, aber der Wert kann `null` sein. | `{ "title": "...", "explicit": null }` |
+
+Wenn eine Property fehlen kann, zwingt dich der Compiler zu einer Prüfung.
+Dafür gibt es drei Möglichkeiten:
+
 ```typescript
-interface FlexiblePerson {
-    id: string | number;  // Kann entweder eine ID als string oder number sein
-    name: string;
-    age: number | null;    // Alter kann entweder eine Zahl oder null sein
-    active: boolean | string;  // Kann als boolean oder als string angegeben werden
+// 1. Check with if
+if (song.explicit !== undefined) {
+    console.log(song.explicit.toString());
 }
 
-const examplePerson: FlexiblePerson = {
+// 2. Optional chaining ?. returns undefined instead of crashing
+console.log(song.explicit?.toString());
+
+// 3. Default value with ??
+const isExplicit: boolean = song.explicit ?? false;
+```
+
+### Union Types und Literal Types in Interfaces
+
+Eine Property kann mehrere Typen erlauben.
+Sehr oft liefert eine API ein Status-Feld mit nur wenigen erlaubten Werten.
+Dafür sind Literal Types perfekt.
+
+```typescript
+type Visibility = "public" | "private" | "friends";
+
+interface User {
+    id: string | number;          // the API sometimes sends a string, sometimes a number
+    username: string;
+    age: number | null;           // always there, but can be null
+    visibility: Visibility;       // only these three values are allowed
+}
+
+const user: User = {
     id: 12345,
-    name: "Jane Doe",
+    username: "byteMe",
     age: null,
-    active: "yes"
+    visibility: "friends"
 };
 ```
 
-In diesem Beispiel kann `id` sowohl ein `string` als auch eine `number` sein. `age` kann entweder eine Zahl oder `null` sein, und `active` kann entweder ein `boolean` oder ein `string` sein.
-
-Diese Flexibilität ist nützlich, wenn man mit Daten arbeitet, die aus verschiedenen Quellen stammen oder unterschiedliche Formate haben könnten.
-
-### Verschachtelte JSON-Objekte
-
-
-Manchmal enthalten JSON-Objekte andere Objekte oder Arrays. Auch diese können mit Interfaces typisiert werden:
-
-```typescript
-interface Address {
-    street: string;
-    city: string;
-}
-
-interface PersonWithAddress {
-    name: string;
-    age: number;
-    address: Address;  // Ein verschachteltes Objekt
-}
-
-/* Alternative in einem Interface:
-interface PersonWithAddress {
-    name: string;
-    age: number;
-    address: {
-        street: string;
-        city: string;
-    };
-}
-*/
-
-const personWithAddress: PersonWithAddress = {
-    name: "John Doe",
-    age: 30,
-    address: {
-        street: "123 Main St",
-        city: "Springfield"
-    }
-};
-```
-
-
-### Funktionen, die Interfaces zurückgeben
-
-Man kann in TypeScript auch Funktionen definieren, die ein bestimmtes Interface zurückgeben. Das ist besonders nützlich, wenn man sicherstellen möchte, dass das Rückgabeobjekt einer bestimmten Struktur entspricht.
-
-Hier ist ein Beispiel, bei dem eine Funktion ein `Person`-Interface zurückgibt:
-
-```typescript
-interface Person {
-    name: string;
-    age: number;
-    email?: string;
-}
-
-function createPerson(name: string, age: number): Person {
-    return {
-        name: name,
-        age: age,
-        email: undefined // Optionales Feld
-    };
-}
-
-const newPerson = createPerson("John", 30);
-```
-
-In diesem Beispiel gibt die Funktion `createPerson` ein Objekt zurück, das der Struktur des `Person`-Interfaces entspricht. Dies stellt sicher, dass das zurückgegebene Objekt immer die Eigenschaften `name` und `age` enthält und optional `email`.
+Schreibst du `if (user.visibility === "frinds")`, meldet der Compiler einen Fehler:
+Der Vergleich kann nie `true` sein, weil es den Wert `"frinds"` nicht gibt.
 
 ### Arrays in Interfaces
 
-
-Man kann auch Arrays von Objekten in einem Interface typisieren:
+Ein Array schreibst du mit `[]` hinter dem Typ.
 
 ```typescript
-interface PersonWithHobbies {
+interface Artist {
     name: string;
-    age: number;
-    hobbies: string[];  // Ein Array von Strings
+    genres: string[];     // an array of strings
 }
 
-const personWithHobbies: PersonWithHobbies = {
-    name: "Jane Doe",
-    age: 25,
-    hobbies: ["Reading", "Traveling", "Sports"]
+const artist: Artist = {
+    name: "DJ Semicolon",
+    genres: ["Lofi", "House", "Chiptune"]
 };
 ```
 
-Für komplexere Szenarien mit verschachtelten Arrays und Objekten:
+### Verschachtelte Interfaces
 
-```typescript
-interface Company {
-    name: string;
-    employees: {
-        name: string;
-        age: number;
-        address: {
-            street: string;
-            city: string;
-        };
-    }[];
-}
+JSON-Daten haben oft Objekte in Objekten und Arrays von Objekten.
+Die Regel ist einfach:
 
-const companyData: Company = {
-    name: "Tech Corp",
-    employees: [
+- Jedes `{ ... }` im JSON wird ein **eigenes Interface**.
+- Jedes `[ ... ]` im JSON wird ein **Array-Typ** wie `Song[]`.
+
+![Links verschachteltes JSON einer Playlist mit Songs und Artist. Rechts die passenden Interfaces Playlist, Song und Artist. Pfeile zeigen, welches Interface welches verwendet.](assets/ts-verschachtelte-interfaces.svg)
+
+Das JSON einer Playlist sieht so aus:
+
+```json
+{
+    "name": "Coding Beats",
+    "songs": [
         {
-            name: "John Doe",
-            age: 30,
-            address: {
-                street: "123 Main St",
-                city: "Springfield"
-            }
+            "title": "Lofi Loop",
+            "durationSec": 182,
+            "artist": { "name": "DJ Semicolon", "verified": true }
         },
         {
-            name: "Jane Doe",
-            age: 25,
-            address: {
-                street: "456 Elm St",
-                city: "Shelbyville"
-            }
+            "title": "Null & Void",
+            "durationSec": 201,
+            "artist": { "name": "The Undefined", "verified": false }
         }
     ]
-};
+}
 ```
 
-In diesem Beispiel enthält das `Company`-Interface ein Array von `PersonWithAddress`-Objekten, wodurch die Struktur des JSON-Datensatzes genau definiert ist.
+Die Interfaces dazu. Beginne **innen** mit dem kleinsten Objekt und arbeite dich nach außen:
 
-## Übungsbeispiel: Wahlsystem in Österreich
-
-Am 29. September 2024 fand in Österreich eine Wahl statt. Deine Aufgabe ist es, ein Wahlsystem in TypeScript zu entwickeln, das die Wählerdaten, Parteien und abgegebenen Stimmen verwaltet. In Österreich gibt es mehrere Parteien, und jeder Wähler darf eine Stimme abgeben. Deine Aufgabe ist es, ein Programm zu schreiben, das Parteien, Wähler und die abgegebenen Stimmen strukturiert und typisiert verwaltet.
-
-Das Programm soll:
-
-- Die verschiedenen Parteien in einem Enum definieren.
-- Die Wähler in einer Datenstruktur erfassen.
-- Eine Funktion zur Stimmabgabe bereitstellen, die sicherstellt, dass jeder Wähler nur einmal abstimmen kann.
-- Die Stimmabgabe und Wählerinformationen überprüfen und protokollieren.
-
-Die zur Wahl stehenden Parteien sollen in einem Enum erfasst werden. Definiere ein Enum Party, das die folgenden Parteien enthält: *OEVP, SPOE, FPOE, Gruene, NEOS*.
-
-Du sollst nun die Daten der Wähler erfassen. Jeder Wähler hat einen Namen, eine eindeutige ID und eine mögliche abgegebene Stimme.
-
-Definiere ein Interface Voter, das die folgenden Eigenschaften enthält:
-- id: Eine eindeutige ID (number).
-- name: Der Name des Wählers (string).
-- vote: Die gewählte Partei aus dem Enum Party (optional, da der Wähler noch nicht abgestimmt haben könnte).
-
-Implementiere eine Funktion *createVoter*, die einen neuen Wähler erstellt.
-Jeder Wähler darf nur einmal abstimmen. Die Funktion *vote* nimmt die ID des Wählers und die gewählte Partei entgegen und aktualisiert den Wählerdatensatz, indem sie die abgegebene Stimme speichert.
-Am Ende sollen die Ergebnisse der Wahl zusammenfassen. Dafür erhältst du eine Liste von Wählern, und die Funktion *calculateResults* soll die Anzahl der Stimmen pro Partei berechnen und ausgeben.
-
-Erstelle für die Übung ein Verzeichnis *typescript_vote* und lege wie in [Die erste Typescript App](10_FirstApp.md) beschrieben eine leere Typescript App an.
-Verwende dann die untenstehende *app.ts* Datei, um deine Implementierung vorzunehmen.
-
-**src/app.ts**
 ```typescript
-// 1. Definiere ein String Enum 'Party' für die verschiedenen Parteien.
-//    Auf https://www.typescriptlang.org/docs/handbook/enums.html#string-enums findest du Infos, wie ein string enum in TS definiert wird.
+interface Artist {
+    name: string;
+    verified: boolean;
+}
 
+interface Song {
+    title: string;
+    durationSec: number;
+    artist: Artist;       // an object inside an object
+}
 
-// 2. Definiere das Interface 'Voter' für Wählerinformationen
-
-
-// 3. Funktion createVoter zur Erstellung eines neuen Wählers
-// Die Funktion soll eine id (number) und name (string) bekommen und einen Voter zurückgeben
-
-// 4. Funktion vote zur Stimmabgabe durch einen Wähler
-// Die Funktion soll einen voter (Typ Voter) und eine party (Typ Party) bekommen und die
-// Partei beim Voter setzen. Das darf er allerdings nur, wenn der Voter nicht schon abgestimmt hat.
-
-// 5. Funktion calculateResults zur Berechnung der Wahlergebnisse.
-//    Die Funktion bekommt ein Array von voters und gibt einen Record mit dem Key der Patei und der Anzahl als Wert zurück.
-//    Lies nach, wie ein Record in Typescript definiert ist und wie er erstellt werden kann.
-//    Hinweis: Erstelle zuerst einen Record mit allen Parteien mit der Anzahl 0 und verwende dann reduce.
-//    Hinweis2: Mit Object.values() können die enum Strings iteriert werden. Verwende reduce, um den record mit Anzahl 0 aufzubauen.
-
-// =============== TESTS (nicht verändern) ===============
-
-// Test-Wähler erstellen
-const voter1 = createVoter(1, "Max Mustermann");
-const voter2 = createVoter(2, "Anna Musterfrau");
-const voter3 = createVoter(3, "Hans Testmann");
-
-// Stimmen abgeben
-vote(voter1, Party.OEVP);
-vote(voter2, Party.Gruene);
-vote(voter3, Party.FPOE);
-vote(voter1, Party.SPOE); // Sollte nichts zuweisen.
-
-// Wahlergebnisse berechnen und ausgeben
-const result = calculateResults([voter1, voter2, voter3]);
-
-// Erwartete Ausgabe { 'ÖVP': 1, 'SPÖ': 0, 'FPÖ': 1, 'Grüne': 1, NEOS: 0 }
-console.log(result);
+interface Playlist {
+    name: string;
+    songs: Song[];        // an array of objects
+}
 ```
 
+Jetzt kennt der Editor die ganze Struktur.
+Tippst du `playlist.songs[0].artist.`, schlägt er dir `name` und `verified` vor.
+
+> [!NOTE]
+> Du kannst ein verschachteltes Objekt auch direkt im Interface schreiben, ohne eigenen Namen:
+>
+> ```typescript
+> interface Song {
+>     title: string;
+>     artist: {
+>         name: string;
+>         verified: boolean;
+>     };
+> }
+> ```
+>
+> Das ist für kleine Objekte in Ordnung.
+> Ein eigenes Interface ist besser, wenn du den Typ öfter brauchst, z. B. als Parameter einer Funktion.
+
+### Funktionen mit Interfaces
+
+Interfaces kannst du als Parameter und als Rückgabetyp verwenden.
+So weiß jeder sofort, welche Daten eine Funktion braucht und was sie liefert.
+
+```typescript
+function createSong(title: string, durationSec: number, artist: Artist): Song {
+    return { title, durationSec, artist };
+}
+
+function totalDuration(playlist: Playlist): number {
+    return playlist.songs.reduce((sum, song) => sum + song.durationSec, 0);
+}
+
+const playlist: Playlist = {
+    name: "Coding Beats",
+    songs: [createSong("Lofi Loop", 182, { name: "DJ Semicolon", verified: true })]
+};
+console.log(totalDuration(playlist));    // 182
+```
+
+Vergisst du in `createSong` eine Property, meldet der Compiler sofort einen Fehler.
+
+## Interfaces für REST APIs
+
+Hier kommt alles zusammen.
+Eine REST API schickt JSON, also nur Text.
+`response.json()` macht daraus ein Objekt, aber TypeScript kennt den Inhalt nicht.
+Der Typ ist deshalb `any`.
+Erst wenn **du** den Typ angibst, kann dir der Editor helfen.
+
+![Ablauf: Der Server schickt JSON. response.json liefert any. Du gibst den Typ Playlist an. Jetzt kennt der Editor alle Properties. Warnung: TypeScript prüft zur Laufzeit nicht, ob die Daten wirklich passen.](assets/ts-api-interface.svg)
+
+```typescript
+async function loadPlaylist(id: number): Promise<Playlist> {
+    const response = await fetch(`https://example.com/api/playlists/${id}`);
+    return await response.json();     // any becomes Playlist
+}
+
+const playlist = await loadPlaylist(42);
+console.log(playlist.songs[0].artist.name);   // the editor knows every property
+```
+
+> [!TIP]
+> **Tipps für API-Interfaces**
+>
+> - Typisiere nur die Properties, die du wirklich brauchst. Den Rest darfst du weglassen.
+> - Schau dir **mehrere** Antworten der API an, nicht nur eine. Fehlt ein Feld manchmal? Dann ist es optional (`?`).
+> - Lies die Dokumentation der API. Dort steht oft, welche Felder Pflicht sind.
+
+> [!WARNING]
+> **TypeScript glaubt dir einfach.**
+> Wenn dein Interface nicht zu den echten Daten passt, merkt der Compiler das nicht.
+> Dein Programm stürzt dann trotzdem zur Laufzeit ab.
+> Wie du die Daten zur Laufzeit prüfst, lernst du mit den **Type Guards** in [Typescript und API](25_TypescriptWithApi.md).
+
+## Zusammenfassung
+
+| Das willst du ... | So schreibst du es |
+| ----------------- | ------------------ |
+| Form eines Objekts beschreiben | `interface Song { title: string; }` |
+| Property darf fehlen | `explicit?: boolean` |
+| Wert darf `null` sein | `age: number \| null` |
+| Nur bestimmte Werte erlauben | `type Mood = "chill" \| "party"` |
+| Array von Objekten | `songs: Song[]` |
+| Objekt im Objekt | `artist: Artist` |
+| Parameter und Rückgabewert | `function f(s: Song): number` |
+| API-Antwort typisieren | `async function load(): Promise<Playlist>` |
+
+## Übung: Bug-Jagd beim Klassenturnier (ohne KI)
+
+Die Klassen 5AAIF und 5BAIF spielen ein Turnier im Spiel *Arena Clash*.
+Jemand hat in JavaScript ein Programm für die Anzeigetafel geschrieben.
+Leider gibt es seltsame Werte aus und stürzt dann ab.
+
+Deine Aufgabe: Mach daraus ein TypeScript-Programm.
+Dann findet der Compiler die Fehler für dich.
+
+> [!IMPORTANT]
+> **Keine KI in dieser Übung.**
+> Du darfst die Unterlagen, die [TypeScript-Dokumentation](https://www.typescriptlang.org/docs/) und die Fehlermeldungen des Compilers verwenden.
+> Fehlermeldungen lesen ist das Ziel der Übung.
+> Genau das brauchst du später, wenn du Code von einer KI prüfst.
+
+### Vorbereitung
+
+Erstelle ein Verzeichnis *arena_clash*.
+Lege darin wie in [Die erste TypeScript App](10_FirstApp.md) beschrieben eine leere TypeScript App an.
+Lege dann die zwei Dateien unten an.
+
+Die Datei *tournament.json* kommt direkt in das Verzeichnis *arena_clash* (**nicht** in *src*).
+Stell dir vor, diese Daten kommen von der REST API `GET /api/tournaments/7`.
+
+**tournament.json**
+```json
+{
+    "id": 7,
+    "name": "Spengi Cup",
+    "game": "Arena Clash",
+    "startsAt": "2026-11-14T09:00:00",
+    "venue": {
+        "school": "HTL Spengergasse",
+        "room": "C3.07"
+    },
+    "teams": [
+        {
+            "tag": "5AAIF",
+            "name": "Null Pointer Ninjas",
+            "players": [
+                {
+                    "gamertag": "byteMe",
+                    "realName": "Lena",
+                    "role": "tank",
+                    "stats": { "kills": 12, "deaths": 4, "assists": 9 },
+                    "clan": { "tag": "NPN", "joinedAt": "2025-09-02" }
+                },
+                {
+                    "gamertag": "segfault",
+                    "role": "damage",
+                    "stats": { "kills": 21, "deaths": 0, "assists": 3 }
+                },
+                {
+                    "gamertag": "404brain",
+                    "realName": "Jonas",
+                    "role": "support",
+                    "stats": { "kills": 2, "deaths": 7, "assists": 25 }
+                }
+            ]
+        },
+        {
+            "tag": "5BAIF",
+            "name": "Ctrl Alt Defeat",
+            "players": [
+                {
+                    "gamertag": "sudo_sara",
+                    "realName": "Sara",
+                    "role": "damage",
+                    "stats": { "kills": 17, "deaths": 9, "assists": 4 },
+                    "clan": { "tag": "CAD", "joinedAt": "2024-11-20" }
+                },
+                {
+                    "gamertag": "lagMaster",
+                    "role": "tank",
+                    "stats": { "kills": 6, "deaths": 11, "assists": 8 }
+                },
+                {
+                    "gamertag": "pingu",
+                    "realName": "Emre",
+                    "role": "support",
+                    "stats": { "kills": 3, "deaths": 5, "assists": 19 },
+                    "clan": { "tag": "CAD", "joinedAt": "2025-01-15" }
+                }
+            ]
+        }
+    ],
+    "matches": [
+        {
+            "id": 1,
+            "round": 1,
+            "teamA": "5AAIF",
+            "teamB": "5BAIF",
+            "status": "finished",
+            "score": { "teamA": 13, "teamB": 9 },
+            "mvp": "segfault"
+        },
+        {
+            "id": 2,
+            "round": 2,
+            "teamA": "5BAIF",
+            "teamB": "5AAIF",
+            "status": "live",
+            "score": { "teamA": 4, "teamB": 4 }
+        },
+        {
+            "id": 3,
+            "round": 3,
+            "teamA": "5AAIF",
+            "teamB": "5BAIF",
+            "status": "scheduled",
+            "score": null
+        }
+    ]
+}
+```
+
+**src/app.js**
+```javascript
+import { readFileSync } from "node:fs";
+
+// In a real app, this data comes from a REST API. Here we read it from a file.
+const tournament = JSON.parse(readFileSync("tournament.json", "utf8"));
+
+/**
+ * Calculates the KDA value: (kills + assists) / deaths.
+ * A player with 0 deaths counts as if they had 1 death.
+ */
+function calcKda(stats) {
+    const deaths = Math.max(stats.deaths, 1);
+    return (stats.kills + stats.assist) / deaths;
+}
+
+/** Adds up the kills of all players in a team. */
+function totalKills(team) {
+    return team.players.reduce((sum, player) => sum + player.stats.kills, "0");
+}
+
+/** Formats one player, e.g. "byteMe [NPN] tank, KDA 5.25". */
+function formatPlayer(player) {
+    return `${player.gamertag} [${player.clan.tag}] ${player.role}, KDA ${calcKda(player.stats).toFixed(2)}`;
+}
+
+/** Finds a team by its tag, e.g. "5AAIF". */
+function findTeam(tag) {
+    return tournament.teams.find(team => team.tag === tag);
+}
+
+/** Returns the tag of the team that won the match. */
+function winner(match) {
+    if (match.score.teamA > match.score.teamB) return match.teamA;
+    if (match.score.teamB > match.score.teamA) return match.teamB;
+}
+
+/** Formats a match, e.g. "Round 1: Null Pointer Ninjas 13:9 Ctrl Alt Defeat". */
+function formatMatch(match) {
+    const nameA = findTeam(match.teamA).name;
+    const nameB = findTeam(match.teamB).name;
+    let line = `Round ${match.round}: ${nameA} ${match.score.teamA}:${match.score.teamB} ${nameB}`;
+    if (match.status === "done") {
+        line += ` -> winner: ${winner(match)}`;
+    }
+    return line;
+}
+
+/** Prints a team and all its players. */
+function printTeam(team) {
+    console.log(`${team.name} (${team.tag}), total kills: ${totalKills(team)}`);
+    team.players.forEach(player => console.log("  " + formatPlayer(player)));
+}
+
+// A new player joins team 5BAIF.
+const newPlayer = {
+    gamertag: "noob42",
+    role: "healer",
+    stats: { kills: 0, deaths: 0 }
+};
+findTeam("5BAIF").players.push(newPlayer);
+
+console.log(`=== ${tournament.name} in room ${tournament.venue.room} ===`);
+tournament.teams.forEach(team => printTeam(team));
+tournament.matches.forEach(match => console.log(formatMatch(match)));
+
+const firstMatch = tournament.matches[0];
+console.log(`MVP of round 1: ${formatPlayer(firstMatch.mvp)}`);
+```
+
+Lege außerdem eine Datei *PROTOKOLL.md* an.
+Dort schreibst du deine Antworten auf.
+
+### Schritt 1: Das JavaScript-Programm ausführen
+
+Führe das Programm im Verzeichnis *arena_clash* aus:
+
+```bash
+node src/app.js
+```
+
+Beantworte im Protokoll:
+
+1. Welche Werte in der Ausgabe sind falsch? Warum?
+2. In welcher Zeile stürzt das Programm ab?
+
+### Schritt 2: Interfaces schreiben
+
+Erstelle *src/app.ts* und schreibe darin Interfaces für die Daten aus *tournament.json*.
+
+Gehe so vor:
+
+1. Schreibe für jedes `{ ... }` ein eigenes Interface.
+   Du brauchst: `Tournament`, `Venue`, `Team`, `Player`, `Stats`, `Clan`, `Match` und `Score`.
+2. **Vergleiche alle Spieler und alle Matches** miteinander.
+   Fehlt ein Feld bei manchen? Dann ist es optional (`?`).
+   Ist ein Wert manchmal `null`? Dann brauchst du `| null`.
+3. Für `role` und `status` gibt es nur wenige erlaubte Werte.
+   Lege dafür die Typen `Role` und `MatchStatus` als Literal Types an.
+
+**So prüfst du deine Interfaces:**
+Kopiere den Inhalt von *tournament.json* vorübergehend an das Ende von *app.ts*:
+
+```typescript
+const check: Tournament = { /* paste the content of tournament.json here */ };
+```
+
+Starte dann den Compiler mit `npx tsc --noEmit`.
+Meldet er hier keinen Fehler, passen deine Interfaces zu den Daten.
+Lösche den Check danach wieder.
+
+> [!TIP]
+> `--noEmit` bedeutet: Nur prüfen, keine *.js*-Datei erzeugen.
+> Das ist schneller, wenn du nur Fehler suchst.
+
+### Schritt 3: JavaScript wird TypeScript
+
+Kopiere jetzt den Code aus *app.js* unter deine Interfaces in *app.ts*.
+Ändere am Code noch **nichts**.
+Ergänze nur die Typen in diesen Zeilen:
+
+| Im JavaScript-Code | In TypeScript |
+| ------------------ | ------------- |
+| `const tournament = JSON.parse(...)` | `const tournament: Tournament = JSON.parse(...)` |
+| `function calcKda(stats)` | `function calcKda(stats: Stats): number` |
+| `function totalKills(team)` | `function totalKills(team: Team): number` |
+| `function formatPlayer(player)` | `function formatPlayer(player: Player): string` |
+| `function findTeam(tag)` | `function findTeam(tag: string): Team \| undefined` |
+| `function winner(match)` | `function winner(match: Match): string` |
+| `function formatMatch(match)` | `function formatMatch(match: Match): string` |
+| `function printTeam(team)` | `function printTeam(team: Team): void` |
+| `const newPlayer = {` | `const newPlayer: Player = {` |
+
+Starte dann den Compiler:
+
+```bash
+npx tsc --noEmit
+```
+
+Du bekommst viele Fehlermeldungen. Manche gehören zum selben Problem.
+Beantworte danach im Protokoll:
+
+1. Wie viele Probleme hat der Compiler gefunden?
+2. Welche Probleme hätte JavaScript **nie** gemeldet, nicht einmal mit einem Absturz?
+3. Manche Fehler treten mit diesen Daten gar nicht auf (z. B. bei `findTeam`).
+   Warum meldet der Compiler sie trotzdem?
+
+> [!TIP]
+> In VS Code siehst du alle Fehler auch im Fenster **Problems** (`Strg + Shift + M`).
+> Ein Klick auf einen Fehler springt direkt in die richtige Zeile.
+
+### Schritt 4: Fehler beheben
+
+Behebe alle Fehler, bis `npx tsc --noEmit` keine Meldung mehr ausgibt.
+Dabei gelten diese Regeln:
+
+- **Kein `any`, kein `as`, kein `!` und kein `// @ts-ignore`.**
+  Damit schaltest du den Compiler nur aus.
+  Der Fehler ist dann nicht behoben, sondern nur versteckt.
+- Ändere die Interfaces nicht, nur weil der Compiler meckert.
+  Die Interfaces beschreiben die Daten. Der Code muss sich an die Daten halten.
+
+Hinweise für die schwierigeren Fehler:
+
+- **`findTeam`**: Wirf einen Fehler (`throw new Error(...)`), wenn es das Team nicht gibt.
+  Dann kann der Rückgabetyp `Team` sein statt `Team | undefined`.
+  Schau, wie viele Fehlermeldungen dadurch auf einmal verschwinden.
+- **`score` ist `null`**: Das Match hat noch nicht begonnen. Gib statt des Ergebnisses `vs` aus.
+- **`winner`**: Was gibt die Funktion bei einem Unentschieden zurück? Gib dann `"draw"` zurück.
+- **MVP**: `mvp` ist nur der Gamertag, also ein string.
+  Schreibe eine Funktion `findPlayer(gamertag: string): Player | undefined`, die den Spieler in allen Teams sucht.
+- Spieler ohne Clan bekommen `[-]` statt des Clan-Tags.
+
+Führe das Programm mit `npm run start` aus. Die Ausgabe muss so aussehen:
+
+```
+=== Spengi Cup in room C3.07 ===
+Null Pointer Ninjas (5AAIF), total kills: 35
+  byteMe [NPN] tank, KDA 5.25
+  segfault [-] damage, KDA 24.00
+  404brain [-] support, KDA 3.86
+Ctrl Alt Defeat (5BAIF), total kills: 26
+  sudo_sara [CAD] damage, KDA 2.33
+  lagMaster [-] tank, KDA 1.27
+  pingu [CAD] support, KDA 4.40
+  noob42 [-] support, KDA 0.00
+Round 1: Null Pointer Ninjas 13:9 Ctrl Alt Defeat -> winner: 5AAIF
+Round 2: Ctrl Alt Defeat 4:4 Null Pointer Ninjas
+Round 3: Null Pointer Ninjas vs Ctrl Alt Defeat
+MVP of round 1: segfault [-] damage, KDA 24.00
+```

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" width="900" height="620" font-family="'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7c3aed"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="898" height="618" rx="18" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="450" y="46" text-anchor="middle" font-size="26" font-weight="700" fill="#1e293b">Verschachteltes JSON → verschachtelte Interfaces</text>
+  <text x="215" y="84" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b" letter-spacing="1">JSON VOM SERVER</text>
+  <text x="670" y="84" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b" letter-spacing="1">INTERFACES IN TYPESCRIPT</text>
+
+  <!-- JSON bands -->
+  <rect x="40" y="113" width="360" height="390" rx="10" fill="#eff6ff" stroke="#3178c6" stroke-width="2"/>
+  <text x="392" y="131" text-anchor="end" font-size="13" font-weight="700" fill="#3178c6">Playlist</text>
+  <rect x="76" y="203" width="316" height="240" rx="10" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+  <text x="384" y="221" text-anchor="end" font-size="13" font-weight="700" fill="#7c3aed">Song</text>
+  <rect x="108" y="322" width="276" height="62" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="376" y="340" text-anchor="end" font-size="13" font-weight="700" fill="#16a34a">Artist</text>
+
+  <g font-family="Consolas, 'Cascadia Mono', monospace" font-size="15" fill="#1e293b">
+    <text x="52" y="134">{</text>
+    <text x="68" y="164">"name": "Coding Beats",</text>
+    <text x="68" y="194">"songs": <tspan fill="#7c3aed" font-weight="700">[</tspan></text>
+    <text x="84" y="224">{</text>
+    <text x="100" y="254">"title": "Lofi Loop",</text>
+    <text x="100" y="284">"durationSec": 182,</text>
+    <text x="100" y="314">"artist": {</text>
+    <text x="116" y="344">"name": "DJ Semicolon",</text>
+    <text x="116" y="374">"verified": true</text>
+    <text x="100" y="404">}</text>
+    <text x="84" y="434">}</text>
+    <text x="68" y="464"><tspan fill="#7c3aed" font-weight="700">]</tspan></text>
+    <text x="52" y="494">}</text>
+  </g>
+
+  <!-- connectors JSON -> interface -->
+  <line x1="400" y1="150" x2="470" y2="160" stroke="#3178c6" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="392" y1="240" x2="470" y2="313" stroke="#7c3aed" stroke-width="2" stroke-dasharray="6 4"/>
+  <line x1="384" y1="360" x2="470" y2="466" stroke="#16a34a" stroke-width="2" stroke-dasharray="6 4"/>
+
+  <!-- interface cards -->
+  <g font-family="Consolas, 'Cascadia Mono', monospace" font-size="15" fill="#1e293b">
+    <rect x="470" y="100" width="400" height="120" rx="12" fill="#eff6ff" stroke="#3178c6" stroke-width="2"/>
+    <rect x="470" y="100" width="8" height="120" fill="#3178c6"/>
+    <text x="492" y="128"><tspan fill="#7c3aed">interface</tspan> Playlist {</text>
+    <text x="512" y="154">name: string;</text>
+    <text x="512" y="180">songs: <tspan fill="#7c3aed" font-weight="700">Song[]</tspan>;</text>
+    <text x="492" y="206">}</text>
+
+    <rect x="470" y="240" width="400" height="146" rx="12" fill="#f5f3ff" stroke="#7c3aed" stroke-width="2"/>
+    <rect x="470" y="240" width="8" height="146" fill="#7c3aed"/>
+    <text x="492" y="268"><tspan fill="#7c3aed">interface</tspan> Song {</text>
+    <text x="512" y="294">title: string;</text>
+    <text x="512" y="320">durationSec: number;</text>
+    <text x="512" y="346">artist: <tspan fill="#16a34a" font-weight="700">Artist</tspan>;</text>
+    <text x="492" y="372">}</text>
+
+    <rect x="470" y="406" width="400" height="120" rx="12" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+    <rect x="470" y="406" width="8" height="120" fill="#16a34a"/>
+    <text x="492" y="434"><tspan fill="#7c3aed">interface</tspan> Artist {</text>
+    <text x="512" y="460">name: string;</text>
+    <text x="512" y="486">verified: boolean;</text>
+    <text x="492" y="512">}</text>
+  </g>
+
+  <!-- arrows between interfaces -->
+  <path d="M640,176 C 820,176 820,215 800,238" fill="none" stroke="#7c3aed" stroke-width="2.5" marker-end="url(#arrowPurple)"/>
+  <path d="M652,342 C 820,342 820,380 800,404" fill="none" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- rules -->
+  <rect x="40" y="546" width="400" height="50" rx="25" fill="#f1f5f9"/>
+  <text x="240" y="577" text-anchor="middle" font-size="17" fill="#1e293b"><tspan font-family="Consolas, monospace" font-weight="700">{ … }</tspan>  →  eigenes Interface</text>
+  <rect x="470" y="546" width="400" height="50" rx="25" fill="#f1f5f9"/>
+  <text x="670" y="577" text-anchor="middle" font-size="17" fill="#1e293b"><tspan font-family="Consolas, monospace" font-weight="700">[ … ]</tspan>  →  Typ mit <tspan font-family="Consolas, monospace" font-weight="700">[]</tspan>, z. B. Song[]</text>
+</svg>
