@@ -1,0 +1,233 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1156" width="1000" height="1156" font-family="'Segoe UI', system-ui, -apple-system, Helvetica, Arial, sans-serif">
+  <title>Mensch und KI: Partner statt Gegner</title>
+  <defs>
+    <!-- Strength: green circle with check mark -->
+    <g id="plus">
+      <circle r="14" fill="#71af2e"/>
+      <path d="M-7,0 L-2,5 L7,-5" fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <!-- Limitation: grey ring with minus sign -->
+    <g id="minus">
+      <circle r="13" fill="#ffffff" stroke="#9d9d9c" stroke-width="2.5"/>
+      <path d="M-6,0 L6,0" stroke="#5f5f5e" stroke-width="3.2" stroke-linecap="round"/>
+    </g>
+  </defs>
+
+  <rect x="1" y="1" width="998" height="1154" rx="20" fill="#ffffff" stroke="#9d9d9c" stroke-width="2"/>
+
+  <!-- Title -->
+  <text x="500" y="54" text-anchor="middle" font-size="30" font-weight="700" fill="#1d1d1b">Mensch und KI: Partner statt Gegner</text>
+  <text x="500" y="86" text-anchor="middle" font-size="18" fill="#5f5f5e">Jede Seite hat Stärken, die der anderen fehlen.</text>
+
+  <!-- Illustration: human and agent shaking hands -->
+  <defs>
+    <!-- Fades the figures out at the bottom so the cut-off bodies look intentional -->
+    <linearGradient id="fadeGradient" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0.82" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <mask id="fadeBottom" maskUnits="userSpaceOnUse" x="0" y="60" width="1000" height="270">
+      <rect x="0" y="60" width="1000" height="270" fill="url(#fadeGradient)"/>
+    </mask>
+    <!-- Clip paths for the agent's shading: a lighter copy shifted to the top left leaves a shadow at the bottom right -->
+    <clipPath id="agentHead"><ellipse cx="682" cy="124" rx="46" ry="44"/></clipPath>
+    <clipPath id="agentTorso"><path d="M640,194 C642,182 722,182 724,194 L714,262 C700,270 664,270 650,262 Z"/></clipPath>
+  </defs>
+  <g stroke-linecap="round" stroke-linejoin="round" transform="translate(0,28)">
+    <g mask="url(#fadeBottom)">
+      <!-- Human: hair behind the head, falling in waves onto the shoulders -->
+      <path d="M300,94 C312,76 348,74 362,94 C374,110 370,128 375,146 C380,162 388,176 378,188 C371,197 362,198 352,198 L300,198 C290,198 287,196 285,194 C278,196 271,189 271,176 C271,163 281,156 281,141 C281,123 288,106 300,94 Z" fill="#5a2e1a"/>
+      <path d="M362,140 C368,156 374,166 370,180 M286,146 C282,162 278,172 282,184" fill="none" stroke="#3e1f10" stroke-width="2"/>
+      <!-- Human: neck with a soft shadow under the chin -->
+      <path d="M312,160 L336,160 L338,196 L310,196 Z" fill="#f3bf98"/>
+      <path d="M312,166 C320,174 330,174 336,166 L336,176 C328,180 320,180 312,176 Z" fill="#dc9f78"/>
+      <!-- Human: arm hanging down (viewer's left) -->
+      <path d="M286,222 L270,300" stroke="#a35f00" stroke-width="30"/>
+      <path d="M286,222 L270,300" stroke="#f39000" stroke-width="26"/>
+      <path d="M360,222 L392,268 L454,264" fill="none" stroke="#a35f00" stroke-width="30"/>
+      <path d="M360,222 L392,268 L454,264" fill="none" stroke="#f39000" stroke-width="26"/>
+      <!-- Human: blazer with lapels over a light shirt -->
+      <path d="M272,330 L272,226 C272,206 284,196 304,192 L342,192 C362,196 372,206 374,222 L366,248 L370,330 Z" fill="#f39000" stroke="#a35f00" stroke-width="2"/>
+      <path d="M306,192 L338,192 L332,330 L312,330 Z" fill="#fdebd1"/>
+      <path d="M308,192 C314,204 330,204 336,192" fill="#f3bf98"/>
+      <path d="M302,192 L309,192 L322,246 L314,264 L299,216 Z" fill="#d97f00" stroke="#a35f00" stroke-width="1.5"/>
+      <path d="M344,192 L337,192 L322,246 L330,264 L347,216 Z" fill="#d97f00" stroke="#a35f00" stroke-width="1.5"/>
+      <path d="M314,264 L312,330 M330,264 L332,330" stroke="#a35f00" stroke-width="1.5"/>
+      <circle cx="338" cy="292" r="3.5" fill="#a35f00"/>
+      <path d="M290,240 C292,262 292,282 290,300" fill="none" stroke="#d97f00" stroke-width="2"/>
+      <!-- Human: arm reaching to the handshake, sleeve cuff and wrist -->
+      <path d="M380,250 C384,258 388,262 394,264" fill="none" stroke="#d97f00" stroke-width="2"/>
+      <path d="M462,253 L464,276" stroke="#a35f00" stroke-width="2"/>
+      <!-- Human: face in a slight three-quarter view -->
+      <ellipse cx="298" cy="136" rx="6.5" ry="9.5" fill="#f3bf98" stroke="#c78a63" stroke-width="1.5"/>
+      <path d="M299,140 Q296,136 299,132" fill="none" stroke="#c78a63" stroke-width="1.5"/>
+      <path d="M303,104 C312,92 344,92 352,106 C358,118 358,136 353,150 C347,164 336,173 325,173 C313,173 303,163 300,149 C297,134 297,114 303,104 Z" fill="#f3bf98" stroke="#c78a63" stroke-width="1.5"/>
+      <!-- Human: side-swept fringe from a parting on the right -->
+      <path d="M340,88 C320,88 303,100 299,126 C298,134 299,140 301,144 C304,126 314,112 328,106 C336,103 343,98 340,88 Z" fill="#5a2e1a"/>
+      <path d="M340,88 C356,92 366,108 364,130 C363,144 359,154 354,160 C357,140 354,118 346,106 C343,100 341,94 340,88 Z" fill="#5a2e1a"/>
+      <path d="M334,94 C320,98 310,108 305,122 M348,98 C356,108 360,120 359,134" fill="none" stroke="#3e1f10" stroke-width="1.8"/>
+      <!-- Human: brows, eyes with upper lids, nose, cheeks, smiling mouth -->
+      <path d="M309,121 Q316,117 323,120" fill="none" stroke="#5a2e1a" stroke-width="2.2"/>
+      <path d="M333,120 Q340,116 347,120" fill="none" stroke="#5a2e1a" stroke-width="2.2"/>
+      <path d="M309,129 Q316,124 323,129" fill="none" stroke="#3e1f10" stroke-width="1.8"/>
+      <path d="M334,129 Q341,124 348,129" fill="none" stroke="#3e1f10" stroke-width="1.8"/>
+      <ellipse cx="317" cy="131.5" rx="2.8" ry="3.4" fill="#2b1a10"/>
+      <ellipse cx="342" cy="131.5" rx="2.8" ry="3.4" fill="#2b1a10"/>
+      <path d="M331,134 Q335,145 329,147" fill="none" stroke="#c78a63" stroke-width="1.8"/>
+      <ellipse cx="311" cy="146" rx="6" ry="3.5" fill="#e88c78" opacity="0.35"/>
+      <ellipse cx="348" cy="146" rx="5" ry="3.5" fill="#e88c78" opacity="0.35"/>
+      <path d="M321,155 Q331,158 341,154 Q337,160 331,160 Q324,160 321,155 Z" fill="#ffffff" stroke="#a8473f" stroke-width="1.5"/>
+      <path d="M326,162 Q331,164.5 336,162" fill="none" stroke="#d46f66" stroke-width="2"/>
+      <path d="M318,155 Q320,153 322,155 M340,154 Q342,152 344,154" fill="none" stroke="#a8473f" stroke-width="1.2"/>
+
+      <!-- Agent: arm hanging down (viewer's right) -->
+      <path d="M730,216 L740,262" stroke="#5f5f5e" stroke-width="22"/>
+      <path d="M730,216 L740,262" stroke="#f4f1ea" stroke-width="17"/>
+      <path d="M742,270 L746,306" stroke="#5f5f5e" stroke-width="20"/>
+      <path d="M742,270 L746,306" stroke="#f4f1ea" stroke-width="15"/>
+      <circle cx="741" cy="266" r="9" fill="#0090d4" stroke="#00628f" stroke-width="2"/>
+      <!-- Agent: neck, torso with chest plate, waist band and hips -->
+      <rect x="670" y="164" width="24" height="22" fill="#00628f"/>
+      <path d="M654,280 L710,280 L716,330 L648,330 Z" fill="#f4f1ea" stroke="#5f5f5e" stroke-width="2"/>
+      <g clip-path="url(#agentTorso)">
+        <rect x="636" y="180" width="92" height="92" fill="#dcd6ca"/>
+        <path d="M632,190 C634,178 714,178 716,190 L708,256 C694,264 656,264 642,256 Z" fill="#f4f1ea"/>
+      </g>
+      <path d="M640,194 C642,182 722,182 724,194 L714,262 C700,270 664,270 650,262 Z" fill="none" stroke="#5f5f5e" stroke-width="2"/>
+      <path d="M658,204 L706,204 Q708,238 682,240 Q656,238 658,204 Z" fill="#0090d4" stroke="#00628f" stroke-width="1.5"/>
+      <rect x="650" y="262" width="64" height="18" rx="5" fill="#00628f"/>
+      <!-- Agent: arm reaching to the handshake -->
+      <path d="M634,216 L612,262" stroke="#5f5f5e" stroke-width="22"/>
+      <path d="M634,216 L612,262" stroke="#f4f1ea" stroke-width="17"/>
+      <path d="M606,268 L544,264" stroke="#5f5f5e" stroke-width="20"/>
+      <path d="M606,268 L544,264" stroke="#f4f1ea" stroke-width="15"/>
+      <circle cx="610" cy="266" r="9" fill="#0090d4" stroke="#00628f" stroke-width="2"/>
+      <rect x="534" y="254" width="10" height="20" rx="3" fill="#00628f"/>
+      <ellipse cx="638" cy="204" rx="15" ry="17" fill="#0090d4" stroke="#00628f" stroke-width="2"/>
+      <ellipse cx="726" cy="204" rx="15" ry="17" fill="#0090d4" stroke="#00628f" stroke-width="2"/>
+      <!-- Agent: head with visor, eyes and ear pieces on both sides -->
+      <ellipse cx="636" cy="126" rx="10" ry="18" fill="#0090d4" stroke="#00628f" stroke-width="2"/>
+      <ellipse cx="728" cy="126" rx="10" ry="18" fill="#0090d4" stroke="#00628f" stroke-width="2"/>
+      <g clip-path="url(#agentHead)">
+        <rect x="630" y="76" width="104" height="96" fill="#dcd6ca"/>
+        <ellipse cx="676" cy="116" rx="48" ry="46" fill="#f4f1ea"/>
+      </g>
+      <ellipse cx="682" cy="124" rx="46" ry="44" fill="none" stroke="#5f5f5e" stroke-width="2"/>
+      <path d="M700,86 C714,93 722,104 725,116" fill="none" stroke="#ffffff" stroke-width="4"/>
+      <rect x="644" y="102" width="74" height="34" rx="17" fill="#1d3a52"/>
+      <ellipse cx="667" cy="119" rx="6" ry="9" fill="#9fd3ef"/>
+      <ellipse cx="695" cy="119" rx="6" ry="9" fill="#9fd3ef"/>
+      <path d="M668,150 Q681,159 694,150" fill="none" stroke="#1d3a52" stroke-width="3"/>
+    </g>
+
+    <!-- Handshake: agent hand below, human hand with thumb on top -->
+    <rect x="502" y="250" width="36" height="28" rx="11" fill="#0090d4" stroke="#00628f" stroke-width="2"/>
+    <ellipse cx="490" cy="264" rx="24" ry="14" fill="#f3bf98" stroke="#c78a63" stroke-width="2"/>
+    <path d="M480,253 Q494,244 510,252" fill="none" stroke="#c78a63" stroke-width="2"/>
+    <path d="M484,272 Q492,275 500,271 M486,265 Q494,268 502,264" fill="none" stroke="#c78a63" stroke-width="1.5"/>
+
+    <!-- Plus symbol: the abilities add up -->
+    <circle cx="500" cy="196" r="20" fill="#71af2e"/>
+    <path d="M500,186 L500,206 M490,196 L510,196" stroke="#ffffff" stroke-width="4"/>
+    <path d="M472,178 L464,170 M528,178 L536,170 M500,166 L500,156" stroke="#71af2e" stroke-width="3"/>
+
+    <text x="322" y="350" text-anchor="middle" font-size="20" font-weight="700" fill="#a35f00">Mensch</text>
+    <text x="682" y="350" text-anchor="middle" font-size="20" font-weight="700" fill="#00628f">KI-Agent</text>
+  </g>
+
+  <g transform="translate(0,30)">
+  <!-- Column headers and legend -->
+  <rect x="30" y="378" width="375" height="38" rx="10" fill="#a35f00"/>
+  <text x="217" y="404" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff" letter-spacing="2">MENSCH</text>
+  <rect x="595" y="378" width="375" height="38" rx="10" fill="#00628f"/>
+  <text x="782" y="404" text-anchor="middle" font-size="18" font-weight="700" fill="#ffffff" letter-spacing="2">KI</text>
+  <use href="#plus" x="440" y="388"/>
+  <text x="460" y="393" font-size="14" fill="#1d1d1b">Stärke</text>
+  <use href="#minus" x="520" y="388"/>
+  <text x="540" y="393" font-size="14" fill="#1d1d1b">Grenze</text>
+
+  <!-- Comparison rows: y = 430 + i * 98 -->
+  <g font-size="15" fill="#1d1d1b">
+    <!-- 1 -->
+    <rect x="30" y="430" width="375" height="88" rx="12" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+    <use href="#plus" x="62" y="474"/>
+    <text x="90" y="466" font-size="17" font-weight="700">Intuition und Weltmodell</text>
+    <text x="90" y="488">reagiert oft richtig auf Unbekanntes</text>
+    <rect x="415" y="454" width="170" height="40" rx="20" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="500" y="479" text-anchor="middle" font-weight="700">Neue Situationen</text>
+    <rect x="595" y="430" width="375" height="88" rx="12" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+    <use href="#minus" x="627" y="474"/>
+    <text x="655" y="466" font-size="17" font-weight="700">Nur Trainiertes</text>
+    <text x="655" y="488">kann nur, wofür sie trainiert wurde</text>
+
+    <!-- 2 -->
+    <rect x="30" y="528" width="375" height="88" rx="12" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+    <use href="#plus" x="62" y="572"/>
+    <text x="90" y="556" font-size="17" font-weight="700">Lernt ständig</text>
+    <text x="90" y="578">jeder Input verändert das Gehirn,</text>
+    <text x="90" y="598">kann über Gelerntes reflektieren</text>
+    <rect x="415" y="552" width="170" height="40" rx="20" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="500" y="577" text-anchor="middle" font-weight="700">Lernen</text>
+    <rect x="595" y="528" width="375" height="88" rx="12" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+    <use href="#minus" x="627" y="572"/>
+    <text x="655" y="564" font-size="17" font-weight="700">Training ≠ Anwendung</text>
+    <text x="655" y="586">ein Prompt verändert das Modell nicht</text>
+
+    <!-- 3 -->
+    <rect x="30" y="626" width="375" height="88" rx="12" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+    <use href="#plus" x="62" y="670"/>
+    <text x="90" y="662" font-size="17" font-weight="700">Extrapolation, Deduktion, Induktion</text>
+    <text x="90" y="684">beherrscht alle Formen der Schlussfolgerung</text>
+    <rect x="415" y="650" width="170" height="40" rx="20" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="500" y="675" text-anchor="middle" font-weight="700">Schlussfolgern</text>
+    <rect x="595" y="626" width="375" height="88" rx="12" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+    <use href="#plus" x="627" y="670"/>
+    <text x="655" y="662" font-size="17" font-weight="700">Analyse im großen Stil</text>
+    <text x="655" y="684">erkennt Muster in großen Datenmengen</text>
+
+    <!-- 4 -->
+    <rect x="30" y="724" width="375" height="88" rx="12" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+    <use href="#plus" x="62" y="768"/>
+    <text x="90" y="752" font-size="17" font-weight="700">Meister im Generalisieren</text>
+    <text x="90" y="774">erkennt Gesetzmäßigkeiten schon an</text>
+    <text x="90" y="794">wenigen Beispielen</text>
+    <rect x="415" y="748" width="170" height="40" rx="20" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="500" y="773" text-anchor="middle" font-weight="700">Wissen</text>
+    <rect x="595" y="724" width="375" height="88" rx="12" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+    <use href="#plus" x="627" y="768"/>
+    <text x="655" y="752" font-size="17" font-weight="700">Meister im Detailwissen</text>
+    <text x="655" y="774">Wahrscheinlichkeiten aus vielen Daten,</text>
+    <text x="655" y="794">darin ist sie Expertin</text>
+
+    <!-- 5 -->
+    <rect x="30" y="822" width="375" height="88" rx="12" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+    <use href="#minus" x="62" y="866"/>
+    <text x="90" y="858" font-size="17" font-weight="700">Langsam</text>
+    <text x="90" y="880">liest, denkt und schreibt Schritt für Schritt</text>
+    <rect x="415" y="846" width="170" height="40" rx="20" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="500" y="871" text-anchor="middle" font-weight="700">Geschwindigkeit</text>
+    <rect x="595" y="822" width="375" height="88" rx="12" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+    <use href="#plus" x="627" y="866"/>
+    <text x="655" y="858" font-size="17" font-weight="700">Extrem schnell</text>
+    <text x="655" y="880">erzeugt Code und Texte in Sekunden</text>
+
+    <!-- 6 -->
+    <rect x="30" y="920" width="375" height="88" rx="12" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+    <use href="#minus" x="62" y="964"/>
+    <text x="90" y="956" font-size="17" font-weight="700">Überfordert und nachlässig</text>
+    <text x="90" y="978">bei Routineaufgaben wird er schlampig</text>
+    <rect x="415" y="944" width="170" height="40" rx="20" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="500" y="969" text-anchor="middle" font-weight="700">Ausdauer</text>
+    <rect x="595" y="920" width="375" height="88" rx="12" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+    <use href="#plus" x="627" y="964"/>
+    <text x="655" y="948" font-size="17" font-weight="700">Wird nie müde</text>
+    <text x="655" y="970">verarbeitet große Datenmengen</text>
+    <text x="655" y="990">konzentriert und genau</text>
+  </g>
+
+  <!-- Conclusion -->
+  <rect x="30" y="1030" width="940" height="76" rx="14" fill="#e5f1d9" stroke="#71af2e" stroke-width="2"/>
+  <text x="500" y="1062" text-anchor="middle" font-size="19" font-weight="700" fill="#4a7a1c">Gemeinsam stärker</text>
+  <text x="500" y="1090" text-anchor="middle" font-size="16" fill="#1d1d1b">Du gibst die Richtung vor und prüfst das Ergebnis. Die KI liefert Tempo, Detailwissen und Ausdauer.</text>
+  </g>
+</svg>

@@ -1,5 +1,7 @@
 # WMC im 5. und 6. Semester AIF/KIF, 7. und 8. Semester BIF/CIF und 4./5. JG HIF
 
+![Mensch und KI: Partner statt Gegner. Gegenüberstellung der Stärken und Grenzen von Mensch und KI.](assets/mensch-und-ki.svg)
+
 ## Installation der Software
 
 Siehe [software.md](software.md).
