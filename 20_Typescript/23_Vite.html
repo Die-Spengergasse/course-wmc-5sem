@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vite Trainer</title>
+<style>
+  :root {
+    --bg: #f6f6f6; --card: #ffffff; --fg: #1d1d1b; --muted: #5f5f5e; --border: #9d9d9c; --soft: #ededed;
+    --n-stroke: #0090d4; --n-fill: #d1ebf7; --n-text: #00628f;
+    --a-stroke: #f39000; --a-fill: #fdebd1; --a-text: #a35f00;
+    --ok-stroke: #71af2e; --ok-fill: #e5f1d9; --ok-text: #4a7a1c;
+    --err-stroke: #cc0935; --err-fill: #f6d3db; --err-text: #a8072c;
+    --c2-stroke: #6cc1b0; --c2-fill: #e5f4f1; --c2-text: #2f7d6e;
+    --btn: #0090d4; --btn-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212; --card: #1f1f1e; --fg: #ededed; --muted: #b5b5b4; --border: #6f6f6e; --soft: #2e2e2d;
+      --n-stroke: #0090d4; --n-fill: #0d3346; --n-text: #0090d4;
+      --a-stroke: #f39000; --a-fill: #4a2e05; --a-text: #f39000;
+      --ok-stroke: #71af2e; --ok-fill: #23360f; --ok-text: #71af2e;
+      --err-stroke: #f5b4c7; --err-fill: #4a1622; --err-text: #f5b4c7;
+      --c2-stroke: #6cc1b0; --c2-fill: #173832; --c2-text: #6cc1b0;
+      --btn: #0090d4; --btn-fg: #ffffff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.5; }
+  code, .mono { font-family: Consolas, Menlo, monospace; }
+  code { background: var(--soft); padding: 0 4px; border-radius: 4px; overflow-wrap: anywhere; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--card); border-bottom: 1px solid var(--border);
+           padding: 8px 16px; display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 18px; margin: 0; flex: 1; }
+  #progressText { font-variant-numeric: tabular-nums; color: var(--muted); }
+  #progressBar { position: absolute; left: 0; bottom: -1px; height: 3px; background: var(--btn); transition: width .3s; }
+  main { max-width: 1240px; margin: 0 auto; padding: 16px; }
+  .slide { display: none; }
+  .slide.active { display: block; }
+  .slide h2 { margin: 4px 0 8px; font-size: 24px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 12px 0; min-width: 0; }
+  .card > b:first-child { display: block; margin-bottom: 4px; }
+  .nav { display: flex; justify-content: space-between; max-width: 1240px; margin: 0 auto; padding: 0 16px 24px; }
+  button { font: inherit; border: 1px solid var(--border); background: var(--card); color: var(--fg); border-radius: 6px;
+           padding: 5px 12px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--btn); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.primary { background: var(--btn); color: var(--btn-fg); border-color: var(--btn); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 8px 0; }
+  .muted { color: var(--muted); }
+  .hint { font-size: 14px; color: var(--muted); }
+  .stepinfo { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .appear { animation: appear .6s ease-out; }
+  @keyframes appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .caption { min-height: 96px; }
+  .caption b.step { color: var(--n-text); }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; align-items: start; }
+  .grid2 > * { min-width: 0; }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+  .badge { display: inline-block; text-align: center; font-weight: 700; font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+           font-size: 12px; border-radius: 10px; padding: 0 6px; margin-left: 6px; vertical-align: 1px; white-space: nowrap; }
+  .badge.new { background: var(--a-fill); color: var(--a-text); border: 1px solid var(--a-stroke); }
+  .badge.ok { background: var(--ok-fill); color: var(--ok-text); border: 1px solid var(--ok-stroke); }
+  .badge.bad { background: var(--err-fill); color: var(--err-text); border: 1px solid var(--err-stroke); }
+  .badge.info { background: var(--n-fill); color: var(--n-text); border: 1px solid var(--n-stroke); }
+  .badge.c2 { background: var(--c2-fill); color: var(--c2-text); border: 1px solid var(--c2-stroke); }
+  .badge.gray { background: var(--soft); color: var(--muted); border: 1px dashed var(--border); }
+  table.plain { border-collapse: collapse; margin-top: 6px; width: 100%; }
+  table.plain th, table.plain td { border: 1px solid var(--border); padding: 4px 10px; text-align: left; vertical-align: top; }
+  table.plain th { background: var(--soft); }
+  .scroll-x { overflow-x: auto; max-width: 100%; }
+
+  /* code panels */
+  pre.code { margin: 0; font-family: Consolas, Menlo, monospace; font-size: 13px; line-height: 1.7; white-space: pre; overflow-x: auto; }
+  .ln { display: block; border-radius: 3px; padding: 0 4px; }
+  .ln.hl { background: var(--a-fill); box-shadow: inset 3px 0 0 var(--a-stroke); }
+  .ln.info { background: var(--n-fill); box-shadow: inset 3px 0 0 var(--n-stroke); }
+  .ln.ok { background: var(--ok-fill); box-shadow: inset 3px 0 0 var(--ok-stroke); }
+  .ln.bad { background: var(--err-fill); box-shadow: inset 3px 0 0 var(--err-stroke); }
+  .ln.gone { background: var(--err-fill); box-shadow: inset 3px 0 0 var(--err-stroke); text-decoration: line-through; color: var(--muted); }
+  .ln.dim { color: var(--muted); }
+  pre.term { margin: 0; font-family: Consolas, Menlo, monospace; font-size: 13px; line-height: 1.6; white-space: pre; overflow-x: auto;
+             background: var(--soft); border-radius: 6px; padding: 6px 8px; }
+
+  /* network list and console */
+  table.net { border-collapse: collapse; width: 100%; font-size: 14px; }
+  table.net th, table.net td { border-bottom: 1px solid var(--soft); padding: 3px 6px; text-align: left; vertical-align: top; }
+  table.net th { color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+  table.net td.f { font-family: Consolas, Menlo, monospace; overflow-wrap: anywhere; }
+  table.net tr.fresh td { background: var(--a-fill); }
+  table.net tr.vite td { color: var(--muted); }
+  .st-ok { color: var(--ok-text); font-weight: 700; white-space: nowrap; }
+  .st-bad { color: var(--err-text); font-weight: 700; white-space: nowrap; }
+  .console { font-family: Consolas, Menlo, monospace; font-size: 13px; min-height: 44px; }
+  .console .cl { padding: 4px 8px; margin: 4px 0; border-radius: 4px; overflow-wrap: anywhere; }
+  .console .cl.err { background: var(--err-fill); color: var(--err-text); box-shadow: inset 3px 0 0 var(--err-stroke); }
+  .console .cl.err::before { content: "✗ "; font-weight: 700; }
+  .console .empty { color: var(--muted); font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; }
+
+  /* waterfall */
+  .wf { font-size: 14px; }
+  .wf-head, .wf-row { display: grid; grid-template-columns: 150px 1fr; gap: 8px; align-items: center; margin: 3px 0; }
+  .wf-scale { display: grid; grid-template-columns: repeat(4, 1fr); color: var(--muted); font-size: 13px; }
+  .wf-track { position: relative; height: 18px; background: var(--soft); border-radius: 4px; }
+  .wf-bar { position: absolute; top: 2px; bottom: 2px; width: 24%; background: var(--n-fill); border: 1.5px solid var(--n-stroke); border-radius: 3px; }
+
+  /* pipeline */
+  .pipe { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; margin: 8px 0; }
+  .pipe .pst { flex: 1 1 140px; border: 2px solid var(--border); border-radius: 8px; padding: 6px 10px; background: var(--card); }
+  .pipe .pst .mk { display: inline-block; width: 22px; font-weight: 700; }
+  .pipe .pst.cur { border-color: var(--a-stroke); background: var(--a-fill); }
+  .pipe .pst.done { border-color: var(--ok-stroke); background: var(--ok-fill); }
+  .pipe .pst.done .mk { color: var(--ok-text); }
+  .pipe .pst.cur .mk { color: var(--a-text); }
+  .pipe .pst small { display: block; color: var(--muted); font-size: 13px; }
+
+  /* module graph */
+  .graph-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px; margin: 12px 0; }
+  .graph-wrap svg { display: block; width: 100%; min-width: 640px; max-width: 1000px; height: auto; margin: 0 auto; }
+  .g-node rect { fill: var(--card); stroke: var(--border); stroke-width: 1.5; }
+  .g-node text { fill: var(--fg); font-family: Consolas, Menlo, monospace; font-size: 12.5px; }
+  .g-node.cur rect { fill: var(--a-fill); stroke: var(--a-stroke); stroke-width: 2.5; }
+  .g-node.new rect { fill: var(--n-fill); stroke: var(--n-stroke); stroke-width: 2; }
+  .g-node.done rect { fill: var(--ok-fill); stroke: var(--ok-stroke); stroke-width: 2; }
+  .g-node.type rect { stroke-dasharray: 6 4; }
+  .g-node.never rect { fill: var(--soft); stroke-dasharray: 6 4; }
+  .g-node.never text { fill: var(--muted); }
+  .g-node.c-index rect { fill: var(--n-fill); stroke: var(--n-stroke); stroke-width: 2; }
+  .g-node.c-report rect { fill: var(--c2-fill); stroke: var(--c2-stroke); stroke-width: 2.5; }
+  .g-node.c-css rect { fill: var(--a-fill); stroke: var(--a-stroke); stroke-width: 2; }
+  .g-node.c-none rect { fill: var(--soft); stroke: var(--err-stroke); stroke-width: 2; stroke-dasharray: 6 4; }
+  .g-tag { font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; fill: var(--muted); }
+  .g-tag.cur { fill: var(--a-text); font-weight: 700; }
+  .g-tag.new { fill: var(--n-text); font-weight: 700; }
+  .g-tag.done { fill: var(--ok-text); }
+  .g-tag.c-index { fill: var(--n-text); font-weight: 700; }
+  .g-tag.c-report { fill: var(--c2-text); font-weight: 700; }
+  .g-tag.c-css { fill: var(--a-text); font-weight: 700; }
+  .g-tag.c-none { fill: var(--err-text); font-weight: 700; }
+  .g-edge { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+  .g-edge.type { stroke-dasharray: 7 5; }
+  .g-edge.dyn { stroke-dasharray: 1 5; stroke-linecap: round; stroke-width: 2.6; }
+  .g-edge.hot { stroke: var(--a-stroke); stroke-width: 2.4; }
+  .g-edge.dyn.hot { stroke-width: 3.2; }
+  .g-arrow { fill: var(--muted); }
+  .g-arrow.hot { fill: var(--a-stroke); }
+  .g-elabel { font-family: Consolas, Menlo, monospace; font-size: 12px; fill: var(--muted); }
+  .g-elabel.hot { fill: var(--a-text); font-weight: 700; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--muted); }
+  .legend svg { vertical-align: middle; margin-right: 6px; }
+  .legend .sw { display: inline-block; width: 28px; height: 16px; vertical-align: -3px; margin-right: 6px; border-radius: 3px; }
+
+  /* dist folder */
+  ul.files { list-style: none; margin: 4px 0 0; padding: 0; }
+  ul.files li { font-family: Consolas, Menlo, monospace; font-size: 13.5px; padding: 3px 8px; margin: 4px 0; border-radius: 6px;
+                border: 1.5px solid var(--border); background: var(--soft); overflow-wrap: anywhere; }
+  ul.files li.fresh { border-color: var(--a-stroke); background: var(--a-fill); }
+  ul.files li.old { color: var(--muted); border-style: dashed; }
+  ul.files li.old .fn { text-decoration: line-through; }
+  ul.files li .sz { float: right; color: var(--muted); margin-left: 8px; }
+  ul.files li .note { display: block; font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; color: var(--muted); text-decoration: none; }
+
+  /* exercise */
+  .rounds button { min-width: 40px; }
+  .rounds button.solved { background: var(--ok-fill); border-color: var(--ok-stroke); }
+  .rounds button.solved::after { content: " ✓"; color: var(--ok-text); }
+  .rounds button.current { outline: 2px solid var(--btn); outline-offset: 1px; font-weight: 700; }
+  .ex-code { font-family: Consolas, Menlo, monospace; font-size: 14px; line-height: 1.7; background: var(--card); border: 1px solid var(--border);
+             border-radius: 8px; padding: 8px 12px; white-space: pre-wrap; word-break: break-word; margin: 8px 0; }
+  .choice button { margin: 4px 8px 4px 0; text-align: left; }
+  .choice button.picked-right { background: var(--ok-fill); border-color: var(--ok-stroke); border-width: 2px; }
+  .choice button.picked-right::before { content: "✓ "; color: var(--ok-text); font-weight: 700; }
+  .choice button.picked-wrong { background: var(--err-fill); border-color: var(--err-stroke); border-width: 2px; }
+  .choice button.picked-wrong::before { content: "✗ "; color: var(--err-text); font-weight: 700; }
+  .assign { display: grid; gap: 6px; margin: 8px 0; }
+  .arow { display: grid; grid-template-columns: minmax(180px, 280px) 1fr 28px; gap: 4px 12px; align-items: center; padding: 6px 10px;
+          border: 1.5px solid var(--border); border-radius: 8px; background: var(--card); }
+  .arow .what.code { font-family: Consolas, Menlo, monospace; overflow-wrap: anywhere; }
+  .arow .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .arow .opts button { padding: 3px 10px; font-size: 14px; }
+  .arow .opts button.sel { background: var(--a-fill); border: 2px dashed var(--a-stroke); font-weight: 600; }
+  .arow .opts button.sel::before { content: "● "; color: var(--a-text); }
+  .arow .res { font-weight: 700; font-size: 18px; text-align: center; }
+  .arow.right { border-color: var(--ok-stroke); background: var(--ok-fill); }
+  .arow.right .res { color: var(--ok-text); }
+  .arow.wrong { border-color: var(--err-stroke); background: var(--err-fill); }
+  .arow.wrong .res { color: var(--err-text); }
+  .arow.right .opts button.sel, .arow.wrong .opts button.sel { background: var(--card); }
+  @media (max-width: 700px) { .arow { grid-template-columns: 1fr 28px; } .arow .opts { grid-column: 1 / -1; grid-row: 2; } }
+  .feedback { padding: 8px 12px; border-radius: 6px; margin-top: 8px; display: none; }
+  .feedback.ok { display: block; background: var(--ok-fill); border: 1px solid var(--ok-stroke); }
+  .feedback.bad { display: block; background: var(--err-fill); border: 1px solid var(--err-stroke); }
+  .feedback.info { display: block; background: var(--soft); border: 1px solid var(--border); }
+  .feedback ul { margin: 6px 0 0; padding-left: 20px; }
+  .feedback pre { margin: 6px 0 0; font-family: Consolas, Menlo, monospace; font-size: 13.5px; white-space: pre-wrap; }
+  kbd { font-family: Consolas, Menlo, monospace; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--soft); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Vite: Module im Browser verwenden</h1>
+  <span id="progressText">1 / 7</span>
+  <div id="progressBar"></div>
+</header>
+
+<main>
+  <!-- Slide 1 -->
+  <section class="slide" data-slide="0">
+    <h2>Warum lädt der Browser deine Module nicht?</h2>
+    <p>Der Flächenrechner aus dem Kapitel <i>Module</i> soll im Browser laufen. Gehe mit <b>Schritt</b> durch die Versuche
+      oder lass sie mit <b>Play</b> ablaufen.</p>
+    <div class="row">
+      <button id="p-reset">⏮ Anfang</button>
+      <button id="p-back">◀ Zurück</button>
+      <button id="p-step" class="primary">Schritt ▶</button>
+      <button id="p-play">▶ Play</button>
+      <span class="stepinfo" id="p-info"></span>
+    </div>
+    <div class="card caption" id="p-caption"></div>
+    <div class="grid2">
+      <div class="card" id="p-left"></div>
+      <div>
+        <div class="card"><b>Entwicklertools: Network</b><div class="scroll-x" id="p-net"></div></div>
+        <div class="card"><b>Entwicklertools: Console</b><div class="console" id="p-console"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 2 -->
+  <section class="slide" data-slide="1">
+    <h2>Was macht ein Bundler?</h2>
+    <p>Ein <b>Bundler</b> beginnt bei einer Datei, dem <b>Einstiegspunkt</b> (entry point). Er folgt allen
+      <code>import</code>-Anweisungen und bereitet jedes Modul für den Browser vor. Die Beispiele sind echte Ausgaben von Vite für die App <i>ViteDemo</i>.</p>
+    <div class="row">
+      <button id="b-reset">⏮ Anfang</button>
+      <button id="b-back">◀ Zurück</button>
+      <button id="b-step" class="primary">Schritt ▶</button>
+      <button id="b-play">▶ Play</button>
+      <span class="stepinfo" id="b-info"></span>
+    </div>
+    <div class="pipe" id="b-pipe"></div>
+    <div class="card caption" id="b-caption"></div>
+    <div class="grid2">
+      <div class="card"><b id="b-before-title"></b><pre class="code" id="b-before"></pre></div>
+      <div class="card"><b id="b-after-title"></b><pre class="code" id="b-after"></pre></div>
+    </div>
+  </section>
+
+  <!-- Slide 3 -->
+  <section class="slide" data-slide="2">
+    <h2>index.html ist der Einstiegspunkt</h2>
+    <p>Vite beginnt bei <i>index.html</i> und folgt allen Importen. So entsteht der <b>Modulgraph</b> (module graph):
+      Er zeigt, welche Datei welche andere braucht.</p>
+    <div class="row">
+      <button id="g-reset">⏮ Anfang</button>
+      <button id="g-back">◀ Zurück</button>
+      <button id="g-step" class="primary">Schritt ▶</button>
+      <button id="g-play">▶ Play</button>
+      <span class="stepinfo" id="g-info"></span>
+    </div>
+    <div class="card caption" id="g-caption"></div>
+    <div class="graph-wrap" id="g-graph"></div>
+    <div class="legend" id="g-legend"></div>
+    <div class="card"><b id="g-code-title"></b><pre class="code" id="g-code"></pre></div>
+  </section>
+
+  <!-- Slide 4 -->
+  <section class="slide" data-slide="3">
+    <h2>Der Dev-Server: npm run dev</h2>
+    <p>Der <b>Dev-Server</b> (Entwicklungs-Server) übersetzt jede Datei erst, wenn der Browser sie anfordert.
+      Verfolge die Requests wie im Reiter <i>Network</i> der Entwicklertools (<kbd>F12</kbd>).</p>
+    <div class="row">
+      <button id="d-reset">⏮ Anfang</button>
+      <button id="d-back">◀ Zurück</button>
+      <button id="d-step" class="primary">Schritt ▶</button>
+      <button id="d-play">▶ Play</button>
+      <span class="stepinfo" id="d-info"></span>
+    </div>
+    <div class="card caption" id="d-caption"></div>
+    <div class="graph-wrap" id="d-graph"></div>
+    <div class="grid2">
+      <div class="card"><b>Network (http://localhost:5173)</b><div class="scroll-x" id="d-net"></div>
+        <p class="hint">Weggelassen: einige Hilfsdateien von Vite (z. B. <code>env.mjs</code>) und <code>favicon.svg</code>.</p></div>
+      <div class="card"><b id="d-code-title"></b><pre class="code" id="d-code"></pre></div>
+    </div>
+  </section>
+
+  <!-- Slide 5 -->
+  <section class="slide" data-slide="4">
+    <h2>Der Build: npm run build</h2>
+    <p>Ein Webserver im Internet soll nicht jedes Modul einzeln ausliefern. <code>npm run build</code> erzeugt deshalb
+      wenige, fertige Dateien im Ordner <i>dist</i>.</p>
+    <div class="row">
+      <button id="u-reset">⏮ Anfang</button>
+      <button id="u-back">◀ Zurück</button>
+      <button id="u-step" class="primary">Schritt ▶</button>
+      <button id="u-play">▶ Play</button>
+      <span class="stepinfo" id="u-info"></span>
+    </div>
+    <div class="card caption" id="u-caption"></div>
+    <div class="graph-wrap" id="u-graph"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--n-fill);border:2px solid var(--n-stroke)"></span>index-….js</span>
+      <span><span class="sw" style="background:var(--c2-fill);border:2px solid var(--c2-stroke)"></span>report-….js (Chunk)</span>
+      <span><span class="sw" style="background:var(--a-fill);border:2px solid var(--a-stroke)"></span>index-….css</span>
+      <span><span class="sw" style="background:var(--soft);border:2px dashed var(--err-stroke)"></span>✗ nirgends</span>
+      <span>Die Beschriftung unter jeder Datei nennt das Ziel.</span>
+    </div>
+    <div class="grid2">
+      <div class="card"><b>Terminal</b><pre class="term" id="u-term"></pre></div>
+      <div>
+        <div class="card"><b>Ordner dist</b><ul class="files" id="u-dist"></ul></div>
+        <div class="card" id="u-code-card"><b id="u-code-title"></b><pre class="code" id="u-code"></pre><p class="hint" id="u-extra" style="margin:6px 0 0"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 6 -->
+  <section class="slide" data-slide="5">
+    <h2>tsconfig.json: Node.js oder Vite</h2>
+    <p>ViteDemo verwendet dieselben Module wie ModulesDemo. Die <i>tsconfig.json</i> ist aber anders, weil jetzt Vite
+      die Dateien übersetzt und nicht mehr <code>tsc</code>.</p>
+    <div class="row">
+      <button id="t-reset">⏮ Anfang</button>
+      <button id="t-back">◀ Zurück</button>
+      <button id="t-step" class="primary">Schritt ▶</button>
+      <button id="t-play">▶ Play</button>
+      <span class="stepinfo" id="t-info"></span>
+    </div>
+    <div class="card caption" id="t-caption"></div>
+    <div id="t-stage"></div>
+  </section>
+
+  <!-- Slide 7 -->
+  <section class="slide" data-slide="6">
+    <h2>Übung: Was macht Vite mit deinen Modulen?</h2>
+    <div class="row rounds" id="roundButtons"></div>
+    <div class="card" id="roundCard"></div>
+    <div id="exArea"></div>
+    <div class="row" id="exButtons">
+      <button class="primary" id="checkBtn">Prüfen</button>
+      <button id="resetBtn">Auswahl löschen</button>
+      <button id="solutionBtn">Lösung zeigen</button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <p class="hint">Gelöste Runden merkt sich dein Browser. Ohne Maus wählst du mit <kbd>Tab</kbd> eine Antwort und bestätigst
+      mit <kbd>Enter</kbd> oder <kbd>Leertaste</kbd>. Alle Ergebnisse sind mit Vite 8 und der App ViteDemo geprüft.</p>
+  </section>
+</main>
+
+<div class="nav">
+  <button id="prevBtn">← Zurück</button>
+  <button id="nextBtn" class="primary">Weiter →</button>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const PLAY_DELAY = 3600;
+
+  // ---------- storage (works without localStorage) ----------
+  const store = {
+    get(key, fallback) {
+      try {
+        const raw = window.localStorage.getItem('wmc-23-' + key);
+        return raw === null ? fallback : JSON.parse(raw);
+      } catch (e) { return fallback; }
+    },
+    set(key, value) {
+      try { window.localStorage.setItem('wmc-23-' + key, JSON.stringify(value)); } catch (e) { /* ignore */ }
+    }
+  };
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  const $ = id => document.getElementById(id);
+
+  /**
+   * Renders code lines as HTML. marks maps a line index to a CSS class (hl, info, ok, bad, gone, dim)
+   * or to { c: class, b: badge text }.
+   */
+  function codeHtml(lines, marks) {
+    marks = marks || {};
+    return lines.map((l, i) => {
+      const m = typeof marks[i] === 'string' ? { c: marks[i] } : (marks[i] || {});
+      const kind = { gone: 'bad', bad: 'bad', ok: 'ok', info: 'info', dim: 'gray' }[m.c] || 'new';
+      const badge = m.b ? `<span class="badge ${kind}">${esc(m.b)}</span>` : '';
+      return `<span class="ln${m.c ? ' ' + m.c : ''}">${esc(l) || ' '}${badge}</span>`;
+    }).join('');
+  }
+
+  // ---------- generic step animation ----------
+  /** Connects reset/back/step/play buttons to a render function for steps 0..count-1. */
+  function stepper(prefix, count, render) {
+    let step = 0;
+    let timer = null;
+    const playBtn = $(prefix + '-play');
+    const self = {
+      get step() { return step; },
+      show(i) {
+        step = Math.min(Math.max(i, 0), count - 1);
+        $(prefix + '-info').textContent = `Schritt ${step + 1} von ${count}`;
+        $(prefix + '-back').disabled = step === 0;
+        $(prefix + '-step').disabled = step === count - 1;
+        render(step);
+      },
+      stop() {
+        if (timer) { clearTimeout(timer); timer = null; }
+        playBtn.textContent = '▶ Play';
+      },
+      play() {
+        if (timer) { self.stop(); return; }
+        if (step === count - 1) { self.show(0); }
+        playBtn.textContent = '⏸ Pause';
+        const tick = () => {
+          if (step >= count - 1) { self.stop(); return; }
+          self.show(step + 1);
+          timer = setTimeout(tick, PLAY_DELAY);
+        };
+        timer = setTimeout(tick, 900);
+      }
+    };
+    playBtn.addEventListener('click', self.play);
+    $(prefix + '-step').addEventListener('click', () => { self.stop(); self.show(step + 1); });
+    $(prefix + '-back').addEventListener('click', () => { self.stop(); self.show(step - 1); });
+    $(prefix + '-reset').addEventListener('click', () => { self.stop(); self.show(0); });
+    return self;
+  }
+
+  // ---------- module graph (used on slides 3, 4 and 5) ----------
+  const G_NODES = {
+    html: { label: 'index.html', x: 485, y: 22 },
+    main: { label: 'main.ts', x: 485, y: 106 },
+    css: { label: 'style.css', x: 80, y: 205 },
+    dom: { label: 'dom.ts', x: 235, y: 205 },
+    hello: { label: 'hello.ts', x: 390, y: 205 },
+    maths: { label: 'maths.ts', x: 545, y: 205 },
+    sidx: { label: 'shapes/index.ts', x: 705, y: 205 },
+    report: { label: 'report.ts', x: 885, y: 205 },
+    circle: { label: 'shapes/circle.ts', x: 420, y: 315 },
+    rect: { label: 'shapes/rectangle.ts', x: 575, y: 315 },
+    area: { label: 'shapes/area.ts', x: 730, y: 315 },
+    shape: { label: 'shapes/shape.ts', x: 885, y: 315 }
+  };
+  const ALL_NODES = Object.keys(G_NODES);
+  const G_EDGES = [
+    { from: 'html', to: 'main', kind: 'static', label: '<script>' },
+    { from: 'main', to: 'css', kind: 'static' },
+    { from: 'main', to: 'dom', kind: 'static' },
+    { from: 'main', to: 'hello', kind: 'static' },
+    { from: 'main', to: 'maths', kind: 'static' },
+    { from: 'main', to: 'sidx', kind: 'static' },
+    { from: 'main', to: 'report', kind: 'dyn', label: 'import()' },
+    { from: 'sidx', to: 'circle', kind: 'static' },
+    { from: 'sidx', to: 'rect', kind: 'static' },
+    { from: 'sidx', to: 'area', kind: 'static' },
+    { from: 'sidx', to: 'shape', kind: 'type', label: 'export type' }
+  ];
+  const NW = 150, NH = 34;
+
+  /**
+   * Draws the module graph as inline SVG.
+   * @param id prefix for marker ids (each SVG needs its own markers)
+   * @param nodes { nodeId: { c: 'cur new done type never c-index ...', t: 'tag text' } } of the visible nodes
+   * @param hot edge keys "from>to" that are drawn highlighted
+   */
+  function graphSvg(id, nodes, hot) {
+    hot = hot || [];
+    const vis = n => Object.prototype.hasOwnProperty.call(nodes, n);
+    let out = `<svg viewBox="0 0 970 352" role="img" aria-label="Modulgraph der App ViteDemo"><defs>` +
+      `<marker id="${id}-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="g-arrow" d="M0,0 L10,5 L0,10 z"/></marker>` +
+      `<marker id="${id}-arrh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="g-arrow hot" d="M0,0 L10,5 L0,10 z"/></marker></defs>`;
+    G_EDGES.forEach(e => {
+      if (!vis(e.from) || !vis(e.to)) { return; }
+      const a = G_NODES[e.from], b = G_NODES[e.to];
+      const h = hot.includes(e.from + '>' + e.to);
+      let x1 = a.x, y1 = a.y + NH / 2;
+      const x2 = b.x, y2 = b.y - NH / 2 - 1;
+      // the dynamic import leaves main.ts on the right side to keep it apart from the static edges
+      if (e.kind === 'dyn') { x1 = a.x + NW / 2; y1 = a.y; }
+      // an edge starts below the tag of its source node, so the tag stays readable
+      else if (nodes[e.from] && nodes[e.from].t) { y1 += 21; }
+      out += `<line class="g-edge ${e.kind}${h ? ' hot' : ''}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" marker-end="url(#${id}-${h ? 'arrh' : 'arr'})"/>`;
+      if (e.label) {
+        const lx = e.kind === 'static' ? x1 + 10 : (x1 + x2) / 2 + 8;
+        const ly = e.kind === 'static' ? (y1 + y2) / 2 + 4 : (y1 + y2) / 2 - 4;
+        out += `<text class="g-elabel${h ? ' hot' : ''}" x="${lx}" y="${ly}">${esc(e.label)}</text>`;
+      }
+    });
+    ALL_NODES.forEach(n => {
+      if (!vis(n)) { return; }
+      const g = G_NODES[n];
+      const st = nodes[n] || {};
+      const c = st.c || '';
+      const mark = /\bdone\b/.test(c) ? '✓ ' : (/\bc-none\b/.test(c) ? '✗ ' : '');
+      out += `<g class="g-node ${c}"><rect x="${g.x - NW / 2}" y="${g.y - NH / 2}" width="${NW}" height="${NH}" rx="7"/>` +
+        `<text x="${g.x}" y="${g.y + 4.5}" text-anchor="middle">${esc(mark + g.label)}</text></g>`;
+      if (st.t) {
+        const tc = c.split(' ').filter(x => /^(cur|new|done|c-index|c-report|c-css|c-none)$/.test(x)).join(' ');
+        out += `<text class="g-tag ${tc}" x="${g.x}" y="${g.y + NH / 2 + 15}" text-anchor="middle">${esc(st.t)}</text>`;
+      }
+    });
+    return out + '</svg>';
+  }
+  /** Legend with the three line styles of the graph. */
+  function edgeLegend() {
+    const line = cls => `<svg width="46" height="12" aria-hidden="true"><line class="g-edge ${cls}" x1="2" y1="6" x2="44" y2="6"/></svg>`;
+    return `<span>${line('static')}import (statisch)</span><span>${line('type')}nur Typen: verschwindet beim Übersetzen</span>` +
+      `<span>${line('dyn')}import(): lädt erst später</span><span><span class="sw" style="background:var(--a-fill);border:2px solid var(--a-stroke)"></span>liest Vite gerade</span>` +
+      `<span><span class="sw" style="background:var(--n-fill);border:2px solid var(--n-stroke)"></span>neu gefunden</span>`;
+  }
+  /** Builds a node map where every listed node gets the same state. */
+  function nodesWith(ids, c, t) {
+    const o = {};
+    ids.forEach(n => { o[n] = { c: c, t: t }; });
+    return o;
+  }
+
+  // ---------- slide 1: the browser and the modules ----------
+  const P_HTML = ['<!doctype html>', '<html lang="en">', '<body>', '  <h1>Shape Calculator</h1>',
+    '  <script type="module" src="src/maths.ts"><\/script>', '</body>', '</html>'];
+  const ERR_MIME = 'Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/plain".';
+  const ERR_SPEC = 'Failed to resolve module specifier "lodash". Relative references must start with either "/", "./", or "../".';
+  const P_STEPS = [
+    { cap: '<b class="step">Ausgangslage.</b> Der Flächenrechner läuft in Node.js. Jetzt soll er im Browser laufen. Der erste Versuch: Eine HTML-Seite lädt <code>src/maths.ts</code> direkt als Modul.',
+      left: { title: 'index.html', lines: P_HTML, marks: { 4: 'hl' } }, net: [], console: [] },
+    { cap: '<b class="step">1. Der Server schickt Text.</b> Mit jeder Datei schickt der Server ihren Typ mit, den <b>MIME type</b>. Für <i>.ts</i>-Dateien ist das <code>text/plain</code>, also reiner Text. Ein Modul muss aber JavaScript sein. Der Browser führt die Datei nicht aus.',
+      left: { title: 'index.html', lines: P_HTML, marks: { 4: { c: 'bad', b: '✗' } } },
+      net: [{ f: 'src/maths.ts', ok: false, st: '✗ blockiert', type: 'text/plain' }], console: [ERR_MIME] },
+    { cap: '<b class="step">2. Der Browser versteht kein TypeScript.</b> Auch mit dem passenden MIME type könnte er <code>value: number</code> nicht ausführen. Also übersetzen wir mit <code>tsc</code> und laden die <i>.js</i>-Dateien. Relative Importe wie <code>"../maths.js"</code> findet der Browser.',
+      left: { title: 'dist/shapes/circle.js (von tsc erzeugt)', lines: ['import { pi } from "../maths.js";', '', 'export function createCircle(radius) {', '    // ...', '}'], marks: { 0: { c: 'ok', b: '✓' } } },
+      net: [{ f: 'dist/shapes/circle.js', ok: true, st: '✓ 200', type: 'text/javascript' }, { f: 'dist/maths.js', ok: true, st: '✓ 200', type: 'text/javascript' }], console: [] },
+    { cap: '<b class="step">3. Pakete aus node_modules.</b> Ein Paket importierst du mit seinem Namen, z. B. <code>"lodash"</code>. Der Browser kennt den Ordner <i>node_modules</i> nicht. Für ihn muss ein Pfad mit <code>/</code>, <code>./</code> oder <code>../</code> beginnen. Er stellt nicht einmal einen Request.',
+      left: { title: 'dist/report.js', lines: ['import { round } from "./maths.js";', 'import _ from "lodash";', '', '// ...'], marks: { 0: { c: 'ok', b: '✓' }, 1: { c: 'bad', b: '✗' } } },
+      net: [{ f: 'dist/report.js', ok: true, st: '✓ 200', type: 'text/javascript' }, { f: 'dist/maths.js', ok: true, st: '✓ 200', type: 'text/javascript' }, { f: 'lodash', ok: false, st: '✗ kein Request', type: '–' }], console: [ERR_SPEC] },
+    { cap: '<b class="step">4. Viele Module, viele Requests.</b> Der Browser sieht die Importe einer Datei erst, wenn er sie geladen hat. Dann fordert er die nächsten Dateien an. Jede Stufe wartet auf die vorige. Schon unsere kleine App hat 4 Stufen. Eine echte App hat hunderte Module.',
+      left: 'waterfall', net: 'keep', console: [] },
+    { cap: '<b class="step">5. Die Lösung: ein Bundler.</b> Ein Werkzeug, das diese Probleme löst, heißt <b>Bundler</b>. In diesem Kapitel lernst du den Bundler <b>Vite</b> kennen (französisch für „schnell“, gesprochen „wiet“). Vite ist heute der Standard für Webprojekte ohne Server-Framework.',
+      left: 'solution', net: [], console: [] }
+  ];
+  const WATERFALL = [
+    ['index.html', 0], ['main.js', 1], ['dom.js', 2], ['hello.js', 2], ['maths.js', 2], ['shapes/index.js', 2],
+    ['shapes/circle.js', 3], ['shapes/rectangle.js', 3], ['shapes/area.js', 3]
+  ];
+  function netTable(rows) {
+    if (!rows.length) { return '<p class="hint">Noch keine Requests.</p>'; }
+    return '<table class="net"><tr><th>Datei</th><th>Status</th><th>MIME type</th></tr>' + rows.map(r =>
+      `<tr class="appear"><td class="f">${esc(r.f)}</td><td class="${r.ok ? 'st-ok' : 'st-bad'}">${esc(r.st)}</td><td class="f">${esc(r.type)}</td></tr>`).join('') + '</table>';
+  }
+  function renderP(step) {
+    const s = P_STEPS[step];
+    $('p-caption').innerHTML = s.cap;
+    let left;
+    if (s.left === 'waterfall') {
+      left = '<b>Wasserfall der Requests (ohne Bundler)</b><div class="wf"><div class="wf-head"><span></span><span class="wf-scale"><span>Stufe 1</span><span>Stufe 2</span><span>Stufe 3</span><span>Stufe 4</span></span></div>' +
+        WATERFALL.map(w => `<div class="wf-row appear"><span class="mono">${esc(w[0])}</span><span class="wf-track"><span class="wf-bar" style="left:${w[1] * 25 + 0.5}%"></span></span></div>`).join('') +
+        '</div><p class="hint">Bei hunderten Modulen gibt es hunderte Requests und viele Stufen. Jede Stufe kostet eine Rundreise zum Server.</p>';
+    } else if (s.left === 'solution') {
+      left = '<b>Problem und Lösung</b><table class="plain appear"><tr><th>Problem</th><th>Der Bundler …</th></tr>' +
+        '<tr><td>✗ Der Browser versteht kein TypeScript.</td><td>✓ übersetzt TypeScript zu JavaScript.</td></tr>' +
+        '<tr><td>✗ Der Browser kennt <i>node_modules</i> nicht.</td><td>✓ löst <code>"lodash"</code> zur Datei in <i>node_modules</i> auf.</td></tr>' +
+        '<tr><td>✗ Jedes Modul ist ein eigener Request.</td><td>✓ bündelt viele Module zu wenigen Dateien.</td></tr></table>';
+    } else {
+      left = `<b>${esc(s.left.title)}</b><pre class="code">${codeHtml(s.left.lines, s.left.marks)}</pre>`;
+    }
+    $('p-left').innerHTML = left;
+    if (s.net !== 'keep') { $('p-net').innerHTML = s.net.length || step === 0 ? netTable(s.net) : '<p class="hint">Mit einem Bundler: siehe nächste Folien.</p>'; }
+    else { $('p-net').innerHTML = '<p class="hint">Links siehst du, wann jeder Request startet.</p>'; }
+    $('p-console').innerHTML = s.console.length ? s.console.map(c => `<div class="cl err appear">${esc(c)}</div>`).join('') : '<span class="empty">Keine Fehler.</span>';
+  }
+  const pAnim = stepper('p', P_STEPS.length, renderP);
+
+  // ---------- slide 2: what a bundler does ----------
+  const PIPE = [
+    ['Übersetzen', 'TS → JS'], ['Auflösen', 'Pfade finden'], ['Bündeln', 'wenige Dateien'], ['Optimieren', 'minify, tree shaking'], ['Assets', 'CSS, Bilder']
+  ];
+  const SRC_TREE = ['src', '├── main.ts', '├── dom.ts', '├── hello.ts', '├── maths.ts', '├── report.ts', '├── style.css', '└── shapes',
+    '    ├── index.ts', '    ├── shape.ts', '    ├── circle.ts', '    ├── rectangle.ts', '    └── area.ts'];
+  const DIST_TREE = ['dist', '├── index.html', '├── favicon.svg', '└── assets', '    ├── index-DVmRuBBW.js', '    ├── report-D00--KmC.js', '    └── index--YArkD8S.css'];
+  const B_STEPS = [
+    { cap: '<b class="step">Überblick.</b> Links sind die Quelldateien der App, rechts das Ergebnis von <code>npm run build</code>. Aus 11 Dateien in <i>src</i> werden 3 Dateien in <i>dist/assets</i>. Dafür erledigt der Bundler fünf Aufgaben. Gehe sie Schritt für Schritt durch.',
+      bt: 'Quelldateien', b: SRC_TREE, at: 'Ergebnis von npm run build', a: DIST_TREE },
+    { cap: '<b class="step">1. Übersetzen.</b> TypeScript wird zu JavaScript. Die Typen werden entfernt, aber <b>nicht</b> geprüft. Ein Aufruf <code>round("7")</code> mit falschem Typ würde genauso übersetzt.',
+      bt: 'maths.ts', b: ['export function round(value: number, digits: number = defaultDigits): number {', '    const factor = 10 ** digits;', '    return Math.round(value * factor) / factor;', '}'], bm: { 0: 'hl' },
+      at: 'nach dem Übersetzen', a: ['export function round(value, digits = defaultDigits) {', '    const factor = 10 ** digits;', '    return Math.round(value * factor) / factor;', '}'], am: { 0: { c: 'ok', b: 'ohne Typen' } } },
+    { cap: '<b class="step">2. Auflösen.</b> Zu <code>"./maths.js"</code> findet Vite die Datei <i>maths.ts</i>. Für einen Paketnamen wie <code>"lodash"</code> sucht es im Ordner <i>node_modules</i>. Rechts siehst du, was der Browser im Dev-Modus bekommt.',
+      bt: 'main.ts (Quelle)', b: ['import { round } from "./maths.js";', 'import { area } from "./shapes/index.js";', 'import _ from "lodash";'], bm: { 0: 'hl', 1: 'hl', 2: 'hl' },
+      at: 'aufgelöst', a: ['import { round } from "/src/maths.ts";', 'import { area } from "/src/shapes/index.ts";', 'import _ from "/node_modules/…/lodash.js";'], am: { 0: 'ok', 1: 'ok', 2: 'ok' } },
+    { cap: '<b class="step">3. Bündeln.</b> Viele Module werden zu wenigen Dateien zusammengefasst (<b>bundle</b>, englisch für Bündel). Der Browser braucht dann nur wenige Requests. Code, den die App erst später mit <code>import()</code> lädt, kommt in eine eigene Datei. Sie heißt <b>Chunk</b>.',
+      bt: 'Module mit Code', b: ['main.ts', 'dom.ts', 'hello.ts', 'maths.ts', 'shapes/circle.ts', 'shapes/rectangle.ts', 'shapes/area.ts', 'report.ts'], bm: { 7: 'info' },
+      at: 'gebündelt in dist/assets', a: ['index-DVmRuBBW.js     3.56 kB', '  main, dom, hello, maths,', '  circle, rectangle, area', '', 'report-D00--KmC.js    0.19 kB', '  report'], am: { 0: 'ok', 4: { c: 'info', b: 'Chunk' } } },
+    { cap: '<b class="step">4. Optimieren.</b> Leerzeichen, Kommentare und lange Namen fallen weg (<b>minify</b>). Die Datei wird kleiner und lädt schneller. Code, den niemand importiert, fällt ganz weg (<b>tree shaking</b>). Gäbe es in <i>maths.ts</i> eine Funktion, die niemand verwendet, stünde sie nicht in <i>dist</i>.',
+      bt: 'maths.ts (übersetzt)', b: ['/**', ' * Rounds a number to a given number of decimal places.', ' */', 'export function round(value, digits = defaultDigits) {', '    const factor = 10 ** digits;', '    return Math.round(value * factor) / factor;', '}'], bm: { 0: 'dim', 1: 'dim', 2: 'dim' },
+      at: 'in index-DVmRuBBW.js (minify)', a: ['function o(e,t=i){let n=10**t;return Math.round(e*n)/n}'], am: { 0: 'ok' } },
+    { cap: '<b class="step">5. Assets.</b> CSS-Dateien und Bilder bekommen einen eindeutigen Dateinamen. Dateien aus dem Ordner <i>public</i> kopiert Vite unverändert. Bekannte Bundler sind webpack (älter), esbuild, Rollup und Rolldown. Vite verwendet intern <b>Rolldown</b>. Next.js verwendet einen eigenen Bundler: Turbopack.',
+      bt: 'Quelldateien', b: ['src/style.css', 'public/favicon.svg'], bm: { 0: 'hl', 1: 'hl' },
+      at: 'in dist', a: ['dist/assets/index--YArkD8S.css', 'dist/favicon.svg'], am: { 0: { c: 'ok', b: 'neuer Name' }, 1: { c: 'ok', b: 'unverändert' } } }
+  ];
+  function renderB(step) {
+    const s = B_STEPS[step];
+    $('b-pipe').innerHTML = PIPE.map((p, i) => {
+      const k = i + 1;
+      const cls = step === 0 ? '' : (k < step ? 'done' : (k === step ? 'cur' : ''));
+      const mk = cls === 'done' ? '✓' : (cls === 'cur' ? '▶' : String(k));
+      return `<div class="pst ${cls}"><span class="mk">${mk}</span><b>${p[0]}</b><small>${p[1]}</small></div>`;
+    }).join('');
+    $('b-caption').innerHTML = s.cap;
+    $('b-before-title').textContent = s.bt;
+    $('b-after-title').textContent = s.at;
+    $('b-before').innerHTML = codeHtml(s.b, s.bm);
+    $('b-after').innerHTML = codeHtml(s.a, s.am);
+    $('b-after').classList.remove('appear'); void $('b-after').offsetWidth; $('b-after').classList.add('appear');
+  }
+  const bAnim = stepper('b', B_STEPS.length, renderB);
+
+  // ---------- slide 3: entry point and module graph ----------
+  const HTML_LINES = ['<body>', '  <main>', '    <h1 id="greeting">Shape Calculator</h1>', '    <form id="shapeForm"> <\!-- ... --> </form>',
+    '    <ul id="shapeList"></ul>', '    <button id="reportButton" type="button">Show report</button>', '    <pre id="report"></pre>', '  </main>',
+    '  <script type="module" src="/src/main.ts"><\/script>', '</body>'];
+  const MAIN_IMPORTS = ['import "./style.css";', 'import { getElement } from "./dom.js";', 'import helloWorld from "./hello.js";', 'import { round } from "./maths.js";',
+    'import { area, createCircle, createRectangle, goldenRectangle }', '    from "./shapes/index.js";', 'import type { Shape } from "./shapes/index.js";'];
+  const SIDX_LINES = ['export type { Circle, Rectangle, Shape } from "./shape.js";', 'export { createCircle } from "./circle.js";',
+    'export { createRectangle, goldenRectangle } from "./rectangle.js";', 'export { area } from "./area.js";'];
+  const LEAF_LINES = ['// shapes/circle.ts', 'import { pi } from "../maths.js";', 'import type { Circle } from "./shape.js";', '',
+    '// shapes/rectangle.ts', 'import { absolute, phi } from "../maths.js";', 'import type { Rectangle } from "./shape.js";', '',
+    '// shapes/area.ts', 'import { circleArea } from "./circle.js";', 'import { rectangleArea } from "./rectangle.js";', 'import type { Shape } from "./shape.js";'];
+  const CLICK_LINES = ['reportButton.addEventListener("click", async () => {', '    // report.ts is loaded on the first click.',
+    '    const { default: createReport } = await import("./report.js");', '    reportOutput.textContent = createReport(shapes).join("\\n");', '});'];
+  const LVL1 = ['css', 'dom', 'hello', 'maths', 'sidx'];
+  const G_STEPS = [
+    { cap: '<b class="step">1. index.html.</b> In Node.js startet das Programm mit <i>app.js</i>. Bei Vite startet alles mit <i>index.html</i>. Vite sucht das <code>&lt;script type="module"&gt;</code>. Der Pfad <code>/src/main.ts</code> beginnt mit <code>/</code>. Er bezieht sich auf den Projektordner, nicht auf das Laufwerk.',
+      nodes: { html: { c: 'cur', t: 'Einstiegspunkt' }, main: { c: 'new', t: 'neu gefunden' } }, hot: ['html>main'],
+      ct: 'index.html', code: HTML_LINES, cm: { 8: 'hl' } },
+    { cap: '<b class="step">2. main.ts.</b> Vite liest die Importe von <i>main.ts</i> und findet fünf Dateien. <code>import "./style.css"</code> holt keine Namen. Er wird nur wegen seiner Wirkung geschrieben: ein <b>side effect import</b>. Die Zeile <code>import type</code> holt nur Typen aus <i>shapes/index.ts</i>.',
+      nodes: Object.assign({ html: {}, main: { c: 'cur', t: 'liest Vite' } }, nodesWith(LVL1, 'new', 'neu gefunden')), hot: LVL1.map(n => 'main>' + n),
+      ct: 'main.ts', code: MAIN_IMPORTS, cm: { 0: 'hl', 1: 'hl', 2: 'hl', 3: 'hl', 4: 'hl', 5: 'hl', 6: { c: 'dim', b: 'nur Typen' } } },
+    { cap: '<b class="step">3. shapes/index.ts.</b> Diese Datei ist die öffentliche Schnittstelle des Ordners <i>shapes</i>. Sie exportiert Namen aus vier Dateien weiter. <i>shape.ts</i> enthält nur Interfaces und Typen. Die Zeile <code>export type</code> verschwindet beim Übersetzen.',
+      nodes: Object.assign({ html: {}, main: {} }, nodesWith(LVL1, ''), { sidx: { c: 'cur', t: 'liest Vite' } }, nodesWith(['circle', 'rect', 'area'], 'new', 'neu gefunden'), { shape: { c: 'new type', t: 'nur Typen' } }),
+      hot: ['sidx>circle', 'sidx>rect', 'sidx>area', 'sidx>shape'],
+      ct: 'shapes/index.ts', code: SIDX_LINES, cm: { 0: { c: 'dim', b: 'nur Typen' }, 1: 'hl', 2: 'hl', 3: 'hl' } },
+    { cap: '<b class="step">4. Die Dateien in shapes.</b> <i>circle.ts</i> und <i>rectangle.ts</i> importieren <i>maths.ts</i>. Diese Datei kennt Vite schon. Jedes Modul kommt nur <b>einmal</b> in den Graphen, auch wenn es mehrere Dateien importieren. <i>area.ts</i> braucht <i>circle.ts</i> und <i>rectangle.ts</i>: ebenfalls schon bekannt.',
+      nodes: Object.assign({ html: {}, main: {} }, nodesWith(LVL1, ''), { maths: { c: 'new', t: 'schon bekannt' } }, nodesWith(['circle', 'rect', 'area'], 'cur', 'liest Vite'), { shape: { c: 'type' } }),
+      hot: [], ct: 'Importe in shapes/circle.ts, rectangle.ts und area.ts', code: LEAF_LINES, cm: { 1: 'hl', 5: 'hl', 9: 'hl', 10: 'hl', 2: 'dim', 6: 'dim', 11: 'dim' } },
+    { cap: '<b class="step">5. Der dynamische import().</b> In <i>main.ts</i> steht noch <code>import("./report.js")</code>. Dieser Import lädt <i>report.ts</i> erst beim ersten Klick auf <i>Show report</i>. <i>report.ts</i> braucht <i>maths.ts</i> und <i>shapes/index.ts</i>, die kennt Vite schon.',
+      nodes: Object.assign({ html: {}, main: { c: 'cur', t: 'liest Vite' } }, nodesWith(LVL1, ''), nodesWith(['circle', 'rect', 'area'], ''), { shape: { c: 'type' }, report: { c: 'new', t: 'neu: später laden' } }),
+      hot: ['main>report'], ct: 'main.ts (weiter unten)', code: CLICK_LINES, cm: { 2: 'hl' } },
+    { cap: '<b class="step">6. Der fertige Modulgraph.</b> Er enthält alle 11 Dateien aus <i>src</i>. Vite kennt ihn, weil es bei <i>index.html</i> beginnt und allen Importen folgt. Eine Datei, die niemand importiert, gehört nicht dazu. Mit diesem Graphen arbeiten der Dev-Server und der Build.',
+      nodes: Object.assign(nodesWith(ALL_NODES, ''), { shape: { c: 'type' } }), hot: [],
+      ct: 'index.html', code: HTML_LINES, cm: { 8: 'hl' } }
+  ];
+  function renderG(step) {
+    const s = G_STEPS[step];
+    $('g-caption').innerHTML = s.cap;
+    $('g-graph').innerHTML = graphSvg('g', s.nodes, s.hot);
+    $('g-code-title').textContent = s.ct;
+    $('g-code').innerHTML = codeHtml(s.code, s.cm);
+  }
+  $('g-legend').innerHTML = edgeLegend();
+  const gAnim = stepper('g', G_STEPS.length, renderG);
+
+  // ---------- slide 4: dev server ----------
+  // s = step in which the request appears; the order of the src files was measured with ViteDemo.
+  const D_REQ = [
+    { f: '/', why: 'Seite öffnen (index.html)', s: 0, vite: true },
+    { f: '/@vite/client', why: 'von Vite eingefügt (für HMR)', s: 0, vite: true },
+    { f: '/src/main.ts', why: '<script> in index.html', s: 1 },
+    { f: '/src/style.css', why: 'Import in main.ts', s: 2 },
+    { f: '/src/dom.ts', why: 'Import in main.ts', s: 2 },
+    { f: '/src/hello.ts', why: 'Import in main.ts', s: 2 },
+    { f: '/src/maths.ts', why: 'Import in main.ts', s: 2 },
+    { f: '/src/shapes/index.ts', why: 'Import in main.ts', s: 2 },
+    { f: '/src/shapes/circle.ts', why: 'Export in shapes/index.ts', s: 3 },
+    { f: '/src/shapes/area.ts', why: 'Export in shapes/index.ts', s: 3 },
+    { f: '/src/shapes/rectangle.ts', why: 'Export in shapes/index.ts', s: 3 },
+    { f: '/src/report.ts', why: 'Klick: import()', s: 5 },
+    { f: '/src/style.css?t=…', why: 'HMR nach dem Speichern', s: 6 },
+    { f: '(alle Dateien noch einmal)', why: 'page reload nach dem Speichern', s: 7, vite: true, st: '✓' }
+  ];
+  const SERVED_MAIN = ['import "/src/style.css";', 'import { getElement } from "/src/dom.ts";', 'import helloWorld from "/src/hello.ts";', 'import { round } from "/src/maths.ts";',
+    'import { area, createCircle, createRectangle, goldenRectangle } from "/src/shapes/index.ts";', 'const greeting = getElement("#greeting");', '// ...'];
+  const SERVED_SIDX = ['export { createCircle } from "/src/shapes/circle.ts";', 'export { createRectangle, goldenRectangle } from "/src/shapes/rectangle.ts";', 'export { area } from "/src/shapes/area.ts";'];
+  const REQ_NODES = ['main', 'css', 'dom', 'hello', 'maths', 'sidx', 'circle', 'area', 'rect'];
+  /** Node states for the dev server: requested nodes are done (or cur in the step of their request). */
+  function devNodes(step) {
+    const o = { html: { c: step === 0 ? 'cur' : 'done', t: 'Request 1' } };
+    D_REQ.forEach((r, i) => {
+      const n = { '/src/main.ts': 'main', '/src/style.css': 'css', '/src/dom.ts': 'dom', '/src/hello.ts': 'hello', '/src/maths.ts': 'maths',
+        '/src/shapes/index.ts': 'sidx', '/src/shapes/circle.ts': 'circle', '/src/shapes/area.ts': 'area', '/src/shapes/rectangle.ts': 'rect', '/src/report.ts': 'report' }[r.f];
+      if (!n) { return; }
+      o[n] = r.s <= step ? { c: r.s === step ? 'cur' : 'done', t: 'Request ' + (i + 1) } : { c: '', t: n === 'report' ? 'noch nicht' : '' };
+    });
+    REQ_NODES.forEach(n => { if (!o[n]) { o[n] = {}; } });
+    o.shape = { c: 'never', t: step >= 4 ? 'nie angefordert' : '' };
+    if (step === 6) { o.css = { c: 'cur', t: 'HMR: neu geladen' }; }
+    if (step === 7) { o.hello = { c: 'cur', t: 'geändert' }; }
+    if (step === 8) { o.main = { c: 'cur', t: 'Typfehler, läuft trotzdem' }; }
+    return o;
+  }
+  const D_STEPS = [
+    { cap: '<b class="step">1. Server starten.</b> <code>npm run dev</code> startet den Dev-Server auf Port 5173. Du öffnest <i>http://localhost:5173</i>. Der Browser fordert <i>index.html</i> an. Vite fügt dort ein eigenes Script ein: <code>/@vite/client</code>. Es hält die Verbindung zum Dev-Server.',
+      ct: 'Terminal', code: ['> vite', '', '  VITE v8.3.5  ready in 233 ms', '', '  ➜  Local:   http://localhost:5173/', '  ➜  Network: use --host to expose'], cm: { 4: 'hl' } },
+    { cap: '<b class="step">2. main.ts.</b> Der Browser fordert <code>/src/main.ts</code> an. Vite übersetzt die Datei <b>erst jetzt</b> und schickt JavaScript (MIME type <code>text/javascript</code>). Die Typen sind weg, die Zeile <code>import type</code> auch. Die Pfade zeigen auf die echten Dateien.',
+      ct: 'Antwort von Vite auf /src/main.ts', code: SERVED_MAIN, cm: { 0: 'info', 1: 'info', 2: 'info', 3: 'info', 4: 'info' } },
+    { cap: '<b class="step">3. Die Importe von main.ts.</b> Der Browser liest die Importe und fordert fünf Dateien an. Auch <i>style.css</i>: Vite schickt sie als JavaScript, das die CSS-Regeln in die Seite einfügt.',
+      ct: 'Antwort von Vite auf /src/main.ts', code: SERVED_MAIN, cm: { 0: 'hl', 1: 'hl', 2: 'hl', 3: 'hl', 4: 'hl' } },
+    { cap: '<b class="step">4. Die Exporte von shapes/index.ts.</b> Jetzt folgen <i>circle.ts</i>, <i>area.ts</i> und <i>rectangle.ts</i>. Diese drei Requests laufen gleichzeitig. Ihre Reihenfolge kann sich beim nächsten Laden ändern. <i>shape.ts</i> fehlt: Die Zeile <code>export type</code> ist beim Übersetzen verschwunden.',
+      ct: 'Antwort von Vite auf /src/shapes/index.ts', code: SERVED_SIDX, cm: { 0: 'hl', 1: 'hl', 2: 'hl' } },
+    { cap: '<b class="step">5. Die Seite ist fertig.</b> Der Browser hat 9 Dateien aus <i>src</i> geladen, jede einzeln. Zwei Dateien fehlen: <i>report.ts</i> (noch kein Klick) und <i>shapes/shape.ts</i>. Diese Datei fordert der Browser <b>nie</b> an, denn sie wird nur mit <code>import type</code> importiert.',
+      ct: 'Nicht im Reiter Network', code: ['/src/report.ts          kommt erst beim Klick', '/src/shapes/shape.ts    kommt nie (nur Typen)'], cm: { 0: 'info', 1: { c: 'dim', b: 'nie' } } },
+    { cap: '<b class="step">6. Klick auf Show report.</b> Jetzt fordert der Browser <code>/src/report.ts</code> an. <i>report.ts</i> importiert <i>maths.ts</i> und <i>shapes/index.ts</i>. Die hat der Browser schon. Er fordert sie nicht noch einmal an.',
+      ct: 'main.ts', code: CLICK_LINES, cm: { 2: 'hl' } },
+    { cap: '<b class="step">7. Hot Module Replacement (HMR).</b> Du änderst <i>style.css</i> und speicherst. Vite meldet das dem Browser über <code>/@vite/client</code>. Der Browser lädt nur <i>style.css</i> neu und tauscht die Regeln aus. Die Seite wird <b>nicht</b> neu geladen. Was du ins Formular eingegeben hast, bleibt stehen.',
+      ct: 'Terminal', code: ['[vite] (client) hmr update /src/style.css'], cm: { 0: 'ok' } },
+    { cap: '<b class="step">8. Eine .ts-Datei ändern.</b> Du änderst den Text in <i>hello.ts</i> und speicherst. Die Seite zeigt den neuen Text sofort, du musst nichts tun. Vite lädt dafür aber die ganze Seite neu (<i>page reload</i>). Ohne Framework weiß Vite nicht, wie es nur dieses Modul austauscht. Mit React tauscht Vite später auch Components ohne Neuladen aus.',
+      ct: 'Terminal', code: ['[vite] (client) page reload src/hello.ts'], cm: { 0: 'hl' } },
+    { cap: '<b class="step">9. Keine Prüfung der Typen.</b> Der Dev-Server entfernt die Typen nur. <code>helloWorld(42)</code> ist ein Typfehler. VS Code zeigt ihn rot an, die Seite läuft aber weiter: Sie zeigt „Hello 42, …“. Erst <code>npm run build</code> startet <code>tsc</code> und bricht bei Typfehlern ab.',
+      ct: 'main.ts und Ausgabe von npm run build', code: ['greeting.textContent = helloWorld(42);', '', 'Browser:  Hello 42, welcome to the shape calculator!', '', '> tsc && vite build',
+        "src/main.ts:58:35 - error TS2345: Argument of type 'number' is not", "    assignable to parameter of type 'string'.", 'Found 1 error in src/main.ts:58'], cm: { 0: { c: 'bad', b: '✗ Typfehler' }, 2: { c: 'ok', b: 'läuft trotzdem' }, 5: 'bad', 6: 'bad', 7: 'bad' } }
+  ];
+  function renderD(step) {
+    const s = D_STEPS[step];
+    $('d-caption').innerHTML = s.cap;
+    $('d-graph').innerHTML = graphSvg('d', devNodes(step), []);
+    const rows = D_REQ.map((r, i) => ({ r: r, n: i + 1 })).filter(x => x.r.s <= step);
+    $('d-net').innerHTML = '<table class="net"><tr><th>#</th><th>Datei</th><th>Status</th><th>Anlass</th></tr>' + rows.map(x => {
+      const fresh = x.r.s === step;
+      return `<tr class="${fresh ? 'fresh appear' : ''}${x.r.vite ? ' vite' : ''}"><td>${x.n}</td><td class="f">${esc(x.r.f)}${fresh ? '<span class="badge new">neu</span>' : ''}</td>` +
+        `<td class="st-ok">${x.r.st || '✓ 200'}</td><td>${esc(x.r.why)}</td></tr>`;
+    }).join('') + '</table>';
+    $('d-code-title').textContent = s.ct;
+    $('d-code').innerHTML = codeHtml(s.code, s.cm);
+  }
+  const dAnim = stepper('d', D_STEPS.length, renderD);
+
+  // ---------- slide 5: build ----------
+  const BUILD_OUT = ['> tsc && vite build', '', 'vite v8.3.5 building client environment for production...', 'transforming...', '✓ 14 modules transformed.',
+    'rendering chunks...', 'computing gzip size...', 'dist/index.html                 1.19 kB │ gzip: 0.56 kB', 'dist/assets/index--YArkD8S.css  0.50 kB │ gzip: 0.30 kB',
+    'dist/assets/report-D00--KmC.js  0.19 kB │ gzip: 0.17 kB', 'dist/assets/index-DVmRuBBW.js   3.56 kB │ gzip: 1.66 kB', '', '✓ built in 66ms'];
+  const IDX_NODES = ['main', 'dom', 'hello', 'maths', 'circle', 'rect', 'area'];
+  /** Node states for the build: nodes get the colour and the name of their target file from step `from` on. */
+  function buildNodes(step) {
+    const o = nodesWith(ALL_NODES, '');
+    if (step === 2) { ALL_NODES.forEach(n => { o[n] = { c: 'cur' }; }); o.shape = { c: 'type' }; }
+    if (step >= 3) {
+      IDX_NODES.forEach(n => { o[n] = { c: 'c-index', t: 'index-….js' }; });
+      o.sidx = { c: '', t: 'leitet nur weiter' };
+    }
+    if (step >= 4) { o.report = { c: 'c-report', t: 'report-….js' }; }
+    if (step >= 5) {
+      o.css = { c: 'c-css', t: 'index-….css' };
+      o.shape = { c: 'c-none', t: 'nirgends' };
+      o.html = { c: '', t: 'dist/index.html' };
+    }
+    if (step === 6) { o.hello = { c: 'c-index', t: '✎ geändert' }; }
+    return o;
+  }
+  const U_STEPS = [
+    { cap: '<b class="step">1. Zwei Befehle.</b> <code>npm run build</code> führt <code>tsc &amp;&amp; vite build</code> aus. Zuerst läuft <code>tsc</code>. Nur wenn <code>tsc</code> ohne Fehler endet, startet <code>vite build</code>. Das bedeutet <code>&amp;&amp;</code>.',
+      term: 1, termMarks: { 0: 'hl' }, dist: [], ct: '', code: null },
+    { cap: '<b class="step">2. tsc prüft.</b> <code>tsc</code> prüft alle Typen. Wegen <code>"noEmit": true</code> erzeugt es keine Dateien. Ohne Fehler gibt <code>tsc</code> nichts aus. Bei einem Typfehler wie <code>helloWorld(42)</code> bricht es ab, und <code>vite build</code> startet nicht.',
+      term: 1, termMarks: { 0: 'hl' }, dist: [], ct: 'So sähe ein Typfehler aus',
+      code: ['> tsc && vite build', "src/main.ts:58:35 - error TS2345: Argument of type 'number' is not", "    assignable to parameter of type 'string'.", 'Found 1 error in src/main.ts:58'], cm: { 1: 'bad', 2: 'bad', 3: 'bad' } },
+    { cap: '<b class="step">3. vite build.</b> Vite beginnt wie der Dev-Server bei <i>index.html</i> und folgt allen Importen. Es zählt 14 Module, auch <i>index.html</i> und eigene Hilfsmodule. Alle Dateien im Graphen werden übersetzt.',
+      term: 5, termMarks: { 4: 'hl' }, dist: [], ct: '', code: null },
+    { cap: '<b class="step">4. index-….js.</b> Alle statisch importierten Module stecken in <b>einer</b> Datei. Sie ist 3.56 kB groß. Der Code steht in wenigen, sehr langen Zeilen, ohne Kommentare und Typen. <i>shapes/index.ts</i> leitet nur Namen weiter und bringt keinen eigenen Code mit.',
+      term: 13, termMarks: { 10: 'hl' }, dist: [['dist/index.html', '1.19 kB'], ['dist/assets/index-DVmRuBBW.js', '3.56 kB', 'fresh']], ct: '', code: null },
+    { cap: '<b class="step">5. Der Chunk report-….js.</b> <i>report.ts</i> hat eine eigene Datei, weil es mit <code>import()</code> geladen wird. Der Browser lädt sie erst beim Klick. Der Chunk braucht <code>round</code> und <code>area</code>. Die stehen schon in <i>index-….js</i>. Er importiert sie von dort (Zeile 1). So steht kein Code doppelt.',
+      term: 13, termMarks: { 9: 'hl' }, dist: [['dist/index.html', '1.19 kB'], ['dist/assets/index-DVmRuBBW.js', '3.56 kB'], ['dist/assets/report-D00--KmC.js', '0.19 kB', 'fresh']],
+      ct: 'dist/assets/report-D00--KmC.js (zum Lesen umbrochen)',
+      code: ['import{n as e,t}from"./index-DVmRuBBW.js";', 'function n(n){let r=n.map((n,r)=>`${r+1}. ${n.kind}: ${e(t(n))}`),', 'i=n.reduce((e,n)=>e+t(n),0);', 'return r.push(`Total area: ${e(i)}`),r}', 'export{n as default};'], cm: { 0: 'hl' } },
+    { cap: '<b class="step">6. CSS, HTML und public.</b> Das CSS liegt in einer eigenen Datei. Vite schreibt die neuen Dateinamen in <i>dist/index.html</i>. <i>favicon.svg</i> aus <i>public</i> wird unverändert kopiert. <i>shape.ts</i> landet nirgends: Sie enthält nur Typen.',
+      term: 13, termMarks: { 7: 'hl', 8: 'hl' },
+      dist: [['dist/index.html', '1.19 kB', 'fresh'], ['dist/favicon.svg', '', 'fresh', 'aus public, unverändert'], ['dist/assets/index-DVmRuBBW.js', '3.56 kB'], ['dist/assets/report-D00--KmC.js', '0.19 kB'], ['dist/assets/index--YArkD8S.css', '0.50 kB', 'fresh']],
+      ct: 'dist/index.html (Ausschnitt)',
+      code: ['<head>', '  <title>Shape Calculator</title>', '  <script type="module" crossorigin src="/assets/index-DVmRuBBW.js"><\/script>', '  <link rel="stylesheet" crossorigin href="/assets/index--YArkD8S.css">', '</head>'], cm: { 2: 'hl', 3: 'hl' } },
+    { cap: '<b class="step">7. Der Hash.</b> Der Teil nach dem Bindestrich (z. B. <code>DVmRuBBW</code>) ist ein <b>Hash</b>. Vite berechnet ihn aus dem Inhalt. Hier ändern wir einen Text in <i>hello.ts</i> und bauen neu. <i>index-….js</i> bekommt einen neuen Namen. <i>report-….js</i> auch, denn in seiner ersten Zeile steht der Name von <i>index-….js</i>. Die CSS-Datei behält ihren Namen.',
+      term: 0, dist: [['dist/index.html', '1.19 kB'], ['dist/favicon.svg', ''], ['dist/assets/index-DVmRuBBW.js', '3.56 kB', 'old', 'alter Name'], ['dist/assets/index-Bl-QAflb.js', '3.56 kB', 'fresh', 'neuer Hash'],
+        ['dist/assets/report-D00--KmC.js', '0.19 kB', 'old', 'alter Name'], ['dist/assets/report-D0XwoTlW.js', '0.19 kB', 'fresh', 'neuer Hash'], ['dist/assets/index--YArkD8S.css', '0.50 kB', '', 'gleicher Name: der Browser darf seine Kopie behalten']],
+      ct: 'Änderung in hello.ts', code: ['    return `Hello ${name}, welcome to the shape calculator!`;', '    return `Hello ${name}, hi from the shape calculator!`;'], cm: { 0: 'gone', 1: 'ok' },
+      extra: 'Ein neuer Name heißt für den Browser: neue Datei. Nach einem Update lädt er sicher die neue Version und keine alte Kopie aus dem Cache (<b>cache busting</b>).' },
+    { cap: '<b class="step">8. Den Build testen.</b> <code>npm run preview</code> startet einen Server auf Port 4173, der den Ordner <i>dist</i> ausliefert. Ein Doppelklick auf <i>dist/index.html</i> funktioniert <b>nicht</b>: Über <code>file://</code> lädt der Browser keine Module, und die Pfade <code>/assets/…</code> brauchen einen Webserver. Den Inhalt von <i>dist</i> kopierst du auf einen Webserver, und die App ist online.',
+      term: -1, dist: [['dist/index.html', '1.19 kB'], ['dist/favicon.svg', ''], ['dist/assets/index-DVmRuBBW.js', '3.56 kB'], ['dist/assets/report-D00--KmC.js', '0.19 kB'], ['dist/assets/index--YArkD8S.css', '0.50 kB']],
+      ct: '.gitignore (Ausschnitt)', code: ['node_modules', 'dist'], cm: { 1: { c: 'info', b: 'entsteht bei jedem Build neu' } } }
+  ];
+  function renderU(step) {
+    const s = U_STEPS[step];
+    $('u-caption').innerHTML = s.cap;
+    $('u-graph').innerHTML = graphSvg('u', buildNodes(step), []);
+    let term;
+    if (s.term === 0) { term = codeHtml(['> tsc && vite build', '...', 'dist/assets/report-D0XwoTlW.js  0.19 kB │ gzip: 0.17 kB', 'dist/assets/index-Bl-QAflb.js   3.56 kB │ gzip: 1.67 kB'], { 2: 'hl', 3: 'hl' }); }
+    else if (s.term === -1) { term = codeHtml(['> vite preview', '', '  ➜  Local:   http://localhost:4173/', '  ➜  Network: use --host to expose'], { 2: 'hl' }); }
+    else { term = codeHtml(BUILD_OUT.slice(0, s.term), s.termMarks); }
+    $('u-term').innerHTML = term;
+    $('u-dist').innerHTML = s.dist.length ? s.dist.map(d => `<li class="${d[2] || ''}${d[2] === 'fresh' ? ' appear' : ''}"><span class="sz">${esc(d[1])}</span><span class="fn">${esc(d[0])}</span>` +
+      `${d[2] === 'fresh' ? '<span class="badge new">neu</span>' : ''}${d[3] ? `<span class="note">${esc(d[3])}</span>` : ''}</li>`).join('') : '<li class="muted" style="background:none;border-style:dashed">(noch leer)</li>';
+    const card = $('u-code-card');
+    if (s.code) {
+      card.style.display = '';
+      $('u-code-title').textContent = s.ct;
+      $('u-code').innerHTML = codeHtml(s.code, s.cm);
+      $('u-extra').innerHTML = s.extra || '';
+      $('u-extra').style.display = s.extra ? '' : 'none';
+    } else { card.style.display = 'none'; }
+  }
+  const uAnim = stepper('u', U_STEPS.length, renderU);
+
+  // ---------- slide 6: tsconfig ----------
+  const TS_NODE = ['{', '    "compilerOptions": {', '        "target": "ESNext",', '        "module": "NodeNext",', '        "types": ["node"],', '        "rootDir": "src",',
+    '        "outDir": "dist",', '        "verbatimModuleSyntax": true,', '        "forceConsistentCasingInFileNames": true,', '        "strict": true,', '        "skipLibCheck": true,',
+    '        "sourceMap": true', '    },', '    "include": ["src"]', '}'];
+  const TS_VITE = ['{', '  "compilerOptions": {', '    "target": "es2023",', '    "module": "esnext",', '    "lib": ["ES2023", "DOM"],', '    "types": ["vite/client"],',
+    '    "allowArbitraryExtensions": true,', '    "skipLibCheck": true,', '', '    /* Bundler mode */', '    "moduleResolution": "bundler",', '    "allowImportingTsExtensions": true,',
+    '    "verbatimModuleSyntax": true,', '    "moduleDetection": "force",', '    "noEmit": true,', '', '    /* Linting */', '    "noUnusedLocals": true,', '    "noUnusedParameters": true,',
+    '    "erasableSyntaxOnly": true,', '    "noFallthroughCasesInSwitch": true', '  },', '  "include": ["src"]', '}'];
+  const T_STEPS = [
+    { cap: '<b class="step">Überblick.</b> Links die Datei aus ModulesDemo (Node.js), rechts die aus ViteDemo. Gehe die wichtigen Unterschiede Schritt für Schritt durch. Die markierten Zeilen gehören zusammen.', n: {}, v: {} },
+    { cap: '<b class="step">1. Wer löst die Pfade auf?</b> In Node.js löst Node die Pfade auf, deshalb <code>"module": "NodeNext"</code>. Bei Vite macht das ein Bundler: <code>"moduleResolution": "bundler"</code>. Dann sind auch Kurzformen erlaubt, z. B. <code>"./shapes"</code> statt <code>"./shapes/index.js"</code>.',
+      n: { 3: 'hl' }, v: { 3: 'hl', 10: 'hl' } },
+    { cap: '<b class="step">2. Wer erzeugt JavaScript?</b> In Node.js schreibt <code>tsc</code> die <i>.js</i>-Dateien nach <i>dist</i> (<code>"outDir"</code>). Bei Vite prüft <code>tsc</code> nur: <code>"noEmit": true</code>. Übersetzen und Bündeln macht Vite.',
+      n: { 6: 'hl' }, v: { 14: 'hl' } },
+    { cap: '<b class="step">3. Welche Umgebung?</b> Node.js kennt <code>process</code>, aber kein <code>document</code>. Im Browser ist es umgekehrt. <code>"lib": ["ES2023", "DOM"]</code> bringt die Typen für <code>document</code> und HTML-Elemente. <code>"types": ["vite/client"]</code> ersetzt <code>"types": ["node"]</code>.',
+      n: { 4: 'hl' }, v: { 4: 'hl', 5: 'hl' } },
+    { cap: '<b class="step">4. Importe mit .ts.</b> <code>"allowImportingTsExtensions": true</code> erlaubt auch <code>import { pi } from "./maths.ts"</code>. Das Vite-Template schreibt Importe so. In ViteDemo bleiben wir bei <code>.js</code>, damit die Module aus ModulesDemo unverändert bleiben.',
+      n: {}, v: { 11: 'hl' } },
+    { cap: '<b class="step">5. Gleich in beiden.</b> <code>"verbatimModuleSyntax": true</code> steht in beiden Dateien. In beiden Projekten brauchst du deshalb <code>import type</code>, wenn du nur Typen importierst.',
+      n: { 7: 'ok' }, v: { 12: 'ok' } },
+    { cap: '<b class="step">6. Wo ist strict?</b> In ModulesDemo steht <code>"strict": true</code>. In ViteDemo fehlt die Zeile. Seit TypeScript 6 ist der strenge Modus der Standard. Beide Projekte prüfen also gleich streng.',
+      n: { 9: 'info' }, v: {} },
+    { cap: '<b class="step">Zusammenfassung.</b> Die Module bleiben gleich. Es ändert sich, wer sie startet, prüft und übersetzt.', n: {}, v: {}, summary: true }
+  ];
+  function renderT(step) {
+    const s = T_STEPS[step];
+    $('t-caption').innerHTML = s.cap;
+    if (s.summary) {
+      $('t-stage').innerHTML = '<div class="card appear scroll-x"><table class="plain"><tr><th>Node.js mit tsc (ModulesDemo)</th><th>Vite (ViteDemo)</th></tr>' +
+        '<tr><td>Start mit <code>node dist/app.js</code></td><td>Start mit <i>index.html</i> im Browser</td></tr>' +
+        '<tr><td><code>tsc</code> übersetzt und prüft</td><td><code>tsc</code> prüft, Vite übersetzt</td></tr>' +
+        '<tr><td>Import mit <code>.js</code>-Endung Pflicht</td><td>Kurzformen erlaubt</td></tr>' +
+        '<tr><td>eine <i>.js</i>-Datei pro Modul</td><td>wenige gebündelte Dateien in <i>dist</i></td></tr></table></div>';
+      return;
+    }
+    const strictNote = step === 6 ? { 21: { c: 'info', b: 'kein strict: seit TS 6 Standard' } } : {};
+    $('t-stage').innerHTML = '<div class="grid2">' +
+      `<div class="card"><b>ModulesDemo/tsconfig.json</b><pre class="code">${codeHtml(TS_NODE, s.n)}</pre></div>` +
+      `<div class="card"><b>ViteDemo/tsconfig.json</b><pre class="code">${codeHtml(TS_VITE, Object.assign({}, s.v, strictNote))}</pre></div></div>`;
+  }
+  const tAnim = stepper('t', T_STEPS.length, renderT);
+
+  // ---------- slide 7: exercise ----------
+  // kind 'assign': pick one option per item. kind 'choice': pick one option, checked at once.
+  const ROUNDS = [
+    { id: 'dev-load', kind: 'assign', title: 'Dev-Server: Wann kommt der Request?',
+      intro: 'Du startest npm run dev und öffnest die Seite. Danach klickst du einmal auf Show report. Wann fordert der Browser diese Dateien an?',
+      options: ['beim Laden der Seite', 'erst beim Klick', 'nie'], code: true,
+      items: [
+        { what: 'src/main.ts', a: 0, why: 'main.ts steht im <script> in index.html. Der Browser fordert sie als erste Datei aus src an.' },
+        { what: 'src/style.css', a: 0, why: 'main.ts importiert style.css statisch (import "./style.css"). Das passiert beim Laden.' },
+        { what: 'src/hello.ts', a: 0, why: 'main.ts importiert hello.ts statisch. Der Request kommt beim Laden.' },
+        { what: 'src/maths.ts', a: 0, why: 'report.ts braucht maths.ts auch. Aber main.ts importiert maths.ts schon statisch. Beim Klick hat der Browser die Datei bereits.' },
+        { what: 'src/shapes/circle.ts', a: 0, why: 'shapes/index.ts exportiert createCircle aus circle.ts weiter. main.ts importiert shapes/index.ts statisch. Also kommt circle.ts beim Laden.' },
+        { what: 'src/shapes/shape.ts', a: 2, why: 'shape.ts wird nur mit import type und export type verwendet. Diese Zeilen verschwinden beim Übersetzen. Kein Modul fordert shape.ts an.' },
+        { what: 'src/report.ts', a: 1, why: 'main.ts lädt report.ts mit import(). Der Request kommt erst beim Klick auf Show report.' }
+      ] },
+    { id: 'build-target', kind: 'assign', title: 'Build: Wo landet der Code?',
+      intro: 'Nach npm run build liegen drei Dateien in dist/assets. In welcher Datei steht der Code jeder Quelldatei?',
+      options: ['index-DVmRuBBW.js', 'report-D00--KmC.js', 'index--YArkD8S.css', 'nirgends'], code: true,
+      items: [
+        { what: 'src/main.ts', a: 0, why: 'main.ts ist das Modul aus index.html. Ihr Code steht in index-….js.' },
+        { what: 'src/dom.ts', a: 0, why: 'main.ts importiert dom.ts statisch. Alle statisch importierten Module stecken in index-….js.' },
+        { what: 'src/hello.ts', a: 0, why: 'main.ts importiert hello.ts statisch. Der Code steht in index-….js.' },
+        { what: 'src/maths.ts', a: 0, why: 'report.ts braucht round() aus maths.ts. Aber main.ts und die shapes-Dateien importieren maths.ts statisch. Der Code steht deshalb in index-….js. Der Chunk report-….js importiert round von dort.' },
+        { what: 'src/shapes/circle.ts', a: 0, why: 'circle.ts kommt über shapes/index.ts statisch in die App. Der Code steht in index-….js.' },
+        { what: 'src/shapes/area.ts', a: 0, why: 'report.ts braucht area() auch. Aber main.ts importiert area statisch. Also steht der Code in index-….js, und der Chunk importiert ihn von dort.' },
+        { what: 'src/shapes/shape.ts', a: 3, why: 'shape.ts enthält nur Interfaces und Typen. Typen gibt es in JavaScript nicht. Es bleibt kein Code übrig.' },
+        { what: 'src/report.ts', a: 1, why: 'main.ts lädt report.ts mit import(). Dafür erzeugt Vite einen eigenen Chunk: report-….js.' },
+        { what: 'src/style.css', a: 2, why: 'Das CSS kommt in eine eigene Datei: index-….css. dist/index.html bindet sie mit <link> ein.' }
+      ] },
+    { id: 'count-static', kind: 'choice', title: 'Wie viele JS-Dateien? (1)',
+      intro: 'Jemand ändert main.ts: report.ts wird jetzt oben mit einem normalen import geladen. Wie viele .js-Dateien liegen nach npm run build in dist/assets?',
+      code: '// main.ts (changed)\nimport createReport from "./report.js";\n// ...\nreportButton.addEventListener("click", () => {\n    reportOutput.textContent = createReport(shapes).join("\\n");\n});',
+      options: ['1', '2', '3', '4'], correct: 0,
+      explanation: 'Ohne import() gibt es keinen Grund für einen Chunk. report.ts landet mit allen anderen Modulen in einer Datei. Mit Vite 8 geprüft: dist/assets/index-D6bqD1uz.js (2.06 kB) und die CSS-Datei. Die Seite lädt den Report-Code jetzt sofort, auch wenn niemand klickt.',
+      wrong: 'Denk daran: Nur ein import() erzeugt einen eigenen Chunk. Wie wird report.ts jetzt geladen?' },
+    { id: 'count-chart', kind: 'choice', title: 'Wie viele JS-Dateien? (2)',
+      intro: 'Die App bekommt einen zweiten Button Show chart. Er lädt das neue Modul chart.ts mit import(). report.ts bleibt wie bisher. Wie viele .js-Dateien liegen nach npm run build in dist/assets?',
+      code: '// chart.ts (new)\nimport { round } from "./maths.js";\nexport default function createChart(values: number[]): string[] { /* ... */ }\n\n// main.ts (added)\nchartButton.addEventListener("click", async () => {\n    const { default: createChart } = await import("./chart.js");\n    // ...\n});',
+      options: ['1', '2', '3', '4'], correct: 2,
+      explanation: 'Jeder import() ergibt einen eigenen Chunk. Mit Vite 8 geprüft: index-….js, report-….js und chart-….js. chart.ts braucht round() aus maths.ts. Das steht schon in index-….js, der Chunk importiert es von dort.',
+      wrong: 'Zähle: eine Datei für alle statischen Importe und eine Datei pro import().' },
+    { id: 'count-types', kind: 'choice', title: 'Wie viele JS-Dateien? (3)',
+      intro: 'Die Einstellungen für den Report bekommen ein Interface in der neuen Datei types.ts. main.ts importiert es mit import type. Wie viele .js-Dateien liegen nach npm run build in dist/assets?',
+      code: '// types.ts (new)\nexport interface ReportOptions {\n    digits: number;\n    showTotal: boolean;\n}\n\n// main.ts (added)\nimport type { ReportOptions } from "./types.js";\nconst options: ReportOptions = { digits: 2, showTotal: true };',
+      options: ['1', '2', '3', '4'], correct: 1,
+      explanation: 'types.ts enthält nur Typen, und import type verschwindet beim Übersetzen. Es bleiben index-….js und report-….js. Das Objekt options steht in index-….js, nur sein Typ fällt weg.',
+      wrong: 'Was bleibt von einem Interface übrig, wenn TypeScript zu JavaScript wird?' },
+    { id: 'count-unused', kind: 'choice', title: 'Wie viele JS-Dateien? (4)',
+      intro: 'Im Ordner src liegt eine alte Datei old.ts. Kein Modul importiert sie. Wie viele .js-Dateien liegen nach npm run build in dist/assets?',
+      code: '// src/old.ts\nexport function oldFunction(): string {\n    return "old";\n}',
+      options: ['1', '2', '3', '4'], correct: 1,
+      explanation: 'Vite beginnt bei index.html und folgt nur den Importen. old.ts gehört nicht zum Modulgraphen und kommt nicht nach dist. Mit Vite 8 geprüft: Der Build ist genau gleich, sogar die Hashes DVmRuBBW und D00--KmC bleiben.',
+      wrong: 'Wo beginnt Vite, und wie findet es die Module?' },
+    { id: 'dev-or-build', kind: 'assign', title: 'npm run dev oder npm run build?',
+      intro: 'Für welchen Befehl stimmt die Aussage? Wähle „beide“, wenn sie für beide Befehle stimmt.',
+      options: ['npm run dev', 'npm run build', 'beide'], code: false,
+      items: [
+        { what: 'Ein Typfehler bricht den Befehl ab.', a: 1, why: 'npm run build startet zuerst tsc. Bei einem Typfehler startet vite build nicht. Der Dev-Server entfernt Typen nur und prüft sie nicht.' },
+        { what: 'Der Browser fordert jedes Modul einzeln an.', a: 0, why: 'Das macht nur der Dev-Server. Der Build bündelt die Module zu wenigen Dateien.' },
+        { what: 'Nach dem Speichern von style.css ändert sich die Seite ohne Neuladen.', a: 0, why: 'Das ist Hot Module Replacement (HMR). Es gibt sie nur beim Dev-Server. Der Build erzeugt nur Dateien.' },
+        { what: 'Die Dateinamen enthalten einen Hash, z. B. DVmRuBBW.', a: 1, why: 'Hashes gibt es nur in dist. Der Dev-Server liefert /src/main.ts unter dem echten Namen aus.' },
+        { what: 'TypeScript wird zu JavaScript übersetzt.', a: 2, why: 'Der Browser versteht kein TypeScript. Beide Befehle müssen übersetzen: der Dev-Server bei jedem Request, der Build einmal für alle Dateien.' },
+        { what: 'Der Code wird minimiert (minify).', a: 1, why: 'Nur der Build minimiert. Im Dev-Modus soll der Code lesbar bleiben, damit du ihn im Browser debuggen kannst.' },
+        { what: 'report.ts wird erst beim Klick auf Show report geladen.', a: 2, why: 'import() wirkt in beiden Modi. Im Dev-Modus kommt dann der Request /src/report.ts, im Build der Chunk report-….js.' },
+        { what: 'Das Ergebnis liegt im Ordner dist.', a: 1, why: 'Nur der Build schreibt Dateien nach dist. Der Dev-Server übersetzt im Speicher und schreibt nichts.' }
+      ] },
+    { id: 'process', kind: 'choice', title: 'Node.js-Code im Browser',
+      intro: 'Du kopierst diese Zeile aus app.ts (Node.js-Version) in main.ts von ViteDemo. Was passiert bei npm run build?',
+      code: 'greeting.textContent = helloWorld(process.argv[2]);',
+      options: ['Der Build läuft. Im Browser steht der Name aus der Kommandozeile.', 'tsc bricht ab: Der Name process ist unbekannt.', 'Vite lädt process aus node_modules, und der Build läuft.'], correct: 1,
+      explanation: 'In der tsconfig.json von ViteDemo steht "types": ["vite/client"] und nicht "node". tsc kennt process deshalb nicht: error TS2591: Cannot find name \'process\'. Das ist richtig so: Im Browser gibt es kein process und keine Kommandozeile.',
+      wrong: 'Schau in die tsconfig.json von ViteDemo: Welche Typen kennt tsc dort?' },
+    { id: 'extension', kind: 'choice', title: 'Import ohne Endung',
+      intro: 'In welchem Projekt meldet tsc keinen Fehler für diesen Import?',
+      code: 'import { pi } from "./maths";',
+      options: ['nur in ModulesDemo (Node.js)', 'nur in ViteDemo', 'in beiden Projekten'], correct: 1,
+      explanation: 'ViteDemo verwendet "moduleResolution": "bundler". Dort sind Kurzformen erlaubt, Vite findet maths.ts. In ModulesDemo ("module": "NodeNext") meldet tsc: error TS2835: Relative import paths need explicit file extensions … Did you mean \'./maths.js\'?',
+      wrong: 'Welche Option in der tsconfig.json erlaubt Kurzformen?' },
+    { id: 'dblclick', kind: 'choice', title: 'dist ohne Server',
+      intro: 'Der Build ist fertig. Du doppelklickst im Explorer auf dist/index.html. Was passiert?',
+      code: '<script type="module" crossorigin src="/assets/index-DVmRuBBW.js"><\/script>\n<link rel="stylesheet" crossorigin href="/assets/index--YArkD8S.css">',
+      options: ['Die App läuft wie mit npm run preview.', 'Du siehst nur das HTML ohne CSS. Die App rechnet nichts.', 'Der Browser zeigt die Typfehler der App an.'], correct: 1,
+      explanation: 'Über file:// lädt der Browser keine Module. Außerdem zeigen die Pfade /assets/… auf das Hauptverzeichnis des Laufwerks und nicht auf dist. Teste den Build deshalb mit npm run preview auf http://localhost:4173.',
+      wrong: 'Schau dir die Pfade an: Sie beginnen mit /. Und wie lädt ein Browser Module über file://?' }
+  ];
+
+  const solved = new Set((store.get('solved', []) || []).filter(id => ROUNDS.some(r => r.id === id)));
+  let roundIndex = Math.min(Math.max(store.get('round', 0) | 0, 0), ROUNDS.length - 1);
+  let picks = {};
+  const exArea = $('exArea');
+  const feedback = $('feedback');
+
+  function clearFeedback() { feedback.className = 'feedback'; feedback.innerHTML = ''; }
+  function markSolved(r) { solved.add(r.id); store.set('solved', Array.from(solved)); drawRounds(); }
+  function nextRoundIndex() { return ROUNDS.findIndex((x, i) => i > roundIndex && !solved.has(x.id)); }
+  function nextRoundButton() {
+    const next = nextRoundIndex();
+    if (next >= 0) { return `<p><button id="nextRound">Weiter zu Runde ${next + 1}</button></p>`; }
+    return solved.size === ROUNDS.length ? '<p><b>Du hast alle Runden gelöst!</b></p>' : '';
+  }
+  function wireNext() {
+    const nb = $('nextRound');
+    if (nb) { const next = nextRoundIndex(); nb.addEventListener('click', () => selectRound(next)); }
+  }
+
+  function renderAssign(r) {
+    exArea.innerHTML = '<div class="assign">' + r.items.map((it, i) =>
+      `<div class="arow" data-row="${i}"><span class="what${r.code ? ' code' : ''}">${esc(it.what)}</span>` +
+      `<span class="opts" role="group" aria-label="${esc(it.what)}">` + r.options.map((o, k) =>
+        `<button type="button" data-row="${i}" data-opt="${k}" aria-pressed="false">${esc(o)}</button>`).join('') +
+      '</span><span class="res" aria-hidden="true"></span></div>').join('') + '</div>';
+    paintPicks();
+  }
+  /** Shows the selection; with a result it also marks every row right or wrong. */
+  function paintPicks(result) {
+    exArea.querySelectorAll('.arow').forEach(row => {
+      const i = +row.dataset.row;
+      row.classList.remove('right', 'wrong');
+      row.querySelector('.res').textContent = '';
+      row.querySelectorAll('button[data-opt]').forEach(b => {
+        const on = picks[i] === +b.dataset.opt;
+        b.classList.toggle('sel', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      if (result && picks[i] !== undefined) {
+        const ok = result[i];
+        row.classList.add(ok ? 'right' : 'wrong');
+        row.querySelector('.res').textContent = ok ? '✓' : '✗';
+      }
+    });
+  }
+  function renderChoice(r) {
+    exArea.innerHTML = `<div class="ex-code">${esc(r.code)}</div><div class="choice row">` +
+      r.options.map((o, i) => `<button type="button" data-choice="${i}">${esc(o)}</button>`).join('') + '</div>';
+  }
+  exArea.addEventListener('click', e => {
+    const opt = e.target.closest('button[data-opt]');
+    if (opt) {
+      picks[+opt.dataset.row] = +opt.dataset.opt;
+      clearFeedback();
+      paintPicks();
+      return;
+    }
+    const ch = e.target.closest('button[data-choice]');
+    if (ch) { checkChoice(+ch.dataset.choice); }
+  });
+
+  function checkAssign() {
+    const r = ROUNDS[roundIndex];
+    const open = r.items.filter((it, i) => picks[i] === undefined).length;
+    const result = r.items.map((it, i) => picks[i] === it.a);
+    paintPicks(result);
+    const wrong = r.items.map((it, i) => ({ it: it, i: i })).filter(x => picks[x.i] !== undefined && picks[x.i] !== x.it.a);
+    if (open === 0 && wrong.length === 0) {
+      markSolved(r);
+      feedback.className = 'feedback ok';
+      feedback.innerHTML = `✓ Richtig! Alle ${r.items.length} Zeilen stimmen.` + nextRoundButton();
+      wireNext();
+      return;
+    }
+    const items = wrong.map(x => `<li>✗ <b>${esc(x.it.what)}</b><br>${esc(x.it.why)}</li>`);
+    if (open) { items.push(`<li>? ${open === 1 ? 'Eine Zeile hat' : open + ' Zeilen haben'} noch keine Antwort.</li>`); }
+    feedback.className = 'feedback bad';
+    feedback.innerHTML = `Noch nicht ganz. ${result.filter(Boolean).length} von ${r.items.length} richtig.<ul>${items.join('')}</ul><p class="hint">Ändere deine Auswahl und prüfe noch einmal.</p>`;
+  }
+  function checkChoice(opt) {
+    const r = ROUNDS[roundIndex];
+    exArea.querySelectorAll('button[data-choice]').forEach(b => b.classList.remove('picked-right', 'picked-wrong'));
+    const btn = exArea.querySelector(`button[data-choice="${opt}"]`);
+    if (opt === r.correct) {
+      btn.classList.add('picked-right');
+      markSolved(r);
+      feedback.className = 'feedback ok';
+      feedback.innerHTML = `✓ Richtig! ${esc(r.explanation)}` + nextRoundButton();
+      wireNext();
+    } else {
+      btn.classList.add('picked-wrong');
+      feedback.className = 'feedback bad';
+      feedback.innerHTML = `✗ Nicht ganz. ${esc(r.wrong)} Versuche es noch einmal.`;
+    }
+  }
+  function showSolution() {
+    const r = ROUNDS[roundIndex];
+    if (r.kind === 'assign') {
+      picks = {};
+      r.items.forEach((it, i) => { picks[i] = it.a; });
+      paintPicks();
+      feedback.className = 'feedback info';
+      feedback.innerHTML = 'So sieht die Lösung aus. Lösche die Auswahl und versuche es selbst, damit die Runde als gelöst zählt.<ul>' +
+        r.items.map(it => `<li><b>${esc(it.what)}</b> → ${esc(r.options[it.a])}<br>${esc(it.why)}</li>`).join('') + '</ul>';
+    } else {
+      feedback.className = 'feedback info';
+      feedback.innerHTML = `Richtig ist: <b>${esc(r.options[r.correct])}</b>. ${esc(r.explanation)}`;
+    }
+  }
+
+  function drawRounds() {
+    const box = $('roundButtons');
+    box.innerHTML = '';
+    ROUNDS.forEach((r, i) => {
+      const b = document.createElement('button');
+      b.textContent = String(i + 1);
+      b.title = r.title;
+      b.className = (solved.has(r.id) ? 'solved ' : '') + (i === roundIndex ? 'current' : '');
+      b.setAttribute('aria-label', `Runde ${i + 1}: ${r.title}${solved.has(r.id) ? ' (gelöst)' : ''}`);
+      b.addEventListener('click', () => selectRound(i));
+      box.appendChild(b);
+    });
+    const r = ROUNDS[roundIndex];
+    $('roundCard').innerHTML =
+      `<div><b>Runde ${roundIndex + 1} von ${ROUNDS.length}: ${esc(r.title)}</b>${solved.has(r.id) ? ' <span class="badge ok">✓ gelöst</span>' : ''}</div>` +
+      `${esc(r.intro)}` +
+      (r.kind === 'assign' ? '<br><span class="hint">Wähle in jeder Zeile eine Antwort und drücke dann auf Prüfen.</span>' : '<br><span class="hint">Klicke auf eine Antwort. Du bekommst sofort eine Rückmeldung.</span>') +
+      `<br><span class="hint">Gelöst: ${solved.size} von ${ROUNDS.length} Runden</span>`;
+  }
+  function selectRound(i) {
+    roundIndex = i;
+    store.set('round', i);
+    picks = {};
+    clearFeedback();
+    drawRounds();
+    const r = ROUNDS[i];
+    if (r.kind === 'assign') { renderAssign(r); } else { renderChoice(r); }
+    $('checkBtn').style.display = r.kind === 'assign' ? '' : 'none';
+    $('resetBtn').style.display = r.kind === 'assign' ? '' : 'none';
+  }
+  $('checkBtn').addEventListener('click', checkAssign);
+  $('resetBtn').addEventListener('click', () => { picks = {}; clearFeedback(); paintPicks(); });
+  $('solutionBtn').addEventListener('click', showSolution);
+
+  // ---------- slides ----------
+  const anims = [pAnim, bAnim, gAnim, dAnim, uAnim, tAnim];
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let current = Math.min(Math.max(store.get('slide', 0) | 0, 0), slides.length - 1);
+  function showSlide(i) {
+    current = Math.min(Math.max(i, 0), slides.length - 1);
+    slides.forEach((s, k) => s.classList.toggle('active', k === current));
+    $('progressText').textContent = `${current + 1} / ${slides.length}`;
+    $('progressBar').style.width = `${(current + 1) / slides.length * 100}%`;
+    $('prevBtn').disabled = current === 0;
+    $('nextBtn').disabled = current === slides.length - 1;
+    anims.forEach(a => a.stop());
+    store.set('slide', current);
+    window.scrollTo(0, 0);
+  }
+  $('prevBtn').addEventListener('click', () => showSlide(current - 1));
+  $('nextBtn').addEventListener('click', () => showSlide(current + 1));
+  document.addEventListener('keydown', evt => {
+    const tag = evt.target && evt.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (evt.target && evt.target.isContentEditable)) { return; }
+    if (evt.ctrlKey || evt.altKey || evt.metaKey) { return; }
+    if (evt.key === 'ArrowRight' || evt.key === 'PageDown') { showSlide(current + 1); evt.preventDefault(); }
+    if (evt.key === 'ArrowLeft' || evt.key === 'PageUp') { showSlide(current - 1); evt.preventDefault(); }
+  });
+
+  // ---------- start ----------
+  anims.forEach(a => a.show(0));
+  selectRound(roundIndex);
+  showSlide(current);
+
+  /** Read-only hooks for automated tests. */
+  window.viteDebug = {
+    rounds: () => ROUNDS.map(r => r.id),
+    answer: () => (ROUNDS[roundIndex].kind === 'assign' ? ROUNDS[roundIndex].items.map(it => it.a) : [ROUNDS[roundIndex].correct]),
+    /** Every answer must point to an existing option. */
+    selfTest: () => {
+      const problems = [];
+      ROUNDS.forEach(r => {
+        if (r.kind === 'assign') {
+          r.items.forEach(it => { if (!(it.a >= 0 && it.a < r.options.length)) { problems.push(`${r.id}: ${it.what} has no valid answer`); } if (!it.why) { problems.push(`${r.id}: ${it.what} without explanation`); } });
+        } else if (!(r.correct >= 0 && r.correct < r.options.length)) { problems.push(`${r.id}: invalid correct option`); }
+      });
+      return problems;
+    }
+  };
+})();
+</script>
+</body>
+</html>

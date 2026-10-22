@@ -1,0 +1,511 @@
+= Vite: Module im Browser verwenden
+:source-highlighter: rouge
+:icons: font
+:lang: DE
+:hyphens:
+:figure-caption!:
+ifndef::root_dir[:root_dir: .]
+ifndef::github_url[:github_url: ..]
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+Der Flächenrechner aus dem Kapitel link:{github_url}/20_Typescript/22_Modules.adoc[Module] läuft in Node.js.
+Jetzt soll er im Browser laufen, mit einem Formular statt der Konsole.
+Der erste Versuch ist eine HTML-Seite mit `<script type="module" src="src/maths.ts">`.
+Der Browser lädt die Datei nicht:
+
+[source%unbreakable,text]
+----
+Failed to load module script: Expected a JavaScript-or-Wasm module script
+but the server responded with a MIME type of "text/plain".
+----
+
+Der Browser versteht kein TypeScript.
+Auch mit den übersetzten _.js_-Dateien gibt es Probleme.
+`import x from "lodash"` meldet `Failed to resolve module specifier "lodash"`, weil der Browser den Ordner _node_modules_ nicht kennt.
+Und eine echte App besteht aus hunderten Modulen.
+Der Browser müsste jedes einzeln vom Server laden.
+
+Ein Werkzeug, das diese Probleme löst, heißt *Bundler*.
+In diesem Kapitel lernst du den Bundler *Vite* kennen.
+Vite (französisch für „schnell“, gesprochen „wiet“) ist heute der Standard für Webprojekte ohne Server-Framework.
+
+[TIP]
+====
+*Zum Selbst-Erarbeiten: Was Vite mit deinen Modulen macht*
+
+In der https://die-spengergasse.github.io/course-wmc-5sem/20_Typescript/23_Vite.html[interaktiven Präsentation zu Vite] verfolgst du animiert, wie der Dev-Server jede Datei einzeln ausliefert und wie der Build daraus wenige Dateien macht.
+Danach ordnest du in einer Übung zu, welche Quelldatei in welcher Datei im Ordner _dist_ landet.
+So verstehst du die Ausgabe von `npm run build`, statt sie nur zu überfliegen.
+====
+
+[.lead]
+_Link zum Programm: link:{github_url}/20_Typescript/Beispiele/ViteDemo.7z[ViteDemo.7z], im Repo unter 20_Typescript/Beispiele/ViteDemo._
+
+== Was macht ein Bundler?
+
+Ein Bundler beginnt bei einer Datei, dem *Einstiegspunkt*.
+Er folgt allen `import`-Anweisungen und findet so jedes Modul, das die App braucht.
+Diese Module verarbeitet er so, dass der Browser sie ausführen kann.
+
+[cols="1,3"]
+|===
+|Aufgabe |Was passiert?
+
+|Übersetzen
+|TypeScript wird zu JavaScript.
+Die Typen werden entfernt, aber *nicht* geprüft.
+
+|Auflösen
+|`import x from "lodash"` wird zur passenden Datei in _node_modules_.
+
+|Bündeln
+|Viele Module werden zu wenigen Dateien zusammengefasst (*bundle*, englisch für Bündel).
+
+|Optimieren
+|Leerzeichen und Kommentare werden entfernt (*minify*).
+Code, den niemand importiert, fällt weg (*tree shaking*).
+
+|Assets
+|CSS-Dateien und Bilder bekommen eindeutige Dateinamen.
+|===
+
+Bekannte Bundler sind webpack (älter), esbuild, Rollup und Rolldown.
+Vite verwendet intern Rolldown.
+Next.js, das du später kennenlernst, verwendet einen eigenen Bundler namens Turbopack.
+
+Vite arbeitet in zwei Modi.
+Beim Entwickeln startet es einen Server, der jede Datei einzeln übersetzt.
+Vor dem Veröffentlichen erzeugt es fertige Dateien im Ordner _dist_.
+
+image::{root_dir}/assets/vite-dev-build.svg[Vite im Dev-Modus und beim Build,width=100%]
+
+== Ein Vite-Projekt anlegen
+
+Vite bringt Vorlagen (*templates*) mit.
+Die Vorlage `vanilla-ts` ist ein Projekt mit TypeScript, aber ohne Framework.
+_Vanilla_ bedeutet: reines JavaScript ohne Zusätze.
+
+[source,text]
+----
+npm create vite@latest ViteDemo -- --template vanilla-ts
+cd ViteDemo
+npm install
+npm run dev
+----
+
+`npm create vite` lädt das Paket _create-vite_ und führt es aus.
+Die Optionen nach `--` gibt npm an _create-vite_ weiter.
+Öffne danach http://localhost:5173 im Browser.
+
+Die Vorlage enthält eine Demo-App mit einem Zähler.
+Für unser Beispiel räumen wir auf:
+
+. Lösche _src/counter.ts_, den Ordner _src/assets_ und _public/icons.svg_.
+. Ersetze den Inhalt von _src/main.ts_, _src/style.css_ und _index.html_.
+
+Die wichtigsten Dateien des fertigen Projekts:
+
+[source%unbreakable,text]
+----
+ViteDemo
+├── index.html        (Einstiegspunkt für Vite)
+├── package.json
+├── tsconfig.json
+├── public
+│   └── favicon.svg   (wird unverändert kopiert)
+└── src
+    ├── main.ts
+    ├── dom.ts
+    ├── style.css
+    ├── hello.ts      ┐
+    ├── maths.ts      │ unverändert aus ModulesDemo
+    ├── report.ts     │
+    └── shapes/…      ┘
+----
+
+.link:{github_url}/20_Typescript/Beispiele/ViteDemo/package.json[→ ViteDemo/package.json]
+[source,json]
+----
+{
+  "name": "vite-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3",
+    "vite": "^8.3.4"
+  }
+}
+----
+
+[cols="1,3"]
+|===
+|Befehl |Bedeutung
+
+|`npm run dev`
+|Startet den Dev-Server auf Port 5173.
+
+|`npm run build`
+|Prüft die Typen mit `tsc` und erzeugt den Ordner _dist_.
+
+|`npm run preview`
+|Startet einen Server auf Port 4173, der den Ordner _dist_ ausliefert.
+|===
+
+== index.html ist der Einstiegspunkt
+
+In Node.js startet das Programm mit _app.js_.
+Bei Vite startet alles mit der Datei _index.html_.
+
+.link:{github_url}/20_Typescript/Beispiele/ViteDemo/index.html[→ ViteDemo/index.html]
+[source%unbreakable,html]
+----
+<body>
+  <main>
+    <h1 id="greeting">Shape Calculator</h1>
+    <form id="shapeForm"> <!-- ... --> </form>
+    <ul id="shapeList"></ul>
+    <button id="reportButton" type="button">Show report</button>
+    <pre id="report"></pre>
+  </main>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+----
+
+Vite findet das `<script type="module">` und folgt von _main.ts_ aus allen Importen.
+Der Pfad `/src/main.ts` beginnt mit `/`.
+Er bezieht sich auf den Projektordner, nicht auf das Laufwerk.
+
+== Die Module aus ModulesDemo übernehmen
+
+Die Dateien _hello.ts_, _maths.ts_, _report.ts_ und den Ordner _shapes_ kopieren wir *ohne Änderung* aus _ModulesDemo_.
+Sie verwenden nichts, was es nur in Node.js gibt.
+Deshalb laufen sie auch im Browser.
+Nur _app.ts_ können wir nicht übernehmen, denn es verwendet `console.log` und `process.argv`.
+Im Browser ersetzt _main.ts_ diese Datei.
+
+TIP: Trenne Berechnungen von der Ein- und Ausgabe.
+Module ohne `document`, `console` und `process` kannst du überall verwenden: in Node.js, im Browser und später in React.
+
+Die Importe enden weiterhin auf `.js`, z. B. `import { pi } from "../maths.js"`.
+Vite erkennt, dass damit _maths.ts_ gemeint ist.
+Die _tsconfig.json_ von Vite unterscheidet sich aber von der Node.js-Version:
+
+[cols="2,2,3"]
+|===
+|Node.js (ModulesDemo) |Vite (ViteDemo) |Bedeutung
+
+|`"module": "NodeNext"`
+|`"moduleResolution": "bundler"`
+|Ein Bundler löst die Pfade auf.
+Kurzformen wie `"./shapes"` statt `"./shapes/index.js"` sind erlaubt.
+
+|`"outDir": "dist"`
+|`"noEmit": true`
+|`tsc` prüft bei Vite nur.
+Übersetzen und Bündeln macht Vite.
+
+|`"types": ["node"]`
+|`"types": ["vite/client"]`, `"lib": ["ES2023", "DOM"]`
+|Im Browser gibt es `document`, aber kein `process`.
+
+|–
+|`"allowImportingTsExtensions": true`
+|Auch `import { pi } from "./maths.ts"` ist erlaubt.
+Das Vite-Template schreibt Importe so.
+
+|`"verbatimModuleSyntax": true`
+|`"verbatimModuleSyntax": true`
+|In beiden Projekten brauchst du `import type`.
+|===
+
+`strict` steht nicht in der Datei.
+Seit TypeScript 6 ist der strenge Modus der Standard.
+
+== main.ts: Module und DOM verbinden
+
+_main.ts_ liest das Formular aus und zeigt die Formen an.
+Die Berechnungen kommen aus den übernommenen Modulen.
+
+.link:{github_url}/20_Typescript/Beispiele/ViteDemo/src/main.ts[→ ViteDemo/src/main.ts]
+[source%unbreakable,typescript]
+----
+import "./style.css";
+import { getElement } from "./dom.js";
+import helloWorld from "./hello.js";
+import { round } from "./maths.js";
+import { area, createCircle, createRectangle, goldenRectangle }
+    from "./shapes/index.js";
+import type { Shape } from "./shapes/index.js";
+
+const greeting = getElement<HTMLHeadingElement>("#greeting");
+const shapeList = getElement<HTMLUListElement>("#shapeList");
+const reportButton = getElement<HTMLButtonElement>("#reportButton");
+const reportOutput = getElement<HTMLPreElement>("#report");
+// ...
+const shapes: Shape[] = [createCircle(1), goldenRectangle(10)];
+
+function renderShapes(): void {
+    shapeList.replaceChildren();
+    for (const shape of shapes) {
+        const item = document.createElement("li");
+        item.textContent = `${shape.kind}: area ${round(area(shape))}`;
+        shapeList.append(item);
+    }
+}
+
+reportButton.addEventListener("click", async () => {
+    // report.ts is loaded on the first click.
+    const { default: createReport } = await import("./report.js");
+    reportOutput.textContent = createReport(shapes).join("\n");
+});
+----
+
+* `import "./style.css"` holt keine Namen.
+  Vite baut das CSS in die Seite ein.
+  Das ist ein *side effect import*: Er wird nur wegen seiner Wirkung geschrieben.
+* `getElement()` aus _dom.ts_ ruft `document.querySelector()` auf und wirft einen Fehler, wenn es das Element nicht gibt.
+  In den spitzen Klammern steht der Typ des Elements, z. B. `HTMLInputElement`.
+  So weiß der Compiler, dass das Element ein Property `value` hat.
+* Der dynamische `import()` lädt _report.ts_ erst beim ersten Klick auf den Button.
+
+== Der Dev-Server
+
+Starte den Dev-Server mit `npm run dev` und öffne die Seite.
+Öffne die Entwicklertools mit _F12_ und wähle den Reiter _Network_.
+Lade die Seite neu.
+Du siehst, dass der Browser jedes Modul einzeln anfordert:
+
+[source%unbreakable,text]
+----
+/src/main.ts
+/src/style.css
+/src/dom.ts
+/src/hello.ts
+/src/maths.ts
+/src/shapes/index.ts
+/src/shapes/circle.ts
+/src/shapes/area.ts
+/src/shapes/rectangle.ts
+----
+
+Zwei Dateien fehlen:
+
+* _report.ts_ erscheint erst, wenn du auf _Show report_ klickst.
+* _shapes/shape.ts_ erscheint nie.
+  Sie wird nur mit `import type` importiert.
+  Dieser Import verschwindet beim Übersetzen.
+
+Ändere jetzt den Text in _hello.ts_ und speichere die Datei.
+Vite bemerkt die Änderung und lädt die Seite im Browser automatisch neu.
+Ändere danach eine Farbe in _style.css_.
+Diesmal lädt die Seite nicht neu, Vite tauscht nur das CSS aus.
+Das heißt *Hot Module Replacement (HMR)*: Ein geändertes Modul wird ausgetauscht, und die Seite behält ihren Zustand.
+Für TypeScript-Module bekommst du HMR erst mit einem Framework wie React.
+
+WARNING: Der Dev-Server prüft *keine* Typen.
+Er entfernt sie nur.
+Ein Typfehler wird in VS Code rot angezeigt, die Seite läuft aber trotzdem weiter.
+Erst `npm run build` startet `tsc` und bricht bei Typfehlern ab.
+
+== Der Build: npm run build
+
+Ein Webserver im Internet soll keine hundert einzelnen Module ausliefern.
+`npm run build` erzeugt daher den Ordner _dist_:
+
+[source,text]
+----
+> tsc && vite build
+
+✓ 14 modules transformed.
+dist/index.html                 1.19 kB │ gzip: 0.56 kB
+dist/assets/index--YArkD8S.css  0.50 kB │ gzip: 0.30 kB
+dist/assets/report-D00--KmC.js  0.19 kB │ gzip: 0.17 kB
+dist/assets/index-DVmRuBBW.js   3.56 kB │ gzip: 1.66 kB
+✓ built in 78ms
+----
+
+* Alle statisch importierten Module stecken in *einer* Datei _index-….js_.
+* _report.ts_ hat eine eigene Datei, weil es mit `import()` geladen wird.
+  Eine solche Datei heißt *Chunk*.
+* Das CSS liegt in einer eigenen Datei.
+* Der Teil nach dem Bindestrich (z. B. `DVmRuBBW`) ist ein *Hash*.
+  Er wird aus dem Inhalt berechnet und ändert sich bei jeder Änderung am Code.
+  So lädt der Browser nach einem Update sicher die neue Version und keine alte Kopie aus dem Cache.
+
+Öffne _dist/assets/index-….js_.
+Der Code steht in wenigen, sehr langen Zeilen, ohne Kommentare und Typen.
+Den Inhalt von _dist_ kopierst du auf einen Webserver, und die App ist online.
+
+Mit `npm run preview` testest du den Build lokal auf http://localhost:4173.
+Ein Doppelklick auf _dist/index.html_ funktioniert nicht.
+Der Browser lädt Module nicht über `file://`, und die Pfade `/assets/…` brauchen einen Webserver.
+
+NOTE: Der Ordner _dist_ entsteht bei jedem Build neu.
+Er steht in der _.gitignore_ und kommt nicht ins Repository.
+
+== Zusammenfassung
+
+[cols="1,1"]
+|===
+|Node.js mit tsc |Vite
+
+|Start mit `node dist/app.js`
+|Start mit _index.html_ im Browser
+
+|`tsc` übersetzt und prüft
+|`tsc` prüft, Vite übersetzt
+
+|Import mit `.js`-Endung Pflicht
+|Kurzformen erlaubt
+
+|eine _.js_-Datei pro Modul
+|wenige gebündelte Dateien in _dist_
+|===
+
+// tag::pdf_exclude[]
+== Übung: Arena Clash in Module zerlegen
+
+Das Programm für das Klassenturnier läuft jetzt im Browser.
+Leider steht alles in einer Datei _src/main.ts_ mit fast 300 Zeilen.
+Deine Aufgabe: Zerlege die App in Module und ergänze danach eine Rangliste.
+
+_Vorlage: link:{github_url}/20_Typescript/Uebungen/ArenaClashVite.7z[ArenaClashVite.7z], im Repo unter 20_Typescript/Uebungen/ArenaClashVite._
+
+[IMPORTANT]
+====
+*Keine KI in dieser Übung.*
+Eine KI zerlegt die Datei in Sekunden.
+Du sollst aber lernen, *wo* die Grenzen zwischen Modulen liegen.
+Genau das musst du später prüfen, wenn eine KI Code für dich schreibt.
+====
+
+=== Vorbereitung
+
+Entpacke das Archiv und starte die App:
+
+[source,text]
+----
+cd ArenaClashVite
+npm install
+npm run dev
+----
+
+Probiere den Filter für die Rollen aus.
+Lege eine Datei _PROTOKOLL.md_ an und notiere die Anzahl der Zeilen von _src/main.ts_.
+
+=== Teil 1: Die App in Module zerlegen
+
+Erstelle diese Struktur:
+
+[source%unbreakable,text]
+----
+src
+├── main.ts
+├── style.css
+├── types.ts
+├── data
+│   └── tournament.ts
+├── logic
+│   ├── index.ts
+│   ├── stats.ts
+│   ├── lookup.ts
+│   └── format.ts
+└── ui
+    ├── index.ts
+    ├── dom.ts
+    ├── headerView.ts
+    ├── teamView.ts
+    └── matchView.ts
+----
+
+[cols="1,3"]
+|===
+|Modul |Inhalt
+
+|_types.ts_
+|Alle Interfaces und Typen.
+
+|_data/tournament.ts_
+|Die Turnierdaten als named export `tournament`.
+
+|_logic/_
+|Berechnungen, Suchen und Formatieren.
+_stats.ts_ rechnet, _lookup.ts_ sucht Teams und Spieler, _format.ts_ erzeugt Texte.
+
+|_ui/_
+|Alles, was mit dem DOM arbeitet.
+Pro Bereich der Seite ein Modul.
+
+|_main.ts_
+|Nur Importe, die Event Listener und der erste Aufruf der Render-Funktionen.
+|===
+
+Halte dabei diese Regeln ein:
+
+. Kein Modul in _logic/_ verwendet `document`, `window` oder ein HTML-Element.
+. Kein Modul in _logic/_ importiert etwas aus _ui/_.
+. Module außerhalb von _logic/_ und _ui/_ importieren nur über deren _index.ts_.
+. Typen werden mit `import type` importiert.
+. Nur named exports, kein `export default`.
+. Kein `any`, keine Typumwandlung mit `as`, keine Non-null-Assertion `!` und kein `// @ts-ignore`.
+
+Du darfst neue Funktionen anlegen und Parameter ergänzen.
+Jede Funktion muss aber in das Modul passen, in dem sie steht.
+
+Fertig bist du, wenn
+
+* `npm run build` ohne Fehler durchläuft,
+* die App genau so aussieht und funktioniert wie vorher und
+* _main.ts_ höchstens 25 Zeilen hat.
+
+Beantworte im Protokoll:
+
+. Welche Funktionen haben in der Vorlage Variablen verwendet, die sie nicht als Parameter bekommen haben?
+  Was hast du an diesen Funktionen geändert?
+. Welches Modul wird von den meisten anderen Modulen importiert?
+. Wie viele Dateien hat dein Ordner _src_, wie viele _.js_-Dateien hat _dist/assets_?
+. Warum ist Regel 1 nützlich? Denke an eine spätere Version der App mit einem Server in Node.js.
+
+=== Teil 2: Eine Rangliste ergänzen
+
+Unter den Matches soll ein Button _Show leaderboard_ stehen.
+Ergänze ihn in _index.html_.
+Ein Klick zeigt alle Spieler aller Teams, sortiert nach KDA (höchster Wert zuerst):
+
+[source,text]
+----
+1. segfault (5AAIF), KDA 24.00
+2. byteMe (5AAIF), KDA 5.25
+3. pingu (5BAIF), KDA 4.40
+4. 404brain (5AAIF), KDA 3.86
+5. sudo_sara (5BAIF), KDA 2.33
+6. lagMaster (5BAIF), KDA 1.27
+----
+
+* Lege für eine Zeile der Rangliste ein Interface `LeaderboardEntry` in _types.ts_ an.
+* Die Berechnung steht in _logic/leaderboard.ts_, die Anzeige in _ui/leaderboardView.ts_.
+  Für beide gelten die Regeln aus Teil 1.
+* Der Code der Rangliste darf erst beim ersten Klick geladen werden.
+  Für diese zwei Module gilt Regel 3 nicht.
+* Prüfe das Ergebnis mit `npm run build` und `npm run preview`.
+  Der Reiter _Network_ darf die Rangliste erst nach dem Klick zeigen.
+
+Beantworte im Protokoll:
+
+. Wie heißen die Dateien der Rangliste in _dist/assets_?
+. Was zeigt der Reiter _Network_ in `npm run preview` beim ersten und beim zweiten Klick auf den Button?
+. Exportiere _leaderboard.ts_ testweise zusätzlich in _logic/index.ts_ und starte `npm run build`.
+  Was meldet Vite? Erkläre die Meldung in eigenen Worten.
+// end::pdf_exclude[]

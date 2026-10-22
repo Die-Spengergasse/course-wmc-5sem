@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shape Calculator</title>
+  </head>
+  <body>
+    <main>
+      <h1 id="greeting">Shape Calculator</h1>
+
+      <form id="shapeForm">
+        <label>
+          Shape
+          <select id="kind">
+            <option value="circle">Circle</option>
+            <option value="rectangle">Rectangle</option>
+            <option value="golden">Golden rectangle</option>
+          </select>
+        </label>
+        <label>
+          Size
+          <input id="size" type="number" value="1" step="0.1" required />
+        </label>
+        <button type="submit">Add shape</button>
+      </form>
+
+      <ul id="shapeList"></ul>
+
+      <button id="reportButton" type="button">Show report</button>
+      <pre id="report"></pre>
+    </main>
+
+    <!-- Entry point: Vite follows all imports starting from this module. -->
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="570" viewBox="0 0 800 570" font-family="Segoe UI, Helvetica, Arial, sans-serif" fill="#1d1d1b">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1d1d1b"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="798" height="568" rx="12" fill="#ffffff" stroke="#9d9d9c" stroke-width="1.5"/>
+
+  <!-- entry module -->
+  <rect x="290" y="24" width="220" height="58" rx="8" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+  <text x="400" y="49" text-anchor="middle" font-size="17" font-weight="bold">app.ts</text>
+  <text x="400" y="71" text-anchor="middle" font-size="15">Einstiegspunkt</text>
+
+  <!-- import arrows -->
+  <line x1="330" y1="82" x2="100" y2="178" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="380" y1="82" x2="296" y2="178" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="420" y1="82" x2="514" y2="178" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="470" y1="82" x2="706" y2="178" stroke="#1d1d1b" stroke-width="1.8" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+
+  <!-- hello.ts -->
+  <rect x="20" y="180" width="160" height="170" rx="8" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+  <text x="100" y="205" text-anchor="middle" font-size="16" font-weight="bold">hello.ts</text>
+  <text x="32" y="235" font-size="14" font-family="Consolas, Menlo, monospace">export default</text>
+  <text x="32" y="257" font-size="14" font-family="Consolas, Menlo, monospace">helloWorld()</text>
+
+  <!-- maths.ts -->
+  <rect x="196" y="180" width="200" height="170" rx="8" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+  <text x="296" y="205" text-anchor="middle" font-size="16" font-weight="bold">maths.ts</text>
+  <text x="208" y="235" font-size="14" font-family="Consolas, Menlo, monospace">export pi, phi</text>
+  <text x="208" y="257" font-size="14" font-family="Consolas, Menlo, monospace">export absolute()</text>
+  <text x="208" y="279" font-size="14" font-family="Consolas, Menlo, monospace">export round()</text>
+  <line x1="208" y1="292" x2="384" y2="292" stroke="#9d9d9c" stroke-width="1.5" stroke-dasharray="4 4"/>
+  <text x="208" y="313" font-size="14" fill="#5f5f5e">privat (kein export):</text>
+  <text x="208" y="335" font-size="14" font-family="Consolas, Menlo, monospace" fill="#5f5f5e">defaultDigits</text>
+
+  <!-- shapes/index.ts -->
+  <rect x="412" y="180" width="204" height="170" rx="8" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+  <text x="514" y="205" text-anchor="middle" font-size="16" font-weight="bold">shapes/index.ts</text>
+  <text x="422" y="235" font-size="14" font-family="Consolas, Menlo, monospace">export { area,</text>
+  <text x="422" y="257" font-size="14" font-family="Consolas, Menlo, monospace">  createCircle, … }</text>
+  <text x="422" y="279" font-size="14" font-family="Consolas, Menlo, monospace">export type { Shape }</text>
+  <text x="422" y="313" font-size="14">Re-exports: gibt Namen</text>
+  <text x="422" y="335" font-size="14">aus dem Ordner weiter</text>
+
+  <!-- report.ts -->
+  <rect x="632" y="180" width="148" height="170" rx="8" fill="#e5f4f1" stroke="#6cc1b0" stroke-width="2" stroke-dasharray="8 4"/>
+  <text x="706" y="205" text-anchor="middle" font-size="16" font-weight="bold">report.ts</text>
+  <text x="644" y="235" font-size="14" font-family="Consolas, Menlo, monospace">export default</text>
+  <text x="644" y="257" font-size="14" font-family="Consolas, Menlo, monospace">createReport()</text>
+  <text x="644" y="313" font-size="14">wird erst bei</text>
+  <text x="644" y="335" font-size="14">Bedarf geladen</text>
+
+  <!-- folder shapes -->
+  <line x1="514" y1="350" x2="514" y2="398" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="524" y="381" font-size="14" font-family="Consolas, Menlo, monospace">export … from</text>
+  <rect x="20" y="400" width="760" height="104" rx="8" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+  <text x="34" y="422" font-size="15" font-weight="bold">Ordner shapes/</text>
+  <rect x="40" y="434" width="165" height="56" rx="6" fill="#ffffff" stroke="#9d9d9c" stroke-width="1.5"/>
+  <text x="122" y="457" text-anchor="middle" font-size="15" font-weight="bold">shape.ts</text>
+  <text x="122" y="479" text-anchor="middle" font-size="14">nur Typen</text>
+  <rect x="223" y="434" width="165" height="56" rx="6" fill="#ffffff" stroke="#9d9d9c" stroke-width="1.5"/>
+  <text x="305" y="457" text-anchor="middle" font-size="15" font-weight="bold">circle.ts</text>
+  <text x="305" y="479" text-anchor="middle" font-size="14">Kreis</text>
+  <rect x="406" y="434" width="165" height="56" rx="6" fill="#ffffff" stroke="#9d9d9c" stroke-width="1.5"/>
+  <text x="488" y="457" text-anchor="middle" font-size="15" font-weight="bold">rectangle.ts</text>
+  <text x="488" y="479" text-anchor="middle" font-size="14">Rechteck</text>
+  <rect x="589" y="434" width="165" height="56" rx="6" fill="#ffffff" stroke="#9d9d9c" stroke-width="1.5"/>
+  <text x="671" y="457" text-anchor="middle" font-size="15" font-weight="bold">area.ts</text>
+  <text x="671" y="479" text-anchor="middle" font-size="14">Fläche</text>
+
+  <!-- legend -->
+  <line x1="40" y1="540" x2="100" y2="540" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="110" y="545" font-size="15">importiert (import … from)</text>
+  <line x1="390" y1="540" x2="450" y2="540" stroke="#1d1d1b" stroke-width="1.8" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+  <text x="460" y="545" font-size="15">lädt bei Bedarf (await import())</text>
+</svg>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arena Clash</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1 id="title">Arena Clash</h1>
+        <p id="venue"></p>
+      </header>
+
+      <section>
+        <h2>Teams</h2>
+        <label>
+          Role
+          <select id="roleFilter">
+            <option value="all">All roles</option>
+            <option value="tank">Tank</option>
+            <option value="damage">Damage</option>
+            <option value="support">Support</option>
+          </select>
+        </label>
+        <div id="teams"></div>
+      </section>
+
+      <section>
+        <h2>Matches</h2>
+        <ul id="matches"></ul>
+        <p id="mvp"></p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,520 @@
+= Module: Code auf mehrere Dateien aufteilen
+:source-highlighter: rouge
+:icons: font
+:lang: DE
+:hyphens:
+:figure-caption!:
+ifndef::root_dir[:root_dir: .]
+ifndef::github_url[:github_url: ..]
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+Dein Programm für das Klassenturnier hat schon über 100 Zeilen in einer einzigen Datei _app.ts_.
+Es enthält Interfaces, Berechnungen und Ausgaben.
+Jetzt soll ein zweites Programm die Funktion `calcKda()` verwenden.
+Kopierst du sie, hast du den Code doppelt.
+Im Browser kennst du schon eine andere Lösung: mehrere `<script>`-Tags.
+Dort teilen sich aber alle Dateien *einen gemeinsamen globalen Bereich*.
+Definieren zwei Dateien eine Funktion `format()`, gewinnt ohne Fehlermeldung die zuletzt geladene.
+
+In diesem Kapitel lernst du *Module* kennen.
+Mit Modulen teilst du ein Programm sauber auf mehrere Dateien auf.
+Jede Datei legt selbst fest, was andere Dateien von ihr sehen dürfen.
+
+[TIP]
+====
+*Zum Selbst-Erarbeiten: export und import Schritt für Schritt*
+
+In der https://die-spengergasse.github.io/course-wmc-5sem/20_Typescript/22_Modules.html[interaktiven Präsentation zu Modulen] siehst du animiert, wie Namen aus einem Modul exportiert und in einem anderen importiert werden.
+Danach entscheidest du in einem Quiz, welche Importe funktionieren und welche der Compiler ablehnt.
+So lernst du die Fehlermeldungen kennen, bevor sie dir im eigenen Projekt begegnen.
+====
+
+[.lead]
+_Link zum Programm: link:{github_url}/20_Typescript/Beispiele/ModulesDemo.7z[ModulesDemo.7z], im Repo unter 20_Typescript/Beispiele/ModulesDemo._
+
+== Was ist ein Modul?
+
+Ein *Modul* ist eine Datei, die `import` oder `export` verwendet.
+Für Module gelten drei Regeln:
+
+[cols="1,3"]
+|===
+|Regel |Bedeutung
+
+|Eigener Bereich (Scope)
+|Variablen und Funktionen in einem Modul sind nur in diesem Modul sichtbar.
+Zwei Module dürfen beide eine Funktion `format()` haben.
+
+|`export` macht Namen öffentlich
+|Nur was ein Modul mit `export` markiert, können andere Module verwenden.
+Der Rest ist privat.
+
+|`import` holt Namen
+|Ein Modul schreibt am Anfang, welche Namen es aus welchem Modul braucht.
+|===
+
+Dieses System heißt *ES Modules* (kurz *ESM*).
+Es ist seit 2015 Teil von JavaScript (ECMAScript 2015) und läuft im Browser und in Node.js.
+TypeScript verwendet dieselbe Syntax.
+
+Aus Java kennst du schon ein ähnliches Prinzip:
+
+[cols="1,1"]
+|===
+|Java |TypeScript
+
+|`public class Circle` in _Circle.java_
+|`export function createCircle()` in _circle.ts_
+
+|Methode ohne `public` (package-private)
+|Funktion ohne `export` (privat im Modul)
+
+|`import java.util.List;`
+|`import { createCircle } from "./circle.js";`
+|===
+
+Ein Unterschied ist wichtig: In Java schreibst du eine Klasse pro Datei.
+Ein TypeScript-Modul darf beliebig viele Funktionen, Konstanten, Interfaces und Klassen exportieren.
+
+Die Grafik zeigt das Beispielprojekt dieses Kapitels.
+Jeder Pfeil bedeutet: „dieses Modul importiert etwas aus jenem Modul“.
+
+image::{root_dir}/assets/modules-import-graph.svg[Module des Beispielprojekts und ihre Importe,width=100%]
+
+== Das Beispielprojekt
+
+Das Projekt _ModulesDemo_ berechnet Flächen von Kreisen und Rechtecken.
+Es ist wie in link:{github_url}/20_Typescript/10_FirstApp.md[Die erste TypeScript App] aufgebaut.
+
+[source,text]
+----
+ModulesDemo
+├── package.json
+├── tsconfig.json
+├── legacy
+│   └── maths.cjs        (CommonJS, siehe unten)
+└── src
+    ├── app.ts           (Einstiegspunkt)
+    ├── hello.ts
+    ├── maths.ts
+    ├── report.ts
+    └── shapes
+        ├── index.ts
+        ├── shape.ts
+        ├── circle.ts
+        ├── rectangle.ts
+        └── area.ts
+----
+
+Entpacke das Archiv und starte das Programm im Ordner _ModulesDemo_:
+
+[source,text]
+----
+npm install
+npm start
+----
+
+Zwei Einstellungen sind für Module wichtig.
+
+.link:{github_url}/20_Typescript/Beispiele/ModulesDemo/package.json[→ ModulesDemo/package.json]
+[source,json]
+----
+{
+  "type": "module",
+  "scripts": { "start": "tsc && node dist/app.js" }
+}
+----
+
+* `"type": "module"` sagt Node.js: Alle _.js_-Dateien in diesem Projekt sind ES Modules.
+  Ohne diese Zeile verwendet Node.js das alte System CommonJS (siehe <<commonjs>>).
+* In der _tsconfig.json_ stehen `"rootDir": "src"` und `"outDir": "dist"`.
+  Der Compiler schreibt die _.js_-Dateien dann in den Ordner _dist_ und nicht neben die _.ts_-Dateien.
+  Deshalb startet `node` die Datei _dist/app.js_.
+
+== Named exports: mehrere Namen pro Modul
+
+Das Modul _maths.ts_ stellt Konstanten und Funktionen für Berechnungen bereit.
+
+.link:{github_url}/20_Typescript/Beispiele/ModulesDemo/src/maths.ts[→ ModulesDemo/src/maths.ts]
+[source,typescript]
+----
+export const pi = Math.PI;
+export const phi = (1 + Math.sqrt(5)) / 2;
+
+// Not exported: other modules cannot see this constant.
+const defaultDigits = 2;
+
+export function absolute(value: number): number {
+    return value < 0 ? -value : value;
+}
+
+export function round(value: number, digits: number = defaultDigits): number {
+    const factor = 10 ** digits;
+    return Math.round(value * factor) / factor;
+}
+----
+
+Das Schlüsselwort `export` steht direkt vor `const`, `function`, `interface`, `type` oder `class`.
+Diese Form heißt *named export*, weil jeder Export einen festen Namen hat.
+Ein anderes Modul importiert die Namen mit geschwungenen Klammern:
+
+[source,typescript]
+----
+import { pi, phi, absolute } from "./maths.js";
+----
+
+Die Namen in den Klammern müssen genau so heißen wie die Exporte.
+Versuchst du, `defaultDigits` zu importieren, meldet der Compiler `error TS2459: Module '"./maths.js"' declares 'defaultDigits' locally, but it is not exported`.
+
+Du kannst die Exporte auch gesammelt am Ende der Datei angeben, z. B. `export { pi, absolute };`.
+Das Ergebnis ist dasselbe.
+
+== Default export: der eine Hauptexport
+
+Manche Module haben genau eine Hauptsache.
+Dafür gibt es den *default export*.
+
+.link:{github_url}/20_Typescript/Beispiele/ModulesDemo/src/hello.ts[→ ModulesDemo/src/hello.ts]
+[source,typescript]
+----
+export default function helloWorld(name: string): string {
+    return `Hello ${name}, welcome to the shape calculator!`;
+}
+----
+
+Beim Import gibt es keine geschwungenen Klammern.
+Den Namen wählst du selbst:
+
+[source,typescript]
+----
+import helloWorld from "./hello.js";
+import greet from "./hello.js";       // also works: same function, other name
+----
+
+Ein Modul darf *höchstens einen* default export haben (`error TS2528: A module cannot have multiple default exports`).
+Es darf aber zusätzlich named exports haben.
+
+[cols="1,2,2"]
+|===
+| |Named export |Default export
+
+|Anzahl pro Modul
+|beliebig viele
+|höchstens einer
+
+|Import
+|`import { round } from …`
+|`import round from …`
+
+|Name beim Import
+|muss passen (Tippfehler = Compilerfehler)
+|frei wählbar
+
+|Wann verwenden?
+|Standardfall
+|Wenn ein Framework es verlangt (z. B. Seiten in Next.js) oder das Modul genau eine Sache enthält
+|===
+
+TIP: Verwende im Zweifel named exports.
+VS Code findet sie beim Tippen automatisch und schreibt den Import für dich.
+Benennst du eine Funktion um, ändert VS Code auch alle Importe.
+
+== Die Formen von import
+
+Die Datei _app.ts_ zeigt alle Formen, die du für den Anfang brauchst.
+
+.link:{github_url}/20_Typescript/Beispiele/ModulesDemo/src/app.ts[→ ModulesDemo/src/app.ts]
+[source%unbreakable,typescript]
+----
+// Default import: we choose the name ourselves.
+import helloWorld from "./hello.js";
+// Named imports: the names must match the exports.
+import { pi, phi, absolute } from "./maths.js";
+// Rename an import with "as".
+import { round as roundTo } from "./maths.js";
+// Namespace import: all exports as properties of one object.
+import * as maths from "./maths.js";
+// Import from a folder via its index.ts (re-exports).
+import { area, createCircle, createRectangle, goldenRectangle }
+    from "./shapes/index.js";
+import type { Shape } from "./shapes/index.js";
+
+console.log(`Same function via namespace: ${maths.round(maths.phi, 3)}`);
+----
+
+[cols="5,4"]
+|===
+|Form |Bedeutung
+
+|`import helloWorld from "./hello.js"`
+|Holt den default export.
+
+|`import { pi, phi } from "./maths.js"`
+|Holt named exports.
+
+|`import { round as roundTo } from "./maths.js"`
+|Holt `round` und nennt es in diesem Modul `roundTo`.
+
+|`import * as maths from "./maths.js"`
+|Holt alle Exporte als ein Objekt: `maths.pi`, `maths.round()`.
+
+|`import helloWorld, { x } from "./a.js"`
+|Default und named exports in einer Zeile.
+
+|`import type { Shape } from "./shapes/index.js"`
+|Holt nur Typen. Sie verschwinden beim Kompilieren.
+
+|`import "./style.css"`
+|Führt ein Modul nur aus und holt keine Namen (siehe Kapitel Vite).
+
+|`await import("./report.js")`
+|Lädt ein Modul erst zur Laufzeit (siehe <<dynamic-import>>).
+|===
+
+Importe stehen immer *am Anfang* der Datei, außerhalb von Funktionen und `if`-Blöcken.
+Nur so weiß der Compiler schon vor dem Start, welche Module das Programm braucht.
+
+=== Warum steht .js im Import, obwohl die Datei .ts heißt?
+
+Der Compiler übersetzt _maths.ts_ in _dist/maths.js_.
+Den Text im Import ändert er dabei *nicht*.
+Node.js führt später _dist/app.js_ aus und sucht dort die Datei _./maths.js_.
+Node.js verlangt bei ES Modules immer die vollständige Dateiendung.
+Lässt du `.js` weg, meldet TypeScript schon beim Kompilieren:
+
+[source,text]
+----
+error TS2835: Relative import paths need explicit file extensions
+in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'.
+Did you mean './maths.js'?
+----
+
+Der Pfad beginnt immer mit `./` oder `../`.
+Ohne Punkt sucht Node.js ein Paket im Ordner _node_modules_, z. B. `import { readFileSync } from "node:fs"`.
+
+=== Umbenennen mit as und Namespace-Import
+
+Zwei Module können denselben Namen exportieren, z. B. `format` in _date.ts_ und in _currency.ts_.
+Importierst du beide, gibt es einen Namenskonflikt.
+Mit `as` gibst du einem Import im eigenen Modul einen anderen Namen:
+
+[source,typescript]
+----
+import { format as formatDate } from "./date.js";
+import { format as formatCurrency } from "./currency.js";
+----
+
+Der *Namespace-Import* `import * as maths` ist die andere Lösung.
+Alle Exporte stehen dann unter einem Präfix: `maths.round()`, `maths.pi`.
+Man sieht beim Lesen sofort, aus welchem Modul eine Funktion kommt.
+
+== Typen importieren mit import type
+
+Interfaces und Typen gibt es nur in TypeScript.
+Im erzeugten JavaScript sind sie verschwunden.
+Ein Import, der nur Typen holt, ist im JavaScript-Code also überflüssig.
+Mit `import type` sagst du das dem Compiler ausdrücklich.
+
+.link:{github_url}/20_Typescript/Beispiele/ModulesDemo/src/shapes/circle.ts[→ ModulesDemo/src/shapes/circle.ts]
+[source,typescript]
+----
+import { pi } from "../maths.js";
+import type { Circle } from "./shape.js";
+
+export function createCircle(radius: number): Circle {
+    if (radius < 0) {
+        throw new Error(`Invalid radius: ${radius}`);
+    }
+    return { kind: "circle", radius };
+}
+
+export function circleArea(circle: Circle): number {
+    return pi * circle.radius ** 2;
+}
+----
+
+In der _tsconfig.json_ ist `"verbatimModuleSyntax": true` gesetzt.
+Auch Vite setzt diese Option in neuen Projekten.
+Dann *musst* du Typen mit `import type` importieren, sonst meldet der Compiler:
+
+[source,text]
+----
+error TS1484: 'Shape' is a type and must be imported using a type-only import
+when 'verbatimModuleSyntax' is enabled.
+----
+
+Holst du Werte und Typen aus demselben Modul, schreibst du `type` direkt vor den Namen:
+
+[source,typescript]
+----
+import { area, type Shape } from "./shapes/index.js";
+----
+
+[[re-exports]]
+== Ordner als Modul: Re-exports mit index.ts
+
+Der Ordner _shapes_ enthält fünf Dateien.
+Ein anderes Modul soll nicht wissen müssen, in welcher Datei `area()` steht.
+Daher gibt es eine Datei _index.ts_, die nur weitergibt (*re-export*):
+
+.link:{github_url}/20_Typescript/Beispiele/ModulesDemo/src/shapes/index.ts[→ ModulesDemo/src/shapes/index.ts]
+[source,typescript]
+----
+export type { Circle, Rectangle, Shape } from "./shape.js";
+export { createCircle } from "./circle.js";
+export { createRectangle, goldenRectangle } from "./rectangle.js";
+export { area } from "./area.js";
+----
+
+`export { x } from "./y.js"` importiert `x` und exportiert es sofort wieder.
+In _index.ts_ selbst kannst du `x` nicht verwenden.
+
+Die Datei _index.ts_ ist die *öffentliche Schnittstelle* des Ordners.
+`circleArea()` und `rectangleArea()` stehen nicht darin.
+Sie sind Hilfsfunktionen für _area.ts_ und bleiben außerhalb des Ordners unsichtbar.
+Verschiebst du später `area()` in eine andere Datei, änderst du nur _index.ts_.
+Alle anderen Module bleiben gleich.
+
+NOTE: In Node.js musst du den Pfad vollständig schreiben: `"./shapes/index.js"`.
+Bundler wie Vite erlauben auch die Kurzform `"./shapes"`.
+
+[[dynamic-import]]
+== Module bei Bedarf laden: dynamischer import()
+
+Den Bericht braucht das Programm nur, wenn es mit `--report` gestartet wird.
+Dann soll _report.ts_ auch erst dann geladen werden.
+
+.link:{github_url}/20_Typescript/Beispiele/ModulesDemo/src/app.ts[→ ModulesDemo/src/app.ts]
+[source,typescript]
+----
+if (process.argv.includes("--report")) {
+    const { default: createReport } = await import("./report.js");
+    createReport(shapes).forEach(line => console.log(line));
+}
+----
+
+* `import()` sieht aus wie eine Funktion und darf überall stehen, auch in einem `if`.
+* Es liefert ein Promise.
+  Mit `await` wartest du, bis das Modul geladen ist.
+* Das Ergebnis ist ein Objekt mit allen Exporten.
+  Der default export heißt darin `default`.
+  Mit `{ default: createReport }` holst du ihn heraus und nennst ihn `createReport` (Object destructuring).
+
+Starte das Programm mit `npm run report`, um den Bericht zu sehen.
+Im Browser ist das noch wichtiger, wie das Kapitel über Vite zeigt.
+
+NOTE: `await` außerhalb einer Funktion (*top-level await*) ist nur in ES Modules erlaubt.
+
+== Ein Modul wird nur einmal ausgeführt
+
+_maths.ts_ wird von vier Modulen importiert.
+Trotzdem führt Node.js die Datei nur *einmal* aus, beim ersten Import.
+Alle anderen Importe bekommen dieselben Werte.
+Exportiert ein Modul ein Array, sehen alle Module dasselbe Array.
+Ändert ein Modul das Array, sehen alle anderen die Änderung.
+
+[[commonjs]]
+== CommonJS: das alte Modulsystem von Node.js
+
+Node.js gab es schon vor 2015.
+Damals hatte JavaScript noch keine Module.
+Node.js hat dafür ein eigenes System erfunden: *CommonJS*.
+Du findest es in älteren Tutorials, Stack Overflow-Antworten und oft auch in KI-Antworten.
+
+.link:{github_url}/20_Typescript/Beispiele/ModulesDemo/legacy/maths.cjs[→ ModulesDemo/legacy/maths.cjs]
+[source,javascript]
+----
+const pi = Math.PI;
+
+function absolute(value) {
+    return value < 0 ? -value : value;
+}
+
+// Export: assign an object to module.exports.
+module.exports = { pi, absolute };
+
+// Import: require() is a normal function call.
+const { pi: myPi, absolute: abs } = require("./maths.cjs");
+----
+
+[cols="1,2,2"]
+|===
+| |ES Modules |CommonJS
+
+|Export
+|`export function f() {}`
+|`module.exports = { f };`
+
+|Import
+|`import { f } from "./a.js";`
+|`const { f } = require("./a.js");`
+
+|Wann geladen?
+|Vor dem Start, Importe stehen oben
+|Zur Laufzeit, `require()` darf überall stehen
+
+|Dateiendung in Node.js
+|_.mjs_ oder _.js_ mit `"type": "module"`
+|_.cjs_ oder _.js_ ohne `"type": "module"`
+|===
+
+Verwendest du `require` in einem ES Module, stürzt Node.js ab:
+
+[source,text]
+----
+ReferenceError: require is not defined in ES module scope,
+you can use import instead
+----
+
+IMPORTANT: Wir schreiben in diesem Kurs nur ES Modules.
+Schlägt dir eine KI `require()` oder `module.exports` vor, schreibe den Code in `import` und `export` um.
+
+== Häufige Fehlermeldungen
+
+[cols="3,3"]
+|===
+|Meldung |Ursache
+
+|`TS2459: … declares 'x' locally, but it is not exported`
+|`export` vor der Deklaration fehlt.
+
+|`TS2614: … has no exported member 'helloWorld'. Did you mean to use 'import helloWorld from …'`
+|Default export mit geschwungenen Klammern importiert.
+
+|`TS1192: Module … has no default export`
+|Named export ohne geschwungene Klammern importiert.
+
+|`TS2835: Relative import paths need explicit file extensions`
+|`.js` am Ende des Pfads fehlt.
+
+|`TS1484: 'Shape' is a type and must be imported using a type-only import`
+|`import type` fehlt.
+|===
+
+// tag::pdf_exclude[]
+== Übungen
+
+Die Aufgaben arbeiten mit dem Projekt _ModulesDemo_.
+
+=== 1. Ein Dreieck ergänzen
+
+Das Programm soll auch Dreiecke kennen (Fläche = Grundlinie · Höhe / 2).
+
+* Lege eine Datei _shapes/triangle.ts_ mit `createTriangle()` und `triangleArea()` an.
+* Erweitere den Typ `Shape` um ein Interface `Triangle`.
+* Gib in _app.ts_ ein Dreieck mit Grundlinie 6 und Höhe 4 aus.
+* _app.ts_ darf nur aus _shapes/index.ts_ importieren, nicht direkt aus _triangle.ts_.
+
+Beantworte im Protokoll:
+
+. Welche Dateien hast du geändert?
+. Nach welchem Schritt hat der Compiler einen Fehler in _area.ts_ gemeldet? Warum ist das hilfreich?
+
+// end::pdf_exclude[]

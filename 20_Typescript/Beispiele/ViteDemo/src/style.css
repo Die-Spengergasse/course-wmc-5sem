@@ -1,0 +1,40 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: light dark;
+}
+
+main {
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  padding: 0.4rem 0.6rem;
+}
+
+pre {
+  padding: 0.75rem;
+  border: 1px solid #9d9d9c;
+  border-radius: 6px;
+}
+
+pre:empty {
+  display: none;
+}

@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="530" viewBox="0 0 800 530" font-family="Segoe UI, Helvetica, Arial, sans-serif" fill="#1d1d1b">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1d1d1b"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="798" height="528" rx="12" fill="#ffffff" stroke="#9d9d9c" stroke-width="1.5"/>
+  <line x1="400" y1="20" x2="400" y2="510" stroke="#9d9d9c" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+  <!-- left: dev server -->
+  <text x="205" y="38" text-anchor="middle" font-size="18" font-weight="bold" font-family="Consolas, Menlo, monospace">npm run dev</text>
+  <text x="205" y="60" text-anchor="middle" font-size="15">beim Entwickeln</text>
+
+  <rect x="60" y="80" width="290" height="58" rx="8" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+  <text x="205" y="104" text-anchor="middle" font-size="16" font-weight="bold">Browser</text>
+  <text x="205" y="126" text-anchor="middle" font-size="14" font-family="Consolas, Menlo, monospace">http://localhost:5173</text>
+
+  <line x1="140" y1="140" x2="140" y2="206" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="132" y="172" text-anchor="end" font-size="14">fragt jede</text>
+  <text x="132" y="190" text-anchor="end" font-size="14">Datei einzeln</text>
+  <line x1="270" y1="206" x2="270" y2="140" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="278" y="172" font-size="14">liefert</text>
+  <text x="278" y="190" font-size="14">JavaScript</text>
+
+  <rect x="60" y="208" width="290" height="66" rx="8" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+  <text x="205" y="234" text-anchor="middle" font-size="16" font-weight="bold">Vite Dev-Server</text>
+  <text x="205" y="258" text-anchor="middle" font-size="14">übersetzt .ts → .js beim Abrufen</text>
+
+  <line x1="205" y1="274" x2="205" y2="304" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <rect x="40" y="306" width="330" height="200" rx="8" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+  <text x="56" y="330" font-size="16" font-weight="bold">src/ (Quellcode, unverändert)</text>
+  <text x="56" y="358" font-size="14" font-family="Consolas, Menlo, monospace">main.ts</text>
+  <text x="56" y="380" font-size="14" font-family="Consolas, Menlo, monospace">dom.ts, hello.ts, maths.ts</text>
+  <text x="56" y="402" font-size="14" font-family="Consolas, Menlo, monospace">shapes/index.ts, circle.ts, …</text>
+  <text x="56" y="424" font-size="14" font-family="Consolas, Menlo, monospace">style.css</text>
+  <text x="56" y="446" font-size="14" font-family="Consolas, Menlo, monospace">report.ts</text>
+  <text x="150" y="446" font-size="14">← erst nach dem Klick</text>
+  <text x="56" y="484" font-size="14">.ts speichern → Seite lädt automatisch neu</text>
+  <text x="56" y="502" font-size="14">.css speichern → ohne Neuladen (HMR)</text>
+
+  <!-- right: build -->
+  <text x="600" y="38" text-anchor="middle" font-size="18" font-weight="bold" font-family="Consolas, Menlo, monospace">npm run build</text>
+  <text x="600" y="60" text-anchor="middle" font-size="15">vor dem Veröffentlichen</text>
+
+  <rect x="450" y="80" width="300" height="58" rx="8" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+  <text x="600" y="104" text-anchor="middle" font-size="16" font-weight="bold">src/</text>
+  <text x="600" y="126" text-anchor="middle" font-size="14">11 Dateien (.ts, .css)</text>
+
+  <line x1="600" y1="138" x2="600" y2="162" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <rect x="450" y="164" width="300" height="52" rx="8" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+  <text x="600" y="186" text-anchor="middle" font-size="16" font-weight="bold" font-family="Consolas, Menlo, monospace">tsc</text>
+  <text x="600" y="206" text-anchor="middle" font-size="14">prüft nur die Typen</text>
+
+  <line x1="600" y1="216" x2="600" y2="240" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <rect x="450" y="242" width="300" height="52" rx="8" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+  <text x="600" y="264" text-anchor="middle" font-size="16" font-weight="bold">vite build</text>
+  <text x="600" y="284" text-anchor="middle" font-size="14">übersetzt und bündelt (Bundler)</text>
+
+  <line x1="600" y1="294" x2="600" y2="318" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <rect x="430" y="320" width="340" height="186" rx="8" fill="#e5f1d9" stroke="#71af2e" stroke-width="2"/>
+  <text x="446" y="344" font-size="16" font-weight="bold">dist/ (fertig für den Webserver)</text>
+  <text x="446" y="372" font-size="14" font-family="Consolas, Menlo, monospace">index.html</text>
+  <text x="446" y="394" font-size="14" font-family="Consolas, Menlo, monospace">assets/index-DVmRuBBW.js</text>
+  <text x="446" y="416" font-size="14" font-family="Consolas, Menlo, monospace">assets/index--YArkD8S.css</text>
+  <text x="446" y="438" font-size="14" font-family="Consolas, Menlo, monospace">assets/report-D00--KmC.js</text>
+  <text x="446" y="476" font-size="14">3 Dateien statt 11. Der Hash im Namen</text>
+  <text x="446" y="496" font-size="14">ändert sich bei jeder Codeänderung.</text>
+</svg>

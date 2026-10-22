@@ -1,0 +1,25 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: light dark;
+}
+
+main {
+  max-width: 48rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+select,
+button {
+  font: inherit;
+  padding: 0.3rem 0.5rem;
+}
+
+#matches li.live::after {
+  content: " (live)";
+  font-weight: bold;
+}
+
+#matches li.scheduled {
+  font-style: italic;
+}

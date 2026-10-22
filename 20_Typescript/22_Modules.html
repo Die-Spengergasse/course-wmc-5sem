@@ -1,0 +1,1521 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Module-Trainer</title>
+<style>
+  :root {
+    --bg: #f6f6f6; --card: #ffffff; --fg: #1d1d1b; --muted: #5f5f5e; --border: #9d9d9c; --soft: #ededed;
+    --n-stroke: #0090d4; --n-fill: #d1ebf7; --n-text: #00628f;
+    --a-stroke: #f39000; --a-fill: #fdebd1; --a-text: #a35f00;
+    --ok-stroke: #71af2e; --ok-fill: #e5f1d9; --ok-text: #4a7a1c;
+    --err-stroke: #cc0935; --err-fill: #f6d3db; --err-text: #a8072c;
+    --c2-stroke: #6cc1b0; --c2-fill: #e5f4f1; --c2-text: #2f7d6e;
+    --btn: #0090d4; --btn-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212; --card: #1f1f1e; --fg: #ededed; --muted: #b5b5b4; --border: #6f6f6e; --soft: #2e2e2d;
+      --n-stroke: #0090d4; --n-fill: #0d3346; --n-text: #0090d4;
+      --a-stroke: #f39000; --a-fill: #4a2e05; --a-text: #f39000;
+      --ok-stroke: #71af2e; --ok-fill: #23360f; --ok-text: #71af2e;
+      --err-stroke: #f5b4c7; --err-fill: #4a1622; --err-text: #f5b4c7;
+      --c2-stroke: #6cc1b0; --c2-fill: #173832; --c2-text: #6cc1b0;
+      --btn: #0090d4; --btn-fg: #ffffff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.5; }
+  code, .mono { font-family: Consolas, Menlo, monospace; }
+  code { background: var(--soft); padding: 0 4px; border-radius: 4px; }
+  header { position: sticky; top: 0; z-index: 5; background: var(--card); border-bottom: 1px solid var(--border);
+           padding: 8px 16px; display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 18px; margin: 0; flex: 1; }
+  #progressText { font-variant-numeric: tabular-nums; color: var(--muted); white-space: nowrap; }
+  #progressBar { position: absolute; left: 0; bottom: -1px; height: 3px; background: var(--btn); transition: width .3s; }
+  main { max-width: 1240px; margin: 0 auto; padding: 16px; }
+  .slide { display: none; }
+  .slide.active { display: block; }
+  .slide h2 { margin: 4px 0 8px; font-size: 24px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 12px 0; min-width: 0; }
+  .card > b:first-child { display: block; margin-bottom: 4px; }
+  .nav { display: flex; justify-content: space-between; max-width: 1240px; margin: 0 auto; padding: 0 16px 24px; }
+  button { font: inherit; border: 1px solid var(--border); background: var(--card); color: var(--fg); border-radius: 6px;
+           padding: 5px 12px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--btn); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.primary { background: var(--btn); color: var(--btn-fg); border-color: var(--btn); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 8px 0; }
+  .muted { color: var(--muted); }
+  .hint { font-size: 14px; color: var(--muted); }
+  .stepinfo { font-variant-numeric: tabular-nums; color: var(--muted); }
+
+  /* code panels */
+  .panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 760px) { .panels { grid-template-columns: 1fr; } }
+  .panel { background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px; min-width: 0; transition: border-color .3s; }
+  .panel h3 { margin: 0 0 6px; font-size: 15px; display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+  .panel.run { border-color: var(--a-stroke); border-width: 2.5px; }
+  .panel.good { border-color: var(--ok-stroke); border-width: 2px; }
+  .panel.new { border-color: var(--n-stroke); border-width: 2px; }
+  pre.code { margin: 0; font-family: Consolas, Menlo, monospace; font-size: 12.5px; line-height: 1.75; white-space: pre; overflow-x: auto; }
+  .ln { display: block; border-radius: 3px; padding: 0 4px; min-height: 1.75em; }
+  .ln.cur { background: var(--a-fill); box-shadow: inset 3px 0 0 var(--a-stroke); }
+  .ln.err { background: var(--err-fill); box-shadow: inset 3px 0 0 var(--err-stroke); }
+  .ln.gone { text-decoration: line-through; color: var(--muted); }
+  .ln.ghost { color: var(--muted); font-style: italic; }
+  .cm { color: var(--muted); }
+  .tk { border-radius: 3px; padding: 0 1px; }
+  .tk.hl { background: var(--a-fill); outline: 2px dashed var(--a-stroke); }
+  .tk.ok { background: var(--ok-fill); outline: 2px solid var(--ok-stroke); }
+  .tk.bad { background: var(--err-fill); outline: 2px solid var(--err-stroke); }
+  .tk.pub { background: var(--n-fill); outline: 1.5px solid var(--n-stroke); }
+  .tk.c2 { background: var(--c2-fill); outline: 1.5px solid var(--c2-stroke); }
+  .badge { display: inline-block; font-weight: 700; font-size: 12px; border-radius: 10px; padding: 0 8px; border: 1px solid var(--border); background: var(--soft); color: var(--muted); }
+  .badge.run { background: var(--a-fill); color: var(--a-text); border-color: var(--a-stroke); }
+  .badge.ok { background: var(--ok-fill); color: var(--ok-text); border-color: var(--ok-stroke); }
+  .badge.bad { background: var(--err-fill); color: var(--err-text); border-color: var(--err-stroke); }
+  .badge.pub { background: var(--n-fill); color: var(--n-text); border-color: var(--n-stroke); }
+  .appear { animation: appear .6s ease-out; }
+  @keyframes appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .caption { min-height: 72px; }
+  .caption b.step { color: var(--n-text); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; }
+  .legend span.sw { display: inline-block; width: 28px; height: 16px; vertical-align: -3px; margin-right: 6px; border-radius: 3px; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+  .grid2 > * { min-width: 0; }
+  .grid2.wr { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+  @media (max-width: 860px) { .grid2, .grid2.wr { grid-template-columns: 1fr; } }
+  pre.term { margin: 6px 0 0; font-family: Consolas, Menlo, monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere;
+             background: var(--soft); border-left: 4px solid var(--err-stroke); padding: 6px 10px; border-radius: 4px; color: var(--fg); }
+  pre.term.okterm { border-left-color: var(--ok-stroke); }
+  pre.term .e { color: var(--err-text); font-weight: 700; }
+  pre.term .p { color: var(--muted); }
+  table.cmp { border-collapse: collapse; margin-top: 6px; display: block; overflow-x: auto; max-width: 100%; }
+  table.cmp th, table.cmp td { border: 1px solid var(--border); padding: 4px 10px; text-align: left; vertical-align: top; }
+  table.cmp th { background: var(--soft); }
+
+  /* chips (names) */
+  .chip { display: inline-block; font-family: Consolas, Menlo, monospace; font-size: 13.5px; line-height: 1.4; border: 1.5px solid var(--border);
+          background: var(--soft); color: var(--fg); border-radius: 12px; padding: 1px 9px; margin: 2px 4px 2px 0; white-space: nowrap; }
+  .chip.pub { border-color: var(--n-stroke); background: var(--n-fill); }
+  .chip.priv { border-style: dashed; color: var(--muted); background: var(--card); }
+  .chip.ok { border-color: var(--ok-stroke); background: var(--ok-fill); }
+  .chip.bad { border-color: var(--err-stroke); background: var(--err-fill); border-style: dashed; }
+  .chip.act { border-color: var(--a-stroke); background: var(--a-fill); border-width: 2px; }
+  .chip.c2 { border-color: var(--c2-stroke); background: var(--c2-fill); }
+  .chip .tag { font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11.5px; color: var(--muted); margin-left: 5px; }
+  .chip.ok .tag { color: var(--ok-text); }
+  .chip.bad .tag { color: var(--err-text); }
+  .chip.pub .tag { color: var(--n-text); }
+  .chip.act .tag { color: var(--a-text); }
+  .chip.c2 .tag { color: var(--c2-text); }
+
+  /* slide 1: global scope */
+  table.scope { border-collapse: collapse; width: 100%; font-size: 14px; }
+  table.scope td, table.scope th { border: 1px solid var(--border); padding: 4px 8px; text-align: left; }
+  table.scope th { background: var(--soft); }
+  table.scope tr.old td { text-decoration: line-through; color: var(--muted); }
+  .scopes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+  .scopebox { border: 2px solid var(--c2-stroke); background: var(--c2-fill); border-radius: 8px; padding: 6px 10px; }
+  .output { font-family: Consolas, Menlo, monospace; font-size: 14px; }
+
+  /* slide 2: lanes across the module boundary */
+  .modgrid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.2fr) minmax(0, 1.1fr); gap: 12px; align-items: start; }
+  .modgrid > * { min-width: 0; }
+  @media (max-width: 960px) { .modgrid { grid-template-columns: 1fr; } }
+  .gate { background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px; }
+  .gate h3 { margin: 0 0 6px; font-size: 15px; text-align: center; }
+  /* one grid for all lanes, so the columns line up and fit the longest name */
+  .lanes { display: grid; grid-template-columns: max-content minmax(36px, 1fr) max-content; align-items: center; column-gap: 8px; row-gap: 16px; }
+  .lane { display: contents; }
+  .lane .src, .lane .dst { min-width: 0; }
+  .lane .dst { display: flex; flex-direction: column; align-items: flex-start; }
+  .lane .chip { margin: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+  .lane .dst .chip + .chip { margin-top: 3px; }
+  .track { position: relative; height: 26px; }
+  .track::before { content: ""; position: absolute; left: 50%; top: -9px; bottom: -9px; border-left: 2px dashed var(--border); }
+  .track .bar { position: absolute; left: 0; top: 11px; height: 4px; width: 0; background: var(--lane-c, var(--n-stroke)); transition: width .8s ease, background .3s; }
+  .track .bar::after { content: ""; position: absolute; right: -3px; top: -6px; border-top: 8px solid transparent; border-bottom: 8px solid transparent;
+                       border-left: 11px solid var(--lane-c, var(--n-stroke)); opacity: 0; transition: opacity .3s; }
+  .track .stop { position: absolute; left: 50%; top: 0; transform: translateX(-50%); font-weight: 700; color: var(--err-text);
+                 background: var(--err-fill); border: 2px solid var(--err-stroke); border-radius: 12px; line-height: 20px; padding: 0 5px; font-size: 13px; display: none; }
+  .lane.exported { --lane-c: var(--n-stroke); }
+  .lane.exported .bar { width: 50%; }
+  .lane.imported { --lane-c: var(--ok-stroke); }
+  .lane.imported .bar { width: 100%; }
+  .lane.imported .bar::after { opacity: 1; }
+  .lane.blocked { --lane-c: var(--err-stroke); }
+  .lane.blocked .bar { width: 50%; background: repeating-linear-gradient(90deg, var(--err-stroke) 0 7px, transparent 7px 12px); }
+  .lane.blocked .stop { display: block; }
+  .lanes .head { font-size: 13px; color: var(--muted); }
+  .lanes .head.mid { text-align: center; }
+  @media (max-width: 420px) {
+    .lanes { column-gap: 5px; }
+    .lane .chip { font-size: 12.5px; padding: 1px 6px; }
+  }
+  .nsobj { margin-top: 8px; }
+
+  /* slide 3: export tables */
+  table.exp { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 4px; }
+  table.exp td, table.exp th { border: 1px solid var(--border); padding: 3px 8px; text-align: left; }
+  table.exp th { background: var(--soft); }
+  table.exp td.k { font-size: 13px; }
+  table.exp tr.def td:first-child { box-shadow: inset 4px 0 0 var(--c2-stroke); }
+  table.exp tr.look td { background: var(--a-fill); }
+  table.exp tr.hit td { background: var(--ok-fill); }
+  table.exp tr.miss td { background: var(--err-fill); border-style: dashed; }
+  .verdict { font-weight: 700; }
+  .verdict.ok { color: var(--ok-text); }
+  .verdict.bad { color: var(--err-text); }
+
+  /* slide 4: files */
+  .tree { font-family: Consolas, Menlo, monospace; font-size: 13.5px; list-style: none; margin: 0; padding: 0; }
+  .tree li { padding: 1px 6px; border-radius: 4px; }
+  .tree li.hit { background: var(--ok-fill); box-shadow: inset 3px 0 0 var(--ok-stroke); }
+  .tree li.miss { background: var(--err-fill); box-shadow: inset 3px 0 0 var(--err-stroke); }
+  .tree li.dim { color: var(--muted); }
+  .flow { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: start; }
+  .flow .arrow { font-weight: 700; color: var(--muted); text-align: center; align-self: center; }
+  .grid2 > .card, .grid2 > div > .card:first-child, .grid2 > div > .panel:first-child { margin-top: 0; }
+  @media (max-width: 560px) { .flow { grid-template-columns: 1fr; } .flow .arrow { transform: rotate(90deg); } }
+
+  /* slide 5: folder */
+  .folder { border: 2px dashed var(--border); border-radius: 10px; padding: 8px 10px; }
+  .folder > .lbl { font-weight: 700; font-family: Consolas, Menlo, monospace; }
+  .files { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 6px; }
+  @media (max-width: 480px) { .files { grid-template-columns: 1fr; } }
+  .file { border: 1.5px solid var(--border); background: var(--card); border-radius: 8px; padding: 6px 8px; }
+  .file.moved { border-color: var(--a-stroke); border-width: 2.5px; }
+  .file .fn { font-family: Consolas, Menlo, monospace; font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+
+  /* slide 6: module graph */
+  .svgwrap { overflow-x: auto; }
+  .swipe { display: none; margin: 8px 0 -4px; }
+  @media (max-width: 680px) { .swipe { display: block; } }
+  .svgwrap svg { display: block; width: 100%; max-width: 880px; min-width: 620px; height: auto; margin: 0 auto; }
+  .g-node rect { fill: var(--card); stroke: var(--border); stroke-width: 1.5; stroke-dasharray: 6 4; transition: fill .4s, stroke .4s; }
+  .g-node.loaded rect { fill: var(--n-fill); stroke: var(--n-stroke); stroke-width: 2; stroke-dasharray: none; }
+  .g-node.running rect { fill: var(--a-fill); stroke: var(--a-stroke); stroke-width: 3; stroke-dasharray: none; }
+  .g-node.done rect { fill: var(--ok-fill); stroke: var(--ok-stroke); stroke-width: 2; stroke-dasharray: none; }
+  .g-node.typeonly rect { fill: var(--soft); stroke-dasharray: 2 4; }
+  .g-node.focus rect { stroke-width: 4; }
+  .g-node .name { fill: var(--fg); font-family: Consolas, Menlo, monospace; font-size: 15px; font-weight: 700; }
+  .g-node .status { fill: var(--muted); font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12.5px; }
+  .g-node.done .status { fill: var(--ok-text); }
+  .g-node.running .status { fill: var(--a-text); }
+  .g-node.loaded .status { fill: var(--n-text); }
+  .g-edge { stroke: var(--muted); stroke-width: 1.6; fill: none; marker-end: url(#arr); transition: stroke .3s, stroke-width .3s; }
+  .g-edge.dyn { stroke-dasharray: 8 5; }
+  .g-edge.type { stroke-dasharray: 2 4; }
+  .g-edge.hot { stroke: var(--a-stroke); stroke-width: 3.5; marker-end: url(#arrHot); }
+  #arr path { fill: var(--muted); }
+  #arrHot path { fill: var(--a-stroke); }
+  .g-label { fill: var(--muted); font-family: Consolas, Menlo, monospace; font-size: 12.5px; }
+
+  /* slide 7: CommonJS rows */
+  .maprow { display: grid; grid-template-columns: minmax(0, 1fr) 28px minmax(0, 1fr); gap: 8px; align-items: center; margin: 8px 0; }
+  .maprow .arrow { text-align: center; font-weight: 700; color: var(--muted); }
+  .maprow .what { grid-column: 1 / -1; font-size: 13px; color: var(--muted); margin-bottom: -6px; }
+  @media (max-width: 700px) { .maprow { grid-template-columns: 1fr; } .maprow .arrow { transform: rotate(90deg); } }
+  .boxcode { background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 8px; min-width: 0; }
+  .boxcode.cjs { border-color: var(--a-stroke); }
+  .boxcode.esm { border-color: var(--ok-stroke); }
+  .boxcode .lbl { font-size: 12px; color: var(--muted); }
+
+  /* exercise */
+  .rounds button { min-width: 40px; }
+  .rounds button.solved { background: var(--ok-fill); border-color: var(--ok-stroke); }
+  .rounds button.solved::after { content: " ✓"; color: var(--ok-text); }
+  .rounds button.current { outline: 2px solid var(--btn); outline-offset: 1px; font-weight: 700; }
+  .ex-block { margin: 8px 0; }
+  .ex-block .lbl { font-size: 14px; color: var(--muted); }
+  .ex-code { font-family: Consolas, Menlo, monospace; font-size: 14px; line-height: 1.6; background: var(--card); border: 1px solid var(--border);
+             border-radius: 8px; padding: 6px 10px; white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+  .ctxgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  @media (max-width: 760px) { .ctxgrid { grid-template-columns: 1fr; } }
+  .vitem { background: var(--card); border: 1.5px solid var(--border); border-radius: 8px; padding: 8px 10px; margin: 8px 0; }
+  .vitem.right { border-color: var(--ok-stroke); box-shadow: inset 4px 0 0 var(--ok-stroke); }
+  .vitem.wrong { border-color: var(--err-stroke); box-shadow: inset 4px 0 0 var(--err-stroke); }
+  .vitem .ex-code { border: none; padding: 0; background: transparent; }
+  .vitem .vlabel { font-size: 13px; color: var(--muted); }
+  .vrow { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; justify-content: space-between; }
+  .vrow .ex-code { flex: 1 1 22em; min-width: 0; }
+  .vbtns { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+  .vres { min-width: 6.5em; }
+  .vbtns button.sel { border-width: 2px; border-color: var(--a-stroke); background: var(--a-fill); font-weight: 700; }
+  .vres { font-weight: 700; }
+  .vres.ok { color: var(--ok-text); }
+  .vres.bad { color: var(--err-text); }
+  .vdetail { font-size: 14.5px; margin-top: 4px; }
+  .pick { display: flex; flex-wrap: wrap; gap: 6px 8px; margin: 8px 0; }
+  .pick button { font-family: Consolas, Menlo, monospace; border-radius: 14px; }
+  .pick button.marked { background: var(--a-fill); border: 2px dashed var(--a-stroke); font-weight: 700; }
+  .pick button.marked::before { content: "● "; color: var(--a-text); }
+  .pick button.right { background: var(--ok-fill); border: 2px solid var(--ok-stroke); }
+  .pick button.right::after { content: " ✓"; color: var(--ok-text); font-weight: 700; }
+  .pick button.wrong { background: var(--err-fill); border: 2px solid var(--err-stroke); }
+  .pick button.wrong::after { content: " ✗"; color: var(--err-text); font-weight: 700; }
+  .choice { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 8px 0; }
+  .choice button { text-align: left; max-width: 100%; overflow-wrap: anywhere; }
+  .choice button.code { font-family: Consolas, Menlo, monospace; font-size: 14px; }
+  .choice button.picked-right { background: var(--ok-fill); border: 2px solid var(--ok-stroke); }
+  .choice button.picked-right::after { content: "  ✓"; color: var(--ok-text); font-weight: 700; }
+  .choice button.picked-wrong { background: var(--err-fill); border: 2px solid var(--err-stroke); }
+  .choice button.picked-wrong::after { content: "  ✗"; color: var(--err-text); font-weight: 700; }
+  .feedback { padding: 8px 12px; border-radius: 6px; margin-top: 8px; display: none; }
+  .feedback.ok { display: block; background: var(--ok-fill); border: 1px solid var(--ok-stroke); }
+  .feedback.bad { display: block; background: var(--err-fill); border: 1px solid var(--err-stroke); }
+  .feedback.info { display: block; background: var(--soft); border: 1px solid var(--border); }
+  .feedback ul { margin: 6px 0 0; padding-left: 20px; }
+  .feedback pre.term { background: var(--card); }
+  kbd { font-family: Consolas, Menlo, monospace; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--soft); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Module: export und import</h1>
+  <span id="progressText">1 / 8</span>
+  <div id="progressBar"></div>
+</header>
+
+<main>
+  <!-- Slide 1: global scope -->
+  <section class="slide" data-slide="0">
+    <h2>Ein gemeinsamer Bereich für alle Skripte</h2>
+    <p>Im Browser kennst du schon mehrere <code>&lt;script&gt;</code>-Tags. Gehe mit <b>Schritt</b> durch das Beispiel oder lass es
+      mit <b>Play</b> ablaufen.</p>
+    <div class="row">
+      <button id="a-reset">⏮ Anfang</button>
+      <button id="a-back">◀ Zurück</button>
+      <button id="a-step" class="primary">Schritt ▶</button>
+      <button id="a-play">▶ Play</button>
+      <span class="stepinfo" id="a-info"></span>
+    </div>
+    <div class="card caption" id="a-caption"></div>
+    <div class="panels" id="a-files" style="margin-bottom:12px"></div>
+    <div class="grid2">
+      <div class="card" id="a-scope"></div>
+      <div class="card" id="a-output"></div>
+    </div>
+  </section>
+
+  <!-- Slide 2: export / import across the module boundary -->
+  <section class="slide" data-slide="1">
+    <h2>export und import: Namen über die Modulgrenze</h2>
+    <p>Links das Modul <code>maths.ts</code> aus dem Beispielprojekt, rechts <code>app.ts</code>. In der Mitte siehst du, welche Namen
+      über die Grenze zwischen den Modulen dürfen.</p>
+    <div class="row">
+      <button id="b-reset">⏮ Anfang</button>
+      <button id="b-back">◀ Zurück</button>
+      <button id="b-step" class="primary">Schritt ▶</button>
+      <button id="b-play">▶ Play</button>
+      <span class="stepinfo" id="b-info"></span>
+    </div>
+    <div class="card caption" id="b-caption"></div>
+    <div class="modgrid">
+      <div class="panel"><h3>maths.ts</h3><pre class="code" id="b-maths"></pre></div>
+      <div class="gate">
+        <h3>Modulgrenze</h3>
+        <div class="lanes" id="b-lanes"></div>
+      </div>
+      <div>
+        <div class="panel"><h3>app.ts</h3><pre class="code" id="b-app"></pre><div id="b-msg"></div></div>
+        <div class="card" id="b-names"></div>
+      </div>
+    </div>
+    <div class="legend hint" style="margin-top:10px">
+      <span><span class="chip priv">🔒 name</span> privat: kein export</span>
+      <span><span class="sw" style="background:var(--n-stroke);height:4px;vertical-align:3px"></span>export: wartet an der Grenze</span>
+      <span><span class="sw" style="background:var(--ok-stroke);height:4px;vertical-align:3px"></span>▶ ✓ importiert</span>
+      <span><span class="sw" style="background:repeating-linear-gradient(90deg,var(--err-stroke) 0 7px,transparent 7px 12px);height:4px;vertical-align:3px"></span>✗ blockiert</span>
+    </div>
+  </section>
+
+  <!-- Slide 3: named vs default export -->
+  <section class="slide" data-slide="2">
+    <h2>Named export und default export</h2>
+    <p>Jedes Modul hat eine Liste seiner Exporte. Ein Import sucht darin einen Eintrag. Schau dir an, welcher Eintrag gesucht wird.</p>
+    <div class="row">
+      <button id="c-reset">⏮ Anfang</button>
+      <button id="c-back">◀ Zurück</button>
+      <button id="c-step" class="primary">Schritt ▶</button>
+      <button id="c-play">▶ Play</button>
+      <span class="stepinfo" id="c-info"></span>
+    </div>
+    <div class="card caption" id="c-caption"></div>
+    <div class="grid2">
+      <div id="c-modules"></div>
+      <div id="c-import"></div>
+    </div>
+  </section>
+
+  <!-- Slide 4: from .ts to .js -->
+  <section class="slide" data-slide="3">
+    <h2>Vom .ts zum .js: Was passiert mit den Importen?</h2>
+    <p>Warum steht im Import <code>.js</code>, obwohl die Datei <code>maths.ts</code> heißt? Folge dem Weg vom Quelltext bis zum Start mit Node.js.</p>
+    <div class="row">
+      <button id="d-reset">⏮ Anfang</button>
+      <button id="d-back">◀ Zurück</button>
+      <button id="d-step" class="primary">Schritt ▶</button>
+      <button id="d-play">▶ Play</button>
+      <span class="stepinfo" id="d-info"></span>
+    </div>
+    <div class="card caption" id="d-caption"></div>
+    <div class="flow">
+      <div class="panel" id="d-src"></div>
+      <div class="arrow" id="d-arrow">tsc ➜</div>
+      <div class="panel" id="d-dist"></div>
+    </div>
+    <div class="card" id="d-node"></div>
+  </section>
+
+  <!-- Slide 5: folder as a module -->
+  <section class="slide" data-slide="4">
+    <h2>Ein Ordner als Modul: index.ts</h2>
+    <p>Der Ordner <code>shapes</code> enthält mehrere Dateien. Wie viel davon muss <code>app.ts</code> kennen?</p>
+    <div class="row">
+      <button id="e-reset">⏮ Anfang</button>
+      <button id="e-back">◀ Zurück</button>
+      <button id="e-step" class="primary">Schritt ▶</button>
+      <button id="e-play">▶ Play</button>
+      <span class="stepinfo" id="e-info"></span>
+    </div>
+    <div class="card caption" id="e-caption"></div>
+    <div class="grid2">
+      <div class="folder" id="e-folder"></div>
+      <div id="e-outside"></div>
+    </div>
+    <div class="legend hint" style="margin-top:10px">
+      <span><span class="chip pub">name<span class="tag">öffentlich</span></span> steht in index.ts</span>
+      <span><span class="chip priv">🔒 name</span> nur im Ordner</span>
+      <span><span class="chip c2">Shape<span class="tag">Typ</span></span> Typ (export type)</span>
+      <span><span class="chip act">name</span> wird gerade verwendet</span>
+    </div>
+  </section>
+
+  <!-- Slide 6: loading -->
+  <section class="slide" data-slide="5">
+    <h2>Wann wird ein Modul geladen?</h2>
+    <p>Hier siehst du alle Module des Beispielprojekts. Verfolge, was Node.js beim Start macht.</p>
+    <div class="row">
+      <button id="f-reset">⏮ Anfang</button>
+      <button id="f-back">◀ Zurück</button>
+      <button id="f-step" class="primary">Schritt ▶</button>
+      <button id="f-play">▶ Play</button>
+      <span class="stepinfo" id="f-info"></span>
+    </div>
+    <div class="card caption" id="f-caption"></div>
+    <p class="hint swipe">↔ Schiebe den Graphen zur Seite, um alle Module zu sehen.</p>
+    <div class="card svgwrap" id="f-graph"></div>
+    <div class="legend hint">
+      <span><span class="sw" style="border:1.5px dashed var(--border)"></span>nicht geladen</span>
+      <span><span class="sw" style="background:var(--n-fill);border:2px solid var(--n-stroke)"></span>geladen, wartet</span>
+      <span><span class="sw" style="background:var(--a-fill);border:3px solid var(--a-stroke)"></span>läuft gerade</span>
+      <span><span class="sw" style="background:var(--ok-fill);border:2px solid var(--ok-stroke)"></span>✓ ausgeführt</span>
+      <span>– – – <code>import()</code> &nbsp; · · · <code>import type</code></span>
+    </div>
+  </section>
+
+  <!-- Slide 7: CommonJS -->
+  <section class="slide" data-slide="6">
+    <h2>CommonJS: das alte Modulsystem</h2>
+    <p>Links CommonJS, rechts dieselbe Zeile als ES Module (ESM). Lerne, alten Code umzuschreiben.</p>
+    <div class="row">
+      <button id="g-reset">⏮ Anfang</button>
+      <button id="g-back">◀ Zurück</button>
+      <button id="g-step" class="primary">Schritt ▶</button>
+      <button id="g-play">▶ Play</button>
+      <span class="stepinfo" id="g-info"></span>
+    </div>
+    <div class="card caption" id="g-caption"></div>
+    <div id="g-stage"></div>
+  </section>
+
+  <!-- Slide 8: exercise -->
+  <section class="slide" data-slide="7">
+    <h2>Übung: Was funktioniert?</h2>
+    <div class="row rounds" id="roundButtons"></div>
+    <div class="card" id="roundCard"></div>
+    <div id="exArea"></div>
+    <div class="row" id="exButtons">
+      <button class="primary" id="checkBtn">Prüfen</button>
+      <button id="resetBtn">Auswahl löschen</button>
+      <button id="solutionBtn">Lösung zeigen</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <p class="hint">Gelöste Runden merkt sich dein Browser. Mit <kbd>Tab</kbd> und <kbd>Enter</kbd> bedienst du die Übung auch ohne Maus.</p>
+  </section>
+</main>
+
+<div class="nav">
+  <button id="prevBtn">← Zurück</button>
+  <button id="nextBtn" class="primary">Weiter →</button>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const PLAY_DELAY = 2800;
+
+  // ---------- storage (works without localStorage) ----------
+  const store = {
+    get(key, fallback) {
+      try {
+        const raw = window.localStorage.getItem('wmc-22-' + key);
+        return raw === null ? fallback : JSON.parse(raw);
+      } catch (e) { return fallback; }
+    },
+    set(key, value) {
+      try { window.localStorage.setItem('wmc-22-' + key, JSON.stringify(value)); } catch (e) { /* ignore */ }
+    }
+  };
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /**
+   * Formats one line of code. «cls|text» becomes a highlighted token with the class cls.
+   * A trailing "// comment" is shown in a muted colour.
+   */
+  function fmt(line) {
+    let head = line;
+    let tail = '';
+    const trimmed = line.trimStart();
+    const ci = trimmed.startsWith('//') ? line.indexOf('//') : line.indexOf('   // ');
+    if (ci >= 0) { head = line.slice(0, ci); tail = line.slice(ci); }
+    const body = esc(head).replace(/«(\w+)\|([^»]*)»/g, (m, c, t) => `<span class="tk ${c}">${t}</span>`);
+    return body + (tail ? `<span class="cm">${esc(tail)}</span>` : '');
+  }
+
+  /** Renders lines as <span class="ln">. A line is a string or { t: text, c: extra classes }. */
+  function codeLines(lines) {
+    return lines.map(l => {
+      const o = typeof l === 'string' ? { t: l } : l;
+      return `<span class="ln${o.c ? ' ' + o.c : ''}">${o.t ? fmt(o.t) : ' '}</span>`;
+    }).join('');
+  }
+
+  function panel(title, lines, cls, badge) {
+    return `<div class="panel${cls ? ' ' + cls : ''}"><h3>${title}${badge || ''}</h3><pre class="code">${codeLines(lines)}</pre></div>`;
+  }
+
+  /** Real messages from tsc and Node.js. */
+  const MSG = {
+    TS2459: `error TS2459: Module '"./maths.js"' declares 'defaultDigits' locally, but it is not exported.`,
+    TS2614: `error TS2614: Module '"./hello.js"' has no exported member 'helloWorld'. Did you mean to use 'import helloWorld from "./hello.js"' instead?`,
+    TS1192: `error TS1192: Module '"./maths.js"' has no default export.`,
+    TS2835: `error TS2835: Relative import paths need explicit file extensions in ECMAScript imports when '--moduleResolution' is 'node16' or 'nodenext'. Did you mean './maths.js'?`,
+    TS1484: `error TS1484: 'Shape' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.`,
+    TS2528: `error TS2528: A module cannot have multiple default exports.`,
+    TS2305: `error TS2305: Module '"./shapes/index.js"' has no exported member 'circleArea'.`,
+    TS2724: `error TS2724: '"./shapes/index.js"' has no exported member named 'rectangleArea'. Did you mean 'Rectangle'?`,
+    REQ: `ReferenceError: require is not defined in ES module scope, you can use import instead`
+  };
+
+  /** Shows a message like a terminal. The first word (error / ReferenceError) is emphasised. */
+  function term(text, prompt) {
+    const t = esc(text).replace(/^(error TS\d+|ReferenceError)/, '<span class="e">$1</span>');
+    return `<pre class="term">${prompt ? `<span class="p">${esc(prompt)}</span>\n` : ''}${t}</pre>`;
+  }
+
+  function chip(name, cls, tag) {
+    return `<span class="chip${cls ? ' ' + cls : ''}">${esc(name)}${tag ? `<span class="tag">${tag}</span>` : ''}</span>`;
+  }
+
+  // ---------- generic step animation ----------
+  /** Connects reset/back/step/play buttons to a render function for steps 0..count-1. */
+  function stepper(prefix, count, render) {
+    let step = 0;
+    let timer = null;
+    const playBtn = document.getElementById(prefix + '-play');
+    const self = {
+      get step() { return step; },
+      show(i) {
+        step = Math.min(Math.max(i, 0), count - 1);
+        document.getElementById(prefix + '-info').textContent = `Schritt ${step + 1} von ${count}`;
+        document.getElementById(prefix + '-back').disabled = step === 0;
+        document.getElementById(prefix + '-step').disabled = step === count - 1;
+        render(step);
+      },
+      stop() {
+        if (timer) { clearTimeout(timer); timer = null; }
+        playBtn.textContent = '▶ Play';
+      },
+      play() {
+        if (timer) { self.stop(); return; }
+        if (step === count - 1) { self.show(0); }
+        playBtn.textContent = '⏸ Pause';
+        const tick = () => {
+          if (step >= count - 1) { self.stop(); return; }
+          self.show(step + 1);
+          timer = setTimeout(tick, PLAY_DELAY);
+        };
+        timer = setTimeout(tick, 900);
+      }
+    };
+    playBtn.addEventListener('click', self.play);
+    document.getElementById(prefix + '-step').addEventListener('click', () => { self.stop(); self.show(step + 1); });
+    document.getElementById(prefix + '-back').addEventListener('click', () => { self.stop(); self.show(step - 1); });
+    document.getElementById(prefix + '-reset').addEventListener('click', () => { self.stop(); self.show(0); });
+    return self;
+  }
+
+  // ---------- slide 1: one global scope for all scripts ----------
+  const A_STEPS = [
+    '<b class="step">Ausgangslage.</b> Eine Seite lädt drei Skripte mit <code>&lt;script&gt;</code>. date.js und currency.js definieren beide eine Funktion <code>format()</code>. page.js will damit ein Datum ausgeben.',
+    '<b class="step">1. date.js läuft.</b> Die Funktion <code>format</code> landet im <b>globalen Bereich</b> (global scope). Diesen Bereich teilen sich alle Skripte der Seite.',
+    '<b class="step">2. currency.js läuft.</b> Es definiert wieder eine Funktion <code>format</code>. Die neue Funktion ersetzt die alte. Der Browser meldet <b>keinen</b> Fehler.',
+    '<b class="step">3. page.js läuft.</b> <code>format</code> ist jetzt die Funktion aus currency.js. Statt eines Datums erscheint ein Geldbetrag. Solche Fehler findest du nur schwer.',
+    '<b class="step">4. Die Lösung: Module.</b> Jede Datei ist ein <b>Modul</b> mit eigenem Bereich (scope). Mit <code>export</code> gibt eine Datei Namen frei. Mit <code>import</code> holt page.js sie. Mit <code>as</code> bekommen die zwei Funktionen verschiedene Namen.'
+  ];
+  function renderA(step) {
+    document.getElementById('a-caption').innerHTML = A_STEPS[step];
+    const mod = step === 4;
+    const run = n => (step === n ? 'run' : '');
+    const runBadge = n => (step === n ? ' <span class="badge run">läuft</span>' : '');
+    const html = mod
+      ? ['<script «hl|type="module"» src="page.js"><\/script>']
+      : ['<script src="date.js"><\/script>', '<script src="currency.js"><\/script>', '<script src="page.js"><\/script>'];
+    const date = [(mod ? '«pub|export» ' : '') + 'function format(value) {', '    return new Date(value).toLocaleDateString("de-AT");', '}'];
+    const cur = [(mod ? '«pub|export» ' : '') + 'function format(value) {', '    return value.toFixed(2) + " €";', '}'];
+    const page = mod
+      ? ['import { format «ok|as formatDate» } from "./date.js";', 'import { format «ok|as formatCurrency» } from "./currency.js";', '', 'console.log(«ok|formatDate»(1767225600000));']
+      : ['// Expected: the date of the order', 'console.log(' + (step === 3 ? '«bad|format»' : 'format') + '(1767225600000));'];
+    document.getElementById('a-files').innerHTML =
+      panel('index.html', html, mod ? 'good' : '') +
+      panel('date.js', date, run(1) || (mod ? 'good' : ''), runBadge(1)) +
+      panel('currency.js', cur, run(2) || (mod ? 'good' : ''), runBadge(2)) +
+      panel('page.js', page, run(3) || (mod ? 'good' : ''), runBadge(3));
+
+    let scope = '<b>Globaler Bereich (window)</b>';
+    if (step === 0) {
+      scope += '<p class="muted">Noch leer: Kein Skript ist gelaufen.</p>';
+    } else if (step === 1) {
+      scope += '<table class="scope appear"><tr><th>Name</th><th>Wert</th></tr><tr><td class="mono">format</td><td>Funktion aus date.js</td></tr></table>';
+    } else if (step < 4) {
+      scope += '<table class="scope"><tr><th>Name</th><th>Wert</th></tr><tr class="old"><td class="mono">format</td><td>Funktion aus date.js</td></tr>' +
+        '<tr class="appear"><td class="mono">format</td><td>Funktion aus currency.js <span class="badge run">⚠ überschrieben</span></td></tr></table>' +
+        '<p class="hint">Gleicher Name, ein Platz: Das zuletzt geladene Skript gewinnt.</p>';
+    } else {
+      scope += '<p class="appear">Kein <code>format</code> mehr im globalen Bereich. Jedes Modul hat seinen eigenen Bereich:</p>' +
+        '<div class="scopes appear"><div class="scopebox"><b>Modul date.js</b><br>' + chip('format', 'pub', 'export') + '</div>' +
+        '<div class="scopebox"><b>Modul currency.js</b><br>' + chip('format', 'pub', 'export') + '</div></div>' +
+        '<p class="hint">In page.js heißen sie formatDate und formatCurrency.</p>';
+    }
+    document.getElementById('a-scope').innerHTML = scope;
+
+    let out = '<b>Ausgabe in der Konsole</b>';
+    if (step < 3) {
+      out += '<p class="muted">Noch keine Ausgabe.</p>';
+    } else if (step === 3) {
+      out += '<p class="output appear"><span class="verdict bad">✗</span> 1767225600000.00 €</p><p class="hint">Erwartet war das Datum 1.1.2026.</p>';
+    } else {
+      out += '<p class="output appear"><span class="verdict ok">✓</span> 1.1.2026</p>';
+    }
+    document.getElementById('a-output').innerHTML = out;
+  }
+  const aAnim = stepper('a', A_STEPS.length, renderA);
+
+  // ---------- slide 2: names across the module boundary ----------
+  const B_STEPS = [
+    '<b class="step">Ausgangslage.</b> maths.ts ist ein Modul. Ohne <code>export</code> ist alles darin <b>privat</b> 🔒. Kein anderes Modul sieht pi oder round.',
+    '<b class="step">1. export.</b> <code>export</code> vor <code>const</code> oder <code>function</code> macht einen Namen öffentlich. Diese Form heißt <b>named export</b>. defaultDigits hat kein export und bleibt privat.',
+    '<b class="step">2. import.</b> app.ts holt drei Namen. Sie stehen in geschwungenen Klammern und müssen genau so heißen wie die Exporte. Der Pfad beginnt mit <code>./</code> und endet auf <code>.js</code>.',
+    '<b class="step">3. Umbenennen mit as.</b> <code>round as roundTo</code> holt die Funktion round. In app.ts heißt sie aber roundTo.',
+    '<b class="step">4. Privates bleibt privat.</b> app.ts versucht, defaultDigits zu holen. Der Name darf nicht über die Modulgrenze. tsc meldet einen Fehler.',
+    '<b class="step">5. Privat heißt nicht unbenutzt.</b> Ohne die falsche Zeile kompiliert app.ts. <code>roundTo(pi)</code> rundet auf 2 Stellen: round verwendet defaultDigits, denn beide sind im selben Modul.',
+    '<b class="step">6. Namespace-Import.</b> <code>import * as maths</code> holt alle Exporte als ein Objekt. Du schreibst dann <code>maths.round()</code>. Auch hier fehlt defaultDigits.'
+  ];
+  const B_NAMES = ['pi', 'phi', 'defaultDigits', 'absolute', 'round'];
+  /** Lane state of a name: { state, dst: [{ name, cls }] }. */
+  function laneState(name, step) {
+    const exported = name !== 'defaultDigits';
+    if (step === 0) { return { state: 'private' }; }
+    if (!exported) {
+      if (step === 4) { return { state: 'blocked', dst: [{ name: 'defaultDigits', cls: 'bad', tag: '✗' }] }; }
+      return { state: 'private', dst: step >= 5 ? [{ name: 'nur round nutzt es', cls: '', plain: true }] : [] };
+    }
+    const dst = [];
+    if (step >= 2 && name !== 'round') { dst.push({ name, cls: 'ok', tag: '✓' }); }
+    if (step >= 3 && name === 'round') { dst.push({ name: 'roundTo', cls: 'ok', tag: '✓' }); }
+    if (step >= 6) { dst.push({ name: 'maths.' + name, cls: 'c2' }); }
+    return { state: dst.length ? 'imported' : 'exported', dst };
+  }
+  const laneBox = document.getElementById('b-lanes');
+  laneBox.innerHTML = '<span class="head">maths.ts</span><span class="head mid">→</span><span class="head">app.ts</span>' + B_NAMES.map(n =>
+    `<div class="lane" data-name="${n}"><div class="src"></div><div class="track"><div class="bar"></div><span class="stop">✗</span></div><div class="dst"></div></div>`).join('');
+
+  function renderB(step) {
+    document.getElementById('b-caption').innerHTML = B_STEPS[step];
+    const ex = step >= 1 ? '«pub|export» ' : '';
+    const dd = step === 4 ? '«bad|defaultDigits»' : (step === 5 ? '«hl|defaultDigits»' : 'defaultDigits');
+    document.getElementById('b-maths').innerHTML = codeLines([
+      ex + 'const pi = Math.PI;',
+      ex + 'const phi = (1 + Math.sqrt(5)) / 2;',
+      '',
+      step >= 1 ? '// Not exported: other modules cannot see it.' : '',
+      'const ' + dd + ' = 2;',
+      '',
+      ex + 'function absolute(value: number): number {',
+      '    return value < 0 ? -value : value;',
+      '}',
+      '',
+      ex + 'function round(value: number,',
+      '        digits: number = ' + (step === 5 ? '«hl|defaultDigits»' : 'defaultDigits') + '): number {',
+      '    const factor = 10 ** digits;',
+      '    return Math.round(value * factor) / factor;',
+      '}'
+    ]);
+
+    // lanes keep their DOM elements, so the bars animate between steps
+    laneBox.querySelectorAll('.lane').forEach(el => {
+      const name = el.dataset.name;
+      const s = laneState(name, step);
+      el.className = 'lane ' + s.state;
+      el.querySelector('.src').innerHTML = s.state === 'private'
+        ? chip('🔒 ' + name, 'priv')
+        : chip(name, s.state === 'blocked' ? 'priv' : 'pub');
+      el.querySelector('.dst').innerHTML = (s.dst || []).map(d => d.plain
+        ? `<span class="hint">${esc(d.name)}</span>`
+        : chip(d.name, d.cls + ' appear', d.tag)).join('');
+    });
+
+    const lines = [];
+    if (step < 2) { lines.push({ t: '// no imports yet', c: 'ghost' }); }
+    if (step >= 2) { lines.push({ t: 'import { pi, phi, absolute } from "./maths.js";', c: step === 2 ? 'cur' : '' }); }
+    if (step >= 3) { lines.push({ t: 'import { round «ok|as roundTo» } from "./maths.js";', c: step === 3 ? 'cur' : '' }); }
+    if (step === 4) { lines.push({ t: 'import { «bad|defaultDigits» } from "./maths.js";', c: 'err' }); }
+    if (step >= 6) { lines.push({ t: 'import «c2|* as maths» from "./maths.js";', c: 'cur' }); }
+    if (step >= 5) { lines.push(''); lines.push({ t: 'console.log(roundTo(pi));   // 3.14', c: step === 5 ? 'cur' : '' }); }
+    if (step >= 6) { lines.push({ t: 'console.log(maths.round(maths.phi, 3));   // 1.618', c: 'cur' }); }
+    document.getElementById('b-app').innerHTML = codeLines(lines);
+    document.getElementById('b-msg').innerHTML = step === 4 ? term(MSG.TS2459, '> npx tsc') : '';
+
+    let names = '<b>Namen in app.ts</b>';
+    const local = [];
+    if (step >= 2) { local.push(chip('pi', 'ok'), chip('phi', 'ok'), chip('absolute', 'ok')); }
+    if (step >= 3) { local.push(chip('roundTo', 'ok')); }
+    if (step >= 6) { local.push(chip('maths', 'c2', 'Objekt')); }
+    names += local.length ? `<div>${local.join('')}</div>` : '<p class="muted">Noch keine. app.ts sieht nur, was es importiert.</p>';
+    if (step >= 6) {
+      names += '<div class="nsobj appear hint">maths = { pi, phi, absolute, round }<br>Kein maths.defaultDigits: Privates fehlt auch hier.</div>';
+    }
+    document.getElementById('b-names').innerHTML = names;
+  }
+  const bAnim = stepper('b', B_STEPS.length, renderB);
+
+  // ---------- slide 3: named export vs default export ----------
+  const C_STEPS = [
+    '<b class="step">Ausgangslage.</b> maths.ts hat vier <b>named exports</b>. hello.ts hat einen <b>default export</b>: <code>export default function helloWorld</code>. Für den default export gibt es einen eigenen Platz mit dem Namen „default“.',
+    '<b class="step">1. Default import.</b> Ohne geschwungene Klammern holst du den default export.',
+    '<b class="step">2. Der Name ist frei wählbar.</b> <code>greet</code> ist dieselbe Funktion wie helloWorld. Beim default export zählt nur der Platz „default“, nicht der Name.',
+    '<b class="step">3. Klammern beim default export.</b> Mit <code>{ helloWorld }</code> sucht tsc einen <b>named export</b> mit diesem Namen. hello.ts hat keinen. Die Meldung schlägt dir die richtige Zeile vor.',
+    '<b class="step">4. Kein default export.</b> Ohne Klammern sucht tsc den Platz „default“. maths.ts hat dort nichts. Richtig wäre <code>import * as calc</code> oder <code>import { round }</code>.',
+    '<b class="step">5. Höchstens ein default export.</b> Es gibt nur einen Platz „default“. Ein zweites <code>export default</code> ist ein Fehler. Zusätzliche named exports sind aber erlaubt.',
+    '<b class="step">Zusammenfassung.</b> Verwende im Zweifel named exports. VS Code findet sie beim Tippen und schreibt den Import für dich.'
+  ];
+  /**
+   * Builds the export table of a module.
+   * rows: { name, kind: 'named' | 'default', value, mark: '' | 'look' | 'hit' | 'miss' }
+   */
+  function exportTable(file, src, rows) {
+    return `<div class="panel" style="margin-bottom:12px"><h3>${file}</h3><pre class="code">${codeLines(src)}</pre>` +
+      '<table class="exp"><tr><th>Export</th><th>Art</th><th>Wert</th></tr>' +
+      rows.map(r => `<tr class="${r.kind === 'default' ? 'def ' : ''}${r.mark || ''}"><td class="mono">${esc(r.name)}</td>` +
+        `<td class="k">${r.kind === 'default' ? 'default export' : 'named export'}</td><td>${r.value}${r.note ? ' ' + r.note : ''}</td></tr>`).join('') +
+      '</table></div>';
+  }
+  function renderC(step) {
+    document.getElementById('c-caption').innerHTML = C_STEPS[step];
+    if (step === 6) {
+      document.getElementById('c-modules').innerHTML = '<div class="card appear"><b>Vergleich</b><table class="cmp">' +
+        '<tr><th></th><th>Named export</th><th>Default export</th></tr>' +
+        '<tr><td>Anzahl pro Modul</td><td>beliebig viele</td><td>höchstens einer</td></tr>' +
+        '<tr><td>Import</td><td><code>import { round } from …</code></td><td><code>import greet from …</code></td></tr>' +
+        '<tr><td>Name beim Import</td><td>muss passen</td><td>frei wählbar</td></tr>' +
+        '<tr><td>Wann?</td><td>Standardfall</td><td>Framework verlangt es, oder das Modul enthält genau eine Sache</td></tr></table></div>';
+      document.getElementById('c-import').innerHTML = '<div class="card appear"><b>Beides in einer Zeile</b>' +
+        '<pre class="code">' + codeLines(['import helloWorld, { goodbye } from "./hello.js";']) + '</pre>' +
+        '<p class="hint">Das geht, wenn hello.ts einen default export <b>und</b> einen named export goodbye hat. Der default import steht vor den Klammern.</p></div>';
+      return;
+    }
+    // hello.ts
+    let helloSrc = ['«c2|export default» function helloWorld(name: string): string { … }'];
+    let helloRows = [{ name: 'default', kind: 'default', value: 'Funktion helloWorld',
+      mark: step === 1 || step === 2 ? 'hit' : '' }];
+    if (step === 3) {
+      helloRows.push({ name: 'helloWorld', kind: 'named', value: '<span class="verdict bad">✗ gibt es nicht</span>', mark: 'miss' });
+    }
+    if (step === 5) {
+      helloSrc = [
+        '«c2|export default» function helloWorld(name: string): string { … }',
+        'function goodbye(name: string): string { … }',
+        { t: '«bad|export default» goodbye;', c: 'err' }
+      ];
+      helloRows = [
+        { name: 'default', kind: 'default', value: 'Funktion helloWorld', mark: 'miss' },
+        { name: 'default', kind: 'default', value: 'Funktion goodbye <span class="verdict bad">✗ zweiter default</span>', mark: 'miss' }
+      ];
+    }
+    // maths.ts
+    const mathsRows = ['pi', 'phi', 'absolute', 'round'].map(n => ({ name: n, kind: 'named', value: n === 'pi' || n === 'phi' ? 'Zahl' : 'Funktion' }));
+    mathsRows.push({ name: 'default', kind: 'default', value: '— (keiner)', mark: step === 4 ? 'miss' : '' });
+    document.getElementById('c-modules').innerHTML =
+      exportTable('hello.ts', helloSrc, helloRows) +
+      exportTable('maths.ts', ['«pub|export» const pi …   «pub|export» const phi …', '«pub|export» function absolute …', '«pub|export» function round …'], mathsRows);
+
+    const IMPORTS = [
+      null,
+      { line: 'import «ok|helloWorld» from "./hello.js";', ok: true, text: 'helloWorld ist in app.ts jetzt die Funktion vom Platz „default“.', local: 'helloWorld' },
+      { line: 'import «ok|greet» from "./hello.js";', ok: true, text: 'greet ist dieselbe Funktion. Den Namen wählst du selbst.', local: 'greet' },
+      { line: 'import «bad|{ helloWorld }» from "./hello.js";', ok: false, msg: MSG.TS2614 },
+      { line: 'import «bad|calc» from "./maths.js";', ok: false, msg: MSG.TS1192 },
+      { file: 'hello.ts', ok: false, msg: MSG.TS2528 }
+    ];
+    const imp = IMPORTS[step];
+    let html = '<div class="card"><b>app.ts</b>';
+    if (!imp) {
+      html += '<p class="muted">Noch kein Import. Im nächsten Schritt holt app.ts den default export von hello.ts.</p>';
+    } else if (imp.file) {
+      html += '<p>app.ts ist unverändert. Der Fehler steht in <b>hello.ts</b>:</p>' + term(imp.msg, '> npx tsc');
+    } else {
+      html += `<pre class="code">${codeLines([{ t: imp.line, c: imp.ok ? 'cur' : 'err' }])}</pre>`;
+      html += imp.ok
+        ? `<p class="appear"><span class="verdict ok">✓ kompiliert.</span> ${imp.text}</p><div>${chip(imp.local, 'ok', 'lokaler Name')}</div>`
+        : `<p class="appear"><span class="verdict bad">✗ Fehler.</span></p>${term(imp.msg, '> npx tsc')}`;
+    }
+    html += '</div>';
+    document.getElementById('c-import').innerHTML = html;
+  }
+  const cAnim = stepper('c', C_STEPS.length, renderC);
+
+  // ---------- slide 4: from .ts to .js ----------
+  const D_STEPS = [
+    '<b class="step">Ausgangslage.</b> Du schreibst TypeScript im Ordner <code>src</code>. Die Importe zeigen auf <code>.js</code>-Dateien, obwohl es dort nur <code>.ts</code>-Dateien gibt.',
+    '<b class="step">1. tsc kompiliert.</b> Aus jeder <code>.ts</code>-Datei wird eine <code>.js</code>-Datei im Ordner <code>dist</code>. Den Text im Import ändert tsc <b>nicht</b>: <code>"./maths.js"</code> bleibt gleich.',
+    '<b class="step">2. Typen verschwinden.</b> Die Zeile mit <code>import type</code> fehlt in dist/app.js. Typen gibt es nur in TypeScript. Mit <code>"verbatimModuleSyntax": true</code> musst du Typen so importieren. Schreibst du nur <code>import { Shape }</code>, meldet tsc einen Fehler.',
+    '<b class="step">3. Node.js startet dist/app.js.</b> Es sucht <code>./maths.js</code> im Ordner von dist/app.js und findet dist/maths.js. Darum steht <code>.js</code> im Import. Ein Pfad ohne <code>./</code> wie <code>"node:fs"</code> ist ein Paket, keine eigene Datei.',
+    '<b class="step">4. Ohne .js.</b> Node.js würde eine Datei dist/maths ohne Endung suchen. Die gibt es nicht. tsc erkennt das schon beim Kompilieren.'
+  ];
+  function renderD(step) {
+    document.getElementById('d-caption').innerHTML = D_STEPS[step];
+    const path = step === 4 ? '«bad|"./maths"»' : (step >= 1 ? '«hl|"./maths.js"»' : '"./maths.js"');
+    const typeLine = step === 2 ? { t: '«c2|import type» { Shape } from "./shapes/index.js";', c: 'cur' } : 'import type { Shape } from "./shapes/index.js";';
+    const src = [
+      'import helloWorld from "./hello.js";',
+      { t: 'import { pi, round } from ' + path + ';', c: step === 4 ? 'err' : (step === 1 || step === 3 ? 'cur' : '') },
+      'import { area } from "./shapes/index.js";',
+      typeLine,
+      '',
+      'const shapes: Shape[] = [];'
+    ];
+    const tree = (items, cls) => '<ul class="tree">' + items.map(i => `<li class="${(cls && cls[i]) || ''}">${esc(i)}</li>`).join('') + '</ul>';
+    document.getElementById('d-src').innerHTML = '<h3>src/app.ts <span class="badge">TypeScript</span></h3>' +
+      `<pre class="code">${codeLines(src)}</pre><p class="hint" style="margin:6px 0 0">Ordner src:</p>` +
+      tree(['app.ts', 'hello.ts', 'maths.ts', 'report.ts', 'shapes/…']);
+    document.getElementById('d-src').className = 'panel' + (step === 4 ? ' run' : '');
+    document.getElementById('d-arrow').textContent = step === 0 ? 'tsc ➜ ?' : 'tsc ➜';
+
+    let dist = '<h3>dist/app.js <span class="badge">JavaScript</span></h3>';
+    if (step === 0) {
+      dist += '<p class="muted">Noch nicht kompiliert. Der Ordner dist ist leer.</p>';
+    } else if (step === 4) {
+      dist += '<p><span class="verdict bad">✗ Fehler.</span> tsc meldet:</p>' + term(MSG.TS2835, '> npx tsc') +
+        '<p class="hint"><code>npm start</code> führt <code>tsc &amp;&amp; node dist/app.js</code> aus. Nach einem Fehler von tsc startet Node.js gar nicht.</p>';
+    } else {
+      // the type import is gone in every compiled version; step 2 points it out
+      const lines = [
+        'import helloWorld from "./hello.js";',
+        { t: 'import { pi, round } from «hl|"./maths.js"»;', c: step === 1 || step === 3 ? 'cur' : '' },
+        'import { area } from "./shapes/index.js";',
+        { t: 'import type { Shape } from "./shapes/index.js";', c: 'gone' + (step === 2 ? ' err' : '') },
+        '',
+        'const shapes = [];'
+      ];
+      dist += `<pre class="code">${codeLines(lines)}</pre><p class="hint" style="margin:4px 0 0">Durchgestrichen: Diese Zeile fehlt in dist/app.js.</p>`;
+      dist += '<p class="hint" style="margin:6px 0 0">Ordner dist:</p>' +
+        tree(['app.js', 'hello.js', 'maths.js', 'report.js', 'shapes/…'], step === 3 ? { 'maths.js': 'hit' } : null);
+      if (step === 2) { dist += '<p class="hint">Ohne <code>type</code>:</p>' + term(MSG.TS1484, '> npx tsc'); }
+    }
+    const distEl = document.getElementById('d-dist');
+    distEl.innerHTML = dist;
+    distEl.className = 'panel' + (step >= 1 && step <= 3 ? ' good' : '');
+
+    let node = '<b>Start mit Node.js</b>';
+    if (step < 3) {
+      node += '<p class="muted">Kommt in Schritt 4: <code>node dist/app.js</code></p>';
+    } else if (step === 3) {
+      node += '<pre class="code appear">' + codeLines([
+        '> node dist/app.js',
+        'import … from "./maths.js"   // in dist/app.js',
+        '→ looks for dist/maths.js   ✓ found'
+      ]) + '</pre>';
+    } else {
+      node += '<pre class="code appear">' + codeLines([
+        '> node dist/app.js',
+        'import … from "./maths"   // without .js',
+        { t: '→ looks for dist/maths   ✗ no such file', c: 'err' }
+      ]) + '</pre><p class="hint">Das passiert nur, wenn du dist/app.js trotz des Fehlers startest. Der Fix ist <code>"./maths.js"</code>.</p>';
+    }
+    document.getElementById('d-node').innerHTML = node;
+  }
+  const dAnim = stepper('d', D_STEPS.length, renderD);
+
+  // ---------- slide 5: folder as a module ----------
+  const E_STEPS = [
+    '<b class="step">Ausgangslage.</b> Der Ordner shapes hat mehrere Dateien. Ohne index.ts muss app.ts wissen, in welcher Datei jede Funktion steht.',
+    '<b class="step">1. index.ts gibt weiter (re-export).</b> <code>export { x } from "./y.js"</code> importiert x und exportiert es sofort wieder. circleArea und rectangleArea stehen nicht in index.ts. Sie bleiben im Ordner.',
+    '<b class="step">2. Eine Tür nach außen.</b> app.ts importiert nur noch aus <code>./shapes/index.js</code>. index.ts ist die <b>öffentliche Schnittstelle</b> des Ordners, so wie ein Package in Java.',
+    '<b class="step">3. Umbauen im Ordner.</b> area() zieht in eine neue Datei measure.ts. Du änderst nur eine Zeile in index.ts. app.ts und report.ts bleiben gleich.'
+  ];
+  const E_FILES = [
+    { file: 'shape.ts', names: [{ n: 'Circle', type: true }, { n: 'Rectangle', type: true }, { n: 'Shape', type: true }] },
+    { file: 'circle.ts', names: [{ n: 'createCircle', pub: true }, { n: 'circleArea' }] },
+    { file: 'rectangle.ts', names: [{ n: 'createRectangle', pub: true }, { n: 'goldenRectangle', pub: true }, { n: 'rectangleArea' }] },
+    { file: 'area.ts', names: [{ n: 'area', pub: true }] }
+  ];
+  function renderE(step) {
+    document.getElementById('e-caption').innerHTML = E_STEPS[step];
+    const files = E_FILES.map(f => {
+      const moved = step === 3 && f.file === 'area.ts';
+      const chips = f.names.map(x => {
+        if (x.type) { return chip(x.n, 'c2', 'Typ'); }
+        if (step === 0) { return chip(x.n, x.pub ? 'act' : ''); }
+        if (x.pub) { return chip(x.n, 'pub', 'öffentlich'); }
+        return chip('🔒 ' + x.n, 'priv', 'nur im Ordner');
+      }).join('');
+      return `<div class="file${moved ? ' moved' : ''}"><div class="fn">${moved ? 'measure.ts <span class="badge run">neu</span>' : f.file}</div>${chips}</div>`;
+    }).join('');
+    let index = '';
+    if (step >= 1) {
+      const areaLine = step === 3 ? { t: 'export { area } from «hl|"./measure.js"»;', c: 'cur' } : 'export { area } from "./area.js";';
+      index = `<div class="panel new appear" style="margin-top:8px"><h3>index.ts <span class="badge pub">öffentliche Schnittstelle</span></h3><pre class="code">${codeLines([
+        'export type { Circle, Rectangle, Shape } from "./shape.js";',
+        'export { createCircle } from "./circle.js";',
+        'export { createRectangle, goldenRectangle } from "./rectangle.js";',
+        areaLine
+      ])}</pre></div>`;
+    } else {
+      index = '<div class="panel" style="margin-top:8px"><h3>index.ts</h3><p class="muted" style="margin:0">Gibt es noch nicht.</p></div>';
+    }
+    document.getElementById('e-folder').innerHTML = '<div class="lbl">📁 shapes/</div><div class="files">' + files + '</div>' + index;
+
+    let app;
+    if (step === 0) {
+      app = panel('app.ts', [
+        'import { createCircle } from «hl|"./shapes/circle.js"»;',
+        'import { createRectangle, goldenRectangle }',
+        '    from «hl|"./shapes/rectangle.js"»;',
+        'import { area } from «hl|"./shapes/area.js"»;',
+        'import type { Shape } from «hl|"./shapes/shape.js"»;'
+      ], '', ' <span class="badge run">4 Pfade in den Ordner</span>');
+    } else if (step === 1) {
+      app = '<div class="card"><b>app.ts</b><p class="muted">Im nächsten Schritt importiert app.ts nur noch aus index.ts.</p></div>';
+    } else {
+      const same = step === 3 ? ' <span class="badge ok">✓ unverändert</span>' : '';
+      app = panel('app.ts', [
+        'import { area, createCircle, createRectangle,',
+        '    goldenRectangle } from «ok|"./shapes/index.js"»;',
+        'import type { Shape } from «ok|"./shapes/index.js"»;'
+      ], step === 3 ? 'good' : 'new', same);
+      if (step === 3) {
+        app += '<div style="margin-top:12px">' + panel('report.ts', [
+          'import { round } from "./maths.js";',
+          'import { area, type Shape } from «ok|"./shapes/index.js"»;'
+        ], 'good', same) + '</div>';
+      } else {
+        app += '<div class="card hint appear">In index.ts selbst kannst du area nicht aufrufen: Die Zeile reicht den Namen nur weiter. Bundler wie Vite erlauben auch den kurzen Pfad <code>"./shapes"</code>. Node.js braucht <code>"./shapes/index.js"</code>.</div>';
+      }
+    }
+    document.getElementById('e-outside').innerHTML = app;
+  }
+  const eAnim = stepper('e', E_STEPS.length, renderE);
+
+  // ---------- slide 6: when is a module loaded? ----------
+  const F_STEPS = [
+    '<b class="step">Ausgangslage.</b> Ein Pfeil heißt „importiert“. app.ts lädt report.ts mit <code>import()</code> (gestrichelt). shape.ts enthält nur Typen (gepunktet). Noch läuft nichts.',
+    '<b class="step">1. Vor dem Start.</b> Node.js liest die <code>import</code>-Zeilen und lädt alle Module, die app.ts direkt oder über andere Module braucht. report.ts lädt es nicht. shape.ts auch nicht: <code>import type</code> fehlt im JavaScript.',
+    '<b class="step">2. Importe laufen zuerst.</b> Ein Modul läuft erst, wenn seine Importe fertig sind. Die Nummern zeigen die Reihenfolge. app.ts wartet noch.',
+    '<b class="step">3. Nur einmal.</b> Vier Module importieren maths.ts. Node.js führt es trotzdem nur <b>einmal</b> aus. Alle bekommen dieselben Werte. Ändert ein Modul ein exportiertes Array, sehen alle anderen die Änderung.',
+    '<b class="step">4. app.ts läuft.</b> Bei <code>npm start</code> fehlt <code>--report</code>. Die Zeile mit <code>import()</code> in einem <code>if</code> läuft nicht. report.ts wird nie geladen.',
+    '<b class="step">5. npm run report.</b> Jetzt läuft die Zeile <code>await import("./report.js")</code>. Erst dann lädt Node.js report.ts. Seine Importe maths.ts und shapes/index.ts sind schon fertig. Sie laufen nicht noch einmal.'
+  ];
+  const W = 150;
+  const H = 46;
+  const F_NODES = {
+    app: { label: 'app.ts', x: 305, y: 14 },
+    hello: { label: 'hello.ts', x: 40, y: 110 },
+    index: { label: 'shapes/index.ts', x: 305, y: 110 },
+    report: { label: 'report.ts', x: 570, y: 110 },
+    circle: { label: 'circle.ts', x: 95, y: 210 },
+    area: { label: 'area.ts', x: 305, y: 210 },
+    rectangle: { label: 'rectangle.ts', x: 515, y: 210 },
+    shape: { label: 'shape.ts', x: 60, y: 310 },
+    maths: { label: 'maths.ts', x: 305, y: 310 }
+  };
+  // Execution order of the static imports (dependencies first).
+  const F_ORDER = ['hello', 'maths', 'circle', 'rectangle', 'area', 'index'];
+  const F_EDGES = [
+    { id: 'app-hello', d: 'M330,60 L170,110' },
+    { id: 'app-index', d: 'M380,60 L380,110' },
+    { id: 'app-maths', d: 'M305,37 C286,37 280,48 280,68 L280,312 C280,326 290,333 304,333' },
+    { id: 'app-report', d: 'M430,60 L615,110', cls: 'dyn' },
+    { id: 'index-circle', d: 'M335,156 L205,210' },
+    { id: 'index-area', d: 'M380,156 L380,210' },
+    { id: 'index-rectangle', d: 'M425,156 L555,210' },
+    { id: 'area-circle', d: 'M305,233 L246,233' },
+    { id: 'area-rectangle', d: 'M455,233 L514,233' },
+    { id: 'circle-maths', d: 'M200,256 L318,310' },
+    { id: 'rectangle-maths', d: 'M560,256 L442,310' },
+    { id: 'circle-shape', d: 'M150,256 L138,310', cls: 'type' },
+    { id: 'report-index', d: 'M570,133 L456,133' },
+    { id: 'report-maths', d: 'M690,156 C715,290 580,333 456,333' }
+  ];
+  const svgNs = 'http://www.w3.org/2000/svg';
+  document.getElementById('f-graph').innerHTML =
+    `<svg viewBox="0 0 760 372" role="img" aria-label="Module des Beispielprojekts und ihre Importe" xmlns="${svgNs}">` +
+    '<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker>' +
+    '<marker id="arrHot" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z"/></marker></defs>' +
+    F_EDGES.map(e => `<path class="g-edge ${e.cls || ''}" data-edge="${e.id}" d="${e.d}"/>`).join('') +
+    '<text class="g-label" x="520" y="76">import()</text><text class="g-label" x="40" y="290">import type</text>' +
+    Object.keys(F_NODES).map(k => {
+      const n = F_NODES[k];
+      return `<g class="g-node" data-node="${k}"><rect x="${n.x}" y="${n.y}" width="${W}" height="${H}" rx="8"/>` +
+        `<text class="name" x="${n.x + W / 2}" y="${n.y + 19}" text-anchor="middle">${n.label}</text>` +
+        `<text class="status" x="${n.x + W / 2}" y="${n.y + 37}" text-anchor="middle"></text></g>`;
+    }).join('') + '</svg>';
+
+  /** Returns { cls, status } of a node in a step. */
+  function nodeState(k, step) {
+    if (k === 'shape') { return { cls: 'typeonly', status: step >= 1 ? 'nur Typen: nie geladen' : 'nicht geladen' }; }
+    if (k === 'report') {
+      if (step === 5) { return { cls: 'done focus', status: '✓ geladen bei Bedarf' }; }
+      return { cls: '', status: step >= 4 ? 'nie geladen' : 'nicht geladen' };
+    }
+    if (step === 0) { return { cls: '', status: 'nicht geladen' }; }
+    if (step === 1) { return { cls: 'loaded', status: 'geladen, wartet' }; }
+    if (k === 'app') {
+      if (step <= 3) { return { cls: 'loaded', status: 'wartet auf Importe' }; }
+      if (step === 4) { return { cls: 'running focus', status: 'läuft (Nr. 7)' }; }
+      return { cls: 'running', status: 'läuft: import()' };
+    }
+    if (k === 'maths' && step >= 3) { return { cls: 'done' + (step === 3 || step === 5 ? ' focus' : ''), status: '✓ 1× ausgeführt' }; }
+    return { cls: 'done', status: `✓ ausgeführt (Nr. ${F_ORDER.indexOf(k) + 1})` };
+  }
+  function renderF(step) {
+    document.getElementById('f-caption').innerHTML = F_STEPS[step];
+    const svg = document.querySelector('#f-graph svg');
+    svg.querySelectorAll('.g-node').forEach(g => {
+      const s = nodeState(g.dataset.node, step);
+      g.setAttribute('class', 'g-node ' + s.cls);
+      g.querySelector('.status').textContent = s.status;
+    });
+    const hot = step === 3 ? ['app-maths', 'circle-maths', 'rectangle-maths', 'report-maths']
+      : step === 5 ? ['app-report', 'report-index', 'report-maths'] : [];
+    svg.querySelectorAll('.g-edge').forEach(p => {
+      const e = F_EDGES.find(x => x.id === p.dataset.edge);
+      p.setAttribute('class', 'g-edge ' + (e.cls || '') + (hot.includes(e.id) ? ' hot' : ''));
+    });
+  }
+  const fAnim = stepper('f', F_STEPS.length, renderF);
+
+  // ---------- slide 7: CommonJS ----------
+  const G_STEPS = [
+    '<b class="step">Ausgangslage.</b> Node.js gab es schon vor 2015. Damals hatte JavaScript noch keine Module. Node.js hat dafür <b>CommonJS</b> erfunden. Du findest es in alten Tutorials und oft in KI-Antworten.',
+    '<b class="step">1. Export.</b> CommonJS weist <code>module.exports</code> ein Objekt zu. In ESM schreibst du <code>export</code>.',
+    '<b class="step">2. Import mit neuem Namen.</b> <code>require()</code> ist ein normaler Funktionsaufruf. Der Doppelpunkt in <code>pi: myPi</code> gehört zum Object destructuring. Bei <code>import</code> heißt das <code>as</code>.',
+    '<b class="step">3. Das ganze Modul.</b> Ohne Klammern liefert <code>require()</code> das ganze Objekt. In ESM ist das der Namespace-Import.',
+    '<b class="step">4. require in einem ES Module.</b> Mit <code>"type": "module"</code> in der package.json ist jede .js-Datei ein ES Module. Dort gibt es kein <code>require</code>. Node.js stürzt ab, sobald die Zeile läuft.',
+    '<b class="step">Zusammenfassung.</b> Wir schreiben in diesem Kurs nur ES Modules. Schlägt dir eine KI <code>require()</code> oder <code>module.exports</code> vor, schreibe den Code in <code>import</code> und <code>export</code> um.'
+  ];
+  const G_ROWS = [
+    { what: 'Export', cjs: ['module.exports = { pi, absolute };'], esm: ['export { pi, absolute };'] },
+    { what: 'Import mit neuem Namen', cjs: ['const { pi«hl|: myPi», absolute«hl|: abs» } =', '    require("./maths.cjs");'],
+      esm: ['import { pi «ok|as myPi», absolute «ok|as abs» }', '    from "./maths.js";'] },
+    { what: 'Das ganze Modul', cjs: ['const maths = require("./maths.cjs");', 'maths.absolute(-3);'], esm: ['import «ok|* as maths» from "./maths.js";', 'maths.absolute(-3);'] }
+  ];
+  function renderG(step) {
+    document.getElementById('g-caption').innerHTML = G_STEPS[step];
+    let html = '';
+    if (step <= 3) {
+      html += '<div class="grid2 wr"><div>' + panel('legacy/maths.cjs <span class="badge run">CommonJS</span>', [
+        'const pi = Math.PI;',
+        '',
+        'function absolute(value) {',
+        '    return value < 0 ? -value : value;',
+        '}',
+        '',
+        '// Export: assign an object to module.exports.',
+        { t: 'module.exports = { pi, absolute };', c: step === 1 ? 'cur' : '' }
+      ]) + '</div><div>';
+      const rows = G_ROWS.slice(0, step);
+      html += rows.length ? rows.map((r, i) => `<div class="maprow${i === step - 1 ? ' appear' : ''}"><div class="what">${r.what}</div>` +
+        `<div class="boxcode cjs"><div class="lbl">CommonJS</div><pre class="code">${codeLines(r.cjs.map(t => ({ t, c: i === step - 1 ? 'cur' : '' })))}</pre></div>` +
+        '<div class="arrow">➜</div>' +
+        `<div class="boxcode esm"><div class="lbl">ES Module ✓</div><pre class="code">${codeLines(r.esm)}</pre></div></div>`).join('')
+        : '<div class="card"><p class="muted" style="margin:0">Hier erscheinen die Zeilen als ES Module.</p></div>';
+      html += '</div></div>';
+    } else if (step === 4) {
+      html += '<div class="grid2"><div>' +
+        panel('package.json', ['{', '  «hl|"type": "module"»,', '  "scripts": { "start": "tsc && node dist/app.js" }', '}']) +
+        '<div style="margin-top:12px">' + panel('src/app.ts', [{ t: 'const { pi } = «bad|require»("./maths.js");', c: 'err' }, 'console.log(pi);'], 'run') + '</div>' +
+        '</div><div class="card appear"><b>Ausgabe</b><p class="hint" style="margin:0">tsc meldet hier keinen Fehler. Erst Node.js scheitert:</p>' +
+        term(MSG.REQ, '> npm start') +
+        '<p>Richtig ist:</p><pre class="code">' + codeLines([{ t: 'import { pi } from "./maths.js";', c: '' }]) + '</pre></div></div>';
+    } else {
+      html += '<div class="card appear"><b>ES Modules und CommonJS</b><table class="cmp">' +
+        '<tr><th></th><th>ES Modules</th><th>CommonJS</th></tr>' +
+        '<tr><td>Export</td><td><code>export function f() {}</code></td><td><code>module.exports = { f };</code></td></tr>' +
+        '<tr><td>Import</td><td><code>import { f } from "./a.js";</code></td><td><code>const { f } = require("./a.js");</code></td></tr>' +
+        '<tr><td>Wann geladen?</td><td>vor dem Start, Importe stehen oben</td><td>zur Laufzeit, <code>require()</code> darf überall stehen</td></tr>' +
+        '<tr><td>Datei in Node.js</td><td><i>.mjs</i> oder <i>.js</i> mit <code>"type": "module"</code></td><td><i>.cjs</i> oder <i>.js</i> ohne <code>"type": "module"</code></td></tr>' +
+        '<tr><td>Im Browser</td><td>✓ ja</td><td>✗ nein</td></tr></table></div>';
+    }
+    document.getElementById('g-stage').innerHTML = html;
+  }
+  const gAnim = stepper('g', G_STEPS.length, renderG);
+
+  // ---------- slide 8: exercise ----------
+  const MATHS_SRC = 'export const pi = Math.PI;\nexport const phi = (1 + Math.sqrt(5)) / 2;\nconst defaultDigits = 2;\nexport function absolute(value: number): number { /* ... */ }\nexport function round(value: number, digits: number = defaultDigits): number { /* ... */ }';
+  const HELLO_SRC = 'export default function helloWorld(name: string): string {\n    return `Hello ${name}, welcome to the shape calculator!`;\n}';
+  const INDEX_SRC = 'export type { Circle, Rectangle, Shape } from "./shape.js";\nexport { createCircle } from "./circle.js";\nexport { createRectangle, goldenRectangle } from "./rectangle.js";\nexport { area } from "./area.js";';
+  const GAME_FILES = [
+    { label: 'score.ts', code: 'export const scores: number[] = [];\nconsole.log("score.ts loaded");\nexport function addScore(points: number): void {\n    scores.push(points);\n}' },
+    { label: 'ui.ts', code: 'import { scores } from "./score.js";\nconsole.log("ui.ts loaded");\nexport function showScores(): void {\n    console.log(`Scores: ${scores.join(", ")}`);\n}' },
+    { label: 'stats.ts', code: 'import { scores } from "./score.js";\nconsole.log("stats.ts loaded");\nexport default function average(): number {\n    return scores.reduce((sum, s) => sum + s, 0) / scores.length;\n}' },
+    { label: 'main.ts', code: 'import { showScores } from "./ui.js";\nimport { addScore } from "./score.js";\nconsole.log("main.ts loaded");\naddScore(12);\nshowScores();\nif (process.argv.includes("--stats")) {\n    const { default: average } = await import("./stats.js");\n    console.log(`Average: ${average()}`);\n}' }
+  ];
+  const DECK_CTX = [{ label: 'deck.js (CommonJS, von einer KI)', code: 'function createDeck() { /* ... */ }\nfunction shuffle(cards) { /* ... */ }\n\nmodule.exports = { createDeck, shuffle };' }];
+
+  // kind 'verdict': decide for every item whether it works. ok = true means "compiles".
+  // kind 'choice': pick one option. kind 'pick': mark all correct chips.
+  const ROUNDS = [
+    { id: 'maths', kind: 'verdict', title: 'Importe aus maths.ts',
+      intro: 'Das ist maths.ts. Entscheide für jede Zeile in app.ts: Kompiliert sie, oder meldet tsc einen Fehler?',
+      context: [{ label: 'maths.ts', code: MATHS_SRC }],
+      items: [
+        { code: 'import { pi, round } from "./maths.js";', ok: true, why: 'pi und round sind named exports. Die Namen in den Klammern passen genau.' },
+        { code: 'import { defaultDigits } from "./maths.js";', ok: false, msg: MSG.TS2459, why: 'defaultDigits hat kein export. Die Konstante ist privat in maths.ts.' },
+        { code: 'import calc from "./maths.js";', ok: false, msg: MSG.TS1192, why: 'Ohne geschwungene Klammern holst du den default export. maths.ts hat keinen.' },
+        { code: 'import * as calc from "./maths.js";', ok: true, why: 'Der Namespace-Import holt alle Exporte als ein Objekt: calc.pi, calc.round(). Dafür braucht maths.ts keinen default export.' }
+      ] },
+    { id: 'hello', kind: 'verdict', title: 'Default export und Pfade',
+      intro: 'Das ist hello.ts. Entscheide für jede Zeile in app.ts: Kompiliert sie mit den Einstellungen aus ModulesDemo?',
+      context: [{ label: 'hello.ts', code: HELLO_SRC }],
+      items: [
+        { code: 'import greet from "./hello.js";', ok: true, why: 'Der default export hat beim Import keinen festen Namen. greet ist dieselbe Funktion wie helloWorld.' },
+        { code: 'import { helloWorld } from "./hello.js";', ok: false, msg: MSG.TS2614, why: 'Mit geschwungenen Klammern suchst du einen named export. hello.ts hat nur einen default export.' },
+        { code: 'import { round } from "./maths";', ok: false, msg: MSG.TS2835, why: 'Mit "module": "NodeNext" braucht ein relativer Pfad die Endung .js. Node.js sucht später genau diese Datei in dist.' },
+        { code: 'import { absolute as abs } from "./maths.js";', ok: true, why: 'absolute ist ein named export. Mit as heißt die Funktion in app.ts abs.' }
+      ] },
+    { id: 'types', kind: 'verdict', title: 'Typen importieren',
+      intro: 'Das ist shapes/index.ts. Shape ist ein Typ, area und createCircle sind Funktionen. In der tsconfig.json steht "verbatimModuleSyntax": true. Kompiliert die Zeile?',
+      context: [{ label: 'shapes/index.ts', code: INDEX_SRC }],
+      items: [
+        { code: 'import { Shape } from "./shapes/index.js";', ok: false, msg: MSG.TS1484, why: 'Shape ist ein Typ. Mit verbatimModuleSyntax musst du ihn mit import type holen.' },
+        { code: 'import type { Shape } from "./shapes/index.js";', ok: true, why: 'import type holt nur Typen. Die Zeile verschwindet beim Kompilieren.' },
+        { code: 'import { area, type Shape } from "./shapes/index.js";', ok: true, why: 'Werte und Typen in einer Zeile: type steht direkt vor dem Typ.' },
+        { code: 'import { createCircle } from "./shapes/index.js";', ok: true, why: 'createCircle ist eine Funktion, also ein Wert. Dafür reicht ein normaler Import.' }
+      ] },
+    { id: 'defaults', kind: 'verdict', title: 'Wie viele default exports?',
+      intro: 'Drei Versionen von hello.ts. Welche Version kompiliert?',
+      items: [
+        { label: 'Version A', code: 'export default function helloWorld(name: string): string {\n    return `Hello ${name}!`;\n}\nexport function goodbye(name: string): string {\n    return `Goodbye ${name}!`;\n}',
+          ok: true, why: 'Ein default export und zusätzlich named exports sind erlaubt.' },
+        { label: 'Version B', code: 'export default function helloWorld(name: string): string {\n    return `Hello ${name}!`;\n}\nfunction goodbye(name: string): string {\n    return `Goodbye ${name}!`;\n}\nexport default goodbye;',
+          ok: false, msg: MSG.TS2528, why: 'Ein Modul darf höchstens einen default export haben. Hier sind es zwei.' },
+        { label: 'Version C', code: 'function helloWorld(name: string): string {\n    return `Hello ${name}!`;\n}\nexport default helloWorld;\nexport const appName = "Shapes";',
+          ok: true, why: 'export default darf auch am Ende der Datei stehen. Es gibt nur einen default export. appName ist ein named export.' }
+      ] },
+    { id: 'reexport', kind: 'pick', title: 'Was gibt index.ts weiter?',
+      intro: 'Das ist shapes/index.ts. app.ts schreibt import { … } from "./shapes/index.js". Welche Funktionen kann app.ts so holen? Markiere alle.',
+      context: [{ label: 'shapes/index.ts', code: INDEX_SRC },
+        { label: 'Exporte der Dateien im Ordner', code: 'circle.ts:    createCircle, circleArea\nrectangle.ts: createRectangle, goldenRectangle, rectangleArea\narea.ts:      area' }],
+      chips: ['createCircle', 'circleArea', 'createRectangle', 'goldenRectangle', 'rectangleArea', 'area'],
+      answer: ['createCircle', 'createRectangle', 'goldenRectangle', 'area'],
+      explain: {
+        circleArea: { text: 'circleArea ist in circle.ts exportiert, steht aber nicht in index.ts. Über index.ts ist es nicht zu sehen.', msg: MSG.TS2305 },
+        rectangleArea: { text: 'rectangleArea steht nicht in index.ts. Es bleibt eine Hilfsfunktion im Ordner.', msg: MSG.TS2724 }
+      },
+      result: 'Richtig: createCircle, createRectangle, goldenRectangle und area. Nur was in index.ts steht, ist von außen über den Ordner erreichbar.' },
+    { id: 'crash', kind: 'choice', title: 'Absturz beim Start', code: true,
+      intro: 'In der package.json steht "type": "module". tsc meldet keinen Fehler. Trotzdem stürzt node dist/app.js sofort ab. Welche Zeile in app.ts ist schuld?',
+      options: ['import { pi } from "./maths.js";', 'const { phi } = require("./maths.js");', 'import * as maths from "./maths.js";', 'const { default: createReport } = await import("./report.js");'],
+      correct: 1,
+      wrong: ['Das ist ein normaler named import. Er funktioniert in jedem ES Module.',
+        '', 'Der Namespace-Import ist ESM. Er funktioniert.',
+        'import() ist ESM. await außerhalb einer Funktion (top-level await) ist in ES Modules erlaubt.'],
+      explanation: 'require() gehört zu CommonJS. In einem ES Module gibt es require nicht. Node.js meldet:', msg: MSG.REQ },
+    { id: 'cjs-export', kind: 'choice', title: 'CommonJS → ESM: Export', code: true,
+      intro: 'Eine KI schlägt dir deck.js vor. createDeck und shuffle sollen named exports werden. Welche Zeile ersetzt module.exports?',
+      context: DECK_CTX,
+      options: ['export default { createDeck, shuffle };', 'exports { createDeck, shuffle };', 'export { createDeck, shuffle };', 'import { createDeck, shuffle };'],
+      correct: 2,
+      wrong: ['Das ist ein default export: ein Objekt mit zwei Funktionen. Gefragt sind named exports. Nur dann funktioniert import { shuffle } from "./deck.js".',
+        'Das Schlüsselwort heißt export, ohne s. exports gibt es nur bei CommonJS.',
+        '', 'import holt Namen aus einem anderen Modul. Hier soll deck.js Namen hergeben.'],
+      explanation: 'export { … } am Ende der Datei macht beide Funktionen zu named exports. Du kannst export auch direkt vor function schreiben.' },
+    { id: 'cjs-rename', kind: 'choice', title: 'CommonJS → ESM: Umbenennen', code: true,
+      intro: 'deck.js hat jetzt die named exports createDeck und shuffle. Welche ESM-Zeile ersetzt diesen require-Aufruf?',
+      context: [{ label: 'game.js (CommonJS)', code: 'const { shuffle: mix } = require("./deck.js");\n\nconsole.log(mix(["A", "K", "Q"]));' }],
+      options: ['import { shuffle: mix } from "./deck.js";', 'import { mix as shuffle } from "./deck.js";', 'import mix from "./deck.js";', 'import { shuffle as mix } from "./deck.js";'],
+      correct: 3,
+      wrong: ['Der Doppelpunkt gehört zum Object destructuring bei require. Beim import heißt das Umbenennen as.',
+        'Die Reihenfolge ist vertauscht. Links steht der exportierte Name, rechts der neue Name.',
+        'Ohne Klammern holst du den default export. deck.js hat nur named exports, tsc meldet TS1192.', ''],
+      explanation: 'shuffle: mix bei require ist Object destructuring mit neuem Namen. Beim import schreibst du dafür shuffle as mix.' },
+    { id: 'cjs-namespace', kind: 'choice', title: 'CommonJS → ESM: ganzes Modul', code: true,
+      intro: 'deck.js hat nur named exports. Der restliche Code soll gleich bleiben. Welche ESM-Zeile ersetzt die erste Zeile?',
+      context: [{ label: 'game.js (CommonJS)', code: 'const deck = require("./deck.js");\n\nconst cards = deck.shuffle(deck.createDeck());' }],
+      options: ['import * as deck from "./deck.js";', 'import deck from "./deck.js";', 'import { deck } from "./deck.js";', 'const deck = import("./deck.js");'],
+      correct: 0,
+      wrong: ['', 'Ohne Klammern holst du den default export. deck.js hat keinen (TS1192).',
+        'deck.js exportiert keinen Namen deck. Es exportiert createDeck und shuffle.',
+        'import() liefert ein Promise, nicht das Modul. Ohne await hast du noch kein Modul. tsc meldet einen Fehler bei deck.shuffle.'],
+      explanation: 'import * as deck holt alle Exporte als ein Objekt. deck.shuffle() und deck.createDeck() funktionieren wie vorher.' },
+    { id: 'which', kind: 'pick', title: 'Welche Module laufen?',
+      intro: 'Ein kleines Spiel mit vier Modulen. Du startest node dist/main.js ohne --stats. Welche Module führt Node.js aus? Markiere alle.',
+      context: GAME_FILES,
+      chips: ['main.ts', 'ui.ts', 'score.ts', 'stats.ts'],
+      answer: ['main.ts', 'ui.ts', 'score.ts'],
+      explain: { 'stats.ts': { text: 'stats.ts wird nur mit import() geladen. Diese Zeile steht im if und läuft nur mit --stats.' } },
+      result: 'Richtig: main.ts, ui.ts und score.ts. Sie hängen über normale import-Zeilen zusammen. stats.ts lädt nur der dynamische import().' },
+    { id: 'count', kind: 'choice', title: 'Wie oft läuft score.ts?',
+      intro: 'Dieselben vier Module. Jetzt startest du node dist/main.js --stats. Wie oft erscheint "score.ts loaded" in der Ausgabe?',
+      context: GAME_FILES,
+      options: ['0-mal', '1-mal', '2-mal', '3-mal'],
+      correct: 1,
+      wrong: ['score.ts wird importiert, also läuft es auch. Die Zeile mit console.log steht direkt im Modul, nicht in einer Funktion.', '',
+        'Auch der dynamische import() von stats.ts führt score.ts nicht noch einmal aus. stats.ts bekommt das schon geladene Modul.',
+        'Drei Module importieren score.ts. Ausgeführt wird es aber nur beim ersten Import.'],
+      explanation: 'Ein Modul läuft nur einmal, beim ersten Import. main.ts, ui.ts und stats.ts bekommen dasselbe Modul und damit dasselbe Array scores.' },
+    { id: 'order', kind: 'choice', title: 'In welcher Reihenfolge?',
+      intro: 'Dieselben vier Module, Start ohne --stats. In welcher Reihenfolge erscheinen die Zeilen mit "loaded"?',
+      context: GAME_FILES,
+      options: ['main.ts loaded → ui.ts loaded → score.ts loaded', 'ui.ts loaded → score.ts loaded → main.ts loaded', 'score.ts loaded → ui.ts loaded → main.ts loaded'],
+      correct: 2,
+      wrong: ['main.ts läuft zuletzt. Seine Importe müssen vorher fertig sein, sonst gäbe es showScores beim Aufruf noch nicht.',
+        'ui.ts braucht scores aus score.ts. Daher muss score.ts vor ui.ts laufen.', ''],
+      explanation: 'Ein Modul läuft erst, wenn seine Importe fertig sind. main.ts importiert zuerst ui.ts. ui.ts importiert score.ts, also läuft score.ts zuerst. Dann ui.ts, zuletzt main.ts.' }
+  ];
+
+  const solved = new Set((store.get('solved', []) || []).filter(id => ROUNDS.some(r => r.id === id)));
+  let roundIndex = Math.min(Math.max(store.get('round', 0) | 0, 0), ROUNDS.length - 1);
+  let answers = {};
+  let picked = new Set();
+  const exArea = document.getElementById('exArea');
+  const feedback = document.getElementById('feedback');
+
+  function contextHtml(r) {
+    if (!r.context) { return ''; }
+    return `<div class="${r.context.length > 1 ? 'ctxgrid' : ''}">` + r.context.map(c =>
+      `<div class="ex-block"><div class="lbl">${esc(c.label)}</div><pre class="ex-code">${esc(c.code)}</pre></div>`).join('') + '</div>';
+  }
+
+  function renderVerdict(r) {
+    exArea.innerHTML = contextHtml(r) + '<div class="ex-block"><div class="lbl">' + (r.items[0].label ? 'Kompiliert die Datei?' : 'Zeilen in app.ts') + '</div>' +
+      r.items.map((it, i) => `<div class="vitem" data-item="${i}">${it.label ? `<div class="vlabel">${esc(it.label)}</div>` : ''}` +
+        `<div class="vrow"><pre class="ex-code">${esc(it.code)}</pre><div class="vbtns">` +
+        `<button data-v="ok" aria-pressed="false">✓ kompiliert</button><button data-v="err" aria-pressed="false">✗ Fehler</button>` +
+        '<span class="vres"></span></div></div><div class="vdetail"></div></div>').join('') + '</div>';
+  }
+  function paintVerdict() {
+    exArea.querySelectorAll('.vitem').forEach(el => {
+      const i = +el.dataset.item;
+      el.querySelectorAll('button[data-v]').forEach(b => {
+        const on = answers[i] === b.dataset.v;
+        b.classList.toggle('sel', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    });
+  }
+  function clearVerdictResult() {
+    exArea.querySelectorAll('.vitem').forEach(el => {
+      el.classList.remove('right', 'wrong');
+      el.querySelector('.vres').textContent = '';
+      el.querySelector('.vres').className = 'vres';
+      el.querySelector('.vdetail').innerHTML = '';
+    });
+  }
+  /** Checks all items of a verdict round. With fromSolution the round only explains and does not count as solved. */
+  function checkVerdict(fromSolution) {
+    const r = ROUNDS[roundIndex];
+    const open = r.items.filter((it, i) => !answers[i]).length;
+    if (open) {
+      feedback.className = 'feedback info';
+      feedback.innerHTML = `Entscheide zuerst für jede ${r.items[0].label ? 'Version' : 'Zeile'}. Es ${open === 1 ? 'fehlt noch eine Antwort' : 'fehlen noch ' + open + ' Antworten'}.`;
+      return;
+    }
+    let right = 0;
+    exArea.querySelectorAll('.vitem').forEach(el => {
+      const i = +el.dataset.item;
+      const it = r.items[i];
+      const ok = (answers[i] === 'ok') === it.ok;
+      if (ok) { right++; }
+      el.classList.remove('right', 'wrong');
+      el.classList.add(ok ? 'right' : 'wrong');
+      const res = el.querySelector('.vres');
+      res.className = 'vres ' + (ok ? 'ok' : 'bad');
+      res.textContent = ok ? '✓ richtig' : '✗ falsch';
+      el.querySelector('.vdetail').innerHTML = (it.ok ? '<b>Kompiliert.</b> ' : '<b>Fehler.</b> ') + esc(it.why) + (it.msg ? term(it.msg, '> npx tsc') : '');
+    });
+    if (fromSolution) {
+      feedback.className = 'feedback info';
+      feedback.innerHTML = 'Das war die Lösung mit allen Begründungen. Klicke auf <b>Auswahl löschen</b> und löse die Runde selbst, damit sie als gelöst zählt.';
+    } else if (right === r.items.length) {
+      markSolved(r);
+      feedback.className = 'feedback ok';
+      feedback.innerHTML = '✓ Alles richtig! Lies die Meldungen bei den Fehlern. Sie begegnen dir bald im eigenen Projekt.' + nextRoundButton();
+      wireNext();
+    } else {
+      feedback.className = 'feedback bad';
+      feedback.innerHTML = `✗ ${right} von ${r.items.length} richtig. Lies die Begründung bei den roten Einträgen. Ändere deine Antwort und prüfe noch einmal.`;
+    }
+  }
+
+  function renderPick(r) {
+    exArea.innerHTML = contextHtml(r) + '<div class="pick">' +
+      r.chips.map((c, i) => `<button data-chip="${i}" aria-pressed="false">${esc(c)}</button>`).join('') + '</div>';
+  }
+  function paintPick(result) {
+    exArea.querySelectorAll('button[data-chip]').forEach(b => {
+      const name = ROUNDS[roundIndex].chips[+b.dataset.chip];
+      b.classList.remove('marked', 'right', 'wrong');
+      if (result) {
+        if (result.right.has(name)) { b.classList.add('right'); } else if (result.wrong.has(name)) { b.classList.add('wrong'); }
+      } else if (picked.has(name)) { b.classList.add('marked'); }
+      b.setAttribute('aria-pressed', picked.has(name) ? 'true' : 'false');
+    });
+  }
+  /** Checks the marked chips. With fromSolution the round does not count as solved. */
+  function checkPick(fromSolution) {
+    const r = ROUNDS[roundIndex];
+    const result = { right: new Set(), wrong: new Set(), missed: new Set() };
+    picked.forEach(n => (r.answer.includes(n) ? result.right : result.wrong).add(n));
+    r.answer.forEach(n => { if (!picked.has(n)) { result.missed.add(n); } });
+    paintPick(result);
+    if (fromSolution) {
+      feedback.className = 'feedback info';
+      feedback.innerHTML = esc(r.result) + ' Klicke auf <b>Auswahl löschen</b> und löse die Runde selbst, damit sie als gelöst zählt.';
+      return;
+    }
+    if (result.wrong.size === 0 && result.missed.size === 0) {
+      markSolved(r);
+      feedback.className = 'feedback ok';
+      feedback.innerHTML = `✓ ${esc(r.result)}` + nextRoundButton();
+      wireNext();
+      return;
+    }
+    const items = [];
+    result.wrong.forEach(n => {
+      const e = r.explain[n];
+      items.push(`<li>✗ <b>${esc(n)}</b>: ${esc(e.text)}${e.msg ? term(e.msg, '> npx tsc') : ''}</li>`);
+    });
+    if (result.missed.size) {
+      items.push(`<li>? ${result.missed.size === 1 ? 'Es fehlt noch ein Eintrag' : 'Es fehlen noch ' + result.missed.size + ' Einträge'}.</li>`);
+    }
+    feedback.className = 'feedback bad';
+    feedback.innerHTML = `Noch nicht ganz. ${result.right.size} richtig markiert.<ul>${items.join('')}</ul><p class="hint">Ändere deine Auswahl und prüfe noch einmal.</p>`;
+  }
+
+  function renderChoice(r) {
+    exArea.innerHTML = contextHtml(r) + '<div class="choice">' +
+      r.options.map((o, i) => `<button data-opt="${i}" class="${r.code ? 'code' : ''}">${esc(o)}</button>`).join('') + '</div>';
+  }
+  function checkChoice(opt) {
+    const r = ROUNDS[roundIndex];
+    exArea.querySelectorAll('button[data-opt]').forEach(b => b.classList.remove('picked-right', 'picked-wrong'));
+    const btn = exArea.querySelector(`button[data-opt="${opt}"]`);
+    if (opt === r.correct) {
+      btn.classList.add('picked-right');
+      markSolved(r);
+      feedback.className = 'feedback ok';
+      feedback.innerHTML = `✓ Richtig! ${esc(r.explanation)}` + (r.msg ? term(r.msg, '> node dist/app.js') : '') + nextRoundButton();
+      wireNext();
+    } else {
+      btn.classList.add('picked-wrong');
+      feedback.className = 'feedback bad';
+      feedback.innerHTML = `✗ Nicht ganz. ${esc(r.wrong[opt])} Versuche es noch einmal.`;
+    }
+  }
+
+  exArea.addEventListener('click', e => {
+    const r = ROUNDS[roundIndex];
+    const v = e.target.closest('button[data-v]');
+    if (v) {
+      const i = +v.closest('.vitem').dataset.item;
+      answers[i] = v.dataset.v;
+      clearVerdictResult();
+      clearFeedback();
+      paintVerdict();
+      return;
+    }
+    const c = e.target.closest('button[data-chip]');
+    if (c) {
+      const name = r.chips[+c.dataset.chip];
+      if (picked.has(name)) { picked.delete(name); } else { picked.add(name); }
+      clearFeedback();
+      paintPick();
+      return;
+    }
+    const o = e.target.closest('button[data-opt]');
+    if (o) { checkChoice(+o.dataset.opt); }
+  });
+
+  function clearFeedback() {
+    feedback.className = 'feedback';
+    feedback.innerHTML = '';
+  }
+  function markSolved(r) {
+    solved.add(r.id);
+    store.set('solved', Array.from(solved));
+    drawRounds();
+  }
+  function nextRoundButton() {
+    const next = ROUNDS.findIndex((x, i) => i > roundIndex && !solved.has(x.id));
+    if (next >= 0) { return `<p><button id="nextRound">Weiter zu Runde ${next + 1}</button></p>`; }
+    return solved.size === ROUNDS.length ? '<p><b>Du hast alle Runden gelöst!</b></p>' : '';
+  }
+  function wireNext() {
+    const nb = document.getElementById('nextRound');
+    if (nb) {
+      const next = ROUNDS.findIndex((x, i) => i > roundIndex && !solved.has(x.id));
+      nb.addEventListener('click', () => selectRound(next));
+    }
+  }
+  function showSolution() {
+    const r = ROUNDS[roundIndex];
+    if (r.kind === 'verdict') {
+      r.items.forEach((it, i) => { answers[i] = it.ok ? 'ok' : 'err'; });
+      paintVerdict();
+      clearVerdictResult();
+      feedback.className = 'feedback info';
+      feedback.innerHTML = 'So sieht die Lösung aus. Klicke auf <b>Prüfen</b>, um die Begründungen und Meldungen zu sehen. Die Runde zählt dann aber nicht als selbst gelöst.';
+    } else if (r.kind === 'pick') {
+      picked = new Set(r.answer);
+      paintPick();
+      feedback.className = 'feedback info';
+      feedback.innerHTML = esc(r.result) + ' Lösche die Auswahl und versuche es selbst, damit die Runde als gelöst zählt.';
+    } else {
+      feedback.className = 'feedback info';
+      feedback.innerHTML = `Richtig ist: <code>${esc(r.options[r.correct])}</code>. ${esc(r.explanation)}` + (r.msg ? term(r.msg) : '');
+    }
+    shownSolution = true;
+  }
+  let shownSolution = false;
+
+  function drawRounds() {
+    const box = document.getElementById('roundButtons');
+    box.innerHTML = '';
+    ROUNDS.forEach((r, i) => {
+      const b = document.createElement('button');
+      b.textContent = String(i + 1);
+      b.title = r.title;
+      b.className = (solved.has(r.id) ? 'solved ' : '') + (i === roundIndex ? 'current' : '');
+      b.setAttribute('aria-label', `Runde ${i + 1}: ${r.title}${solved.has(r.id) ? ' (gelöst)' : ''}`);
+      b.addEventListener('click', () => selectRound(i));
+      box.appendChild(b);
+    });
+    const r = ROUNDS[roundIndex];
+    const how = r.kind === 'verdict' ? 'Wähle bei jedem Eintrag „kompiliert“ oder „Fehler“ und klicke dann auf Prüfen.'
+      : r.kind === 'pick' ? 'Klicke die Einträge an, um sie zu markieren. Dann klicke auf Prüfen.'
+        : 'Klicke auf eine Antwort. Du bekommst sofort eine Rückmeldung.';
+    document.getElementById('roundCard').innerHTML =
+      `<div style="margin-bottom:4px"><b>Runde ${roundIndex + 1} von ${ROUNDS.length}: ${esc(r.title)}</b>${solved.has(r.id) ? ' <span class="badge ok">✓ gelöst</span>' : ''}</div>` +
+      `${esc(r.intro)}<br><span class="hint">${how} Gelöst: ${solved.size} von ${ROUNDS.length} Runden.</span>`;
+  }
+  function selectRound(i) {
+    roundIndex = i;
+    store.set('round', i);
+    answers = {};
+    picked = new Set();
+    shownSolution = false;
+    clearFeedback();
+    drawRounds();
+    const r = ROUNDS[i];
+    if (r.kind === 'verdict') { renderVerdict(r); } else if (r.kind === 'pick') { renderPick(r); } else { renderChoice(r); }
+    const needsCheck = r.kind !== 'choice';
+    document.getElementById('checkBtn').style.display = needsCheck ? '' : 'none';
+    document.getElementById('resetBtn').style.display = needsCheck ? '' : 'none';
+  }
+  document.getElementById('checkBtn').addEventListener('click', () => {
+    const r = ROUNDS[roundIndex];
+    if (r.kind === 'verdict') { checkVerdict(shownSolution); } else if (r.kind === 'pick') { checkPick(shownSolution); }
+  });
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    answers = {};
+    picked = new Set();
+    shownSolution = false;
+    clearFeedback();
+    const r = ROUNDS[roundIndex];
+    if (r.kind === 'verdict') { clearVerdictResult(); paintVerdict(); } else if (r.kind === 'pick') { paintPick(); }
+  });
+  document.getElementById('solutionBtn').addEventListener('click', showSolution);
+
+  // ---------- slides ----------
+  const anims = [aAnim, bAnim, cAnim, dAnim, eAnim, fAnim, gAnim];
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let current = Math.min(Math.max(store.get('slide', 0) | 0, 0), slides.length - 1);
+  function showSlide(i) {
+    current = Math.min(Math.max(i, 0), slides.length - 1);
+    slides.forEach((s, k) => s.classList.toggle('active', k === current));
+    document.getElementById('progressText').textContent = `${current + 1} / ${slides.length}`;
+    document.getElementById('progressBar').style.width = `${(current + 1) / slides.length * 100}%`;
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === slides.length - 1;
+    anims.forEach(a => a.stop());
+    store.set('slide', current);
+    window.scrollTo(0, 0);
+  }
+  document.getElementById('prevBtn').addEventListener('click', () => showSlide(current - 1));
+  document.getElementById('nextBtn').addEventListener('click', () => showSlide(current + 1));
+  document.addEventListener('keydown', evt => {
+    const tag = evt.target && evt.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (evt.target && evt.target.isContentEditable)) { return; }
+    if (evt.ctrlKey || evt.altKey || evt.metaKey) { return; }
+    if (evt.key === 'ArrowRight' || evt.key === 'PageDown') { showSlide(current + 1); evt.preventDefault(); }
+    if (evt.key === 'ArrowLeft' || evt.key === 'PageUp') { showSlide(current - 1); evt.preventDefault(); }
+  });
+
+  // ---------- start ----------
+  anims.forEach(a => a.show(0));
+  selectRound(roundIndex);
+  showSlide(current);
+
+  /** Read-only hooks for automated tests. */
+  window.modulesDebug = {
+    rounds: () => ROUNDS.map(r => ({ id: r.id, kind: r.kind })),
+    /** Correct answer of the current round: verdicts ('ok' / 'err'), chip names or the option index. */
+    answer: () => {
+      const r = ROUNDS[roundIndex];
+      if (r.kind === 'verdict') { return r.items.map(it => (it.ok ? 'ok' : 'err')); }
+      return r.kind === 'pick' ? r.answer.map(a => r.chips.indexOf(a)) : r.correct;
+    },
+    /** Checks that every round has a consistent answer and every wrong option has an explanation. */
+    selfTest: () => {
+      const problems = [];
+      ROUNDS.forEach(r => {
+        if (r.kind === 'verdict') {
+          r.items.forEach((it, i) => {
+            if (!it.why) { problems.push(`${r.id}: item ${i} without why`); }
+            if (!it.ok && !it.msg) { problems.push(`${r.id}: error item ${i} without message`); }
+          });
+        } else if (r.kind === 'pick') {
+          r.answer.forEach(a => { if (!r.chips.includes(a)) { problems.push(`${r.id}: answer ${a} not a chip`); } });
+          r.chips.filter(c => !r.answer.includes(c)).forEach(c => { if (!r.explain[c]) { problems.push(`${r.id}: ${c} without explanation`); } });
+        } else {
+          if (r.correct < 0 || r.correct >= r.options.length) { problems.push(`${r.id}: correct out of range`); }
+          r.options.forEach((o, i) => { if (i !== r.correct && !r.wrong[i]) { problems.push(`${r.id}: option ${i} without explanation`); } });
+        }
+      });
+      return problems;
+    }
+  };
+})();
+</script>
+</body>
+</html>
