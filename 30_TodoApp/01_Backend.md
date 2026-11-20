@@ -16,7 +16,7 @@ git clone https://github.com/Die-Spengergasse/course-wmc-5sem
 
 ### Start ohne Docker
 
-Wenn du die .NET 8 SDK installiert hast, kannst du einfach die Datei *startServer.cmd* **(Windows)** im Verzeichnis *30_TodoApp/TodoBackend* ausführen.
+Wenn du die .NET 10 SDK installiert hast, kannst du einfach die Datei *startServer.cmd* **(Windows)** im Verzeichnis *30_TodoApp/TodoBackend* ausführen.
 Unter **macOS** gehst du im Terminal in das Verzeichnis *30_TodoApp/TodoBackend* und führst die Datei *./start_server.sh* aus.
 Beide Skripts führen vorher *git pull* durch, um sicherzustellen, dass du den aktuellen Sourcecode hast.
 Nun kannst du die API mit *https://localhost:5443/swagger* im Browser ansehen.
@@ -25,6 +25,6 @@ Nun kannst du die API mit *https://localhost:5443/swagger* im Browser ansehen.
 
 ### Start als Docker Container
 
-Wenn du keine .NET 8 SDK hast, oder die App als Docker container starten möchtest, gibt es ein Shellscript [create_container.sh](TodoBackend/create_container.sh) im Ordner *30_TodoApp/TodoBackend*.
+Wenn du keine .NET 10 SDK hast, oder die App als Docker container starten möchtest, gibt es ein Shellscript [create_container.sh](TodoBackend/create_container.sh) im Ordner *30_TodoApp/TodoBackend*.
 Führe es unter **Windows** mit Doppelklick aus. Das Programm *git bash* muss dafür installiert sein.
 Unter **macOS** starte das Skript im Terminal mit *./create_container.sh*

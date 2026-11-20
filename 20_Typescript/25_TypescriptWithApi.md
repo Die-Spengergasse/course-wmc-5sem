@@ -233,175 +233,120 @@ Beachte bei der Implementierung folgendes:
 
 ### Ausgabe
 
+Das Backend erzeugt die Datumswerte beim Start relativ zum aktuellen Datum.
+Deine Ausgabe hat daher andere Werte bei *dueDate*.
+
 ```
-Item 3b33199e-bc34-7895-eb67-338383c35c99: Voluptatem animi aspernatur voluptates quisquam.
-Desc: Labore quam sunt quidem ab. Omnis facere aut aut distinctio. Qui tenetur voluptatem ut eos fugiat sint. Quia dicta deserunt est quam magni ex.
-categoryName: Health, isCompleted: true, dueDate: 2024-10-16T13:37:17.4047389
+Item 00000000-0000-0000-0001-000000000001: Without Tasks
+Desc: TodoItem without tasks
+categoryName: Work, isCompleted: false, dueDate: null
 Tasks:
-Task In adipisci tenetur ducimus reprehenderit earum autem., dueDate: 2024-10-06T16:51:57.0615584, isCompleted: false
-Task Ipsa et consectetur est ut tenetur vitae ipsam rerum dolor., dueDate: 2024-10-08T22:05:27.3495643, isCompleted: false
-Task Delectus ea beatae et ducimus eum., dueDate: 2024-10-08T14:24:45.4590625, isCompleted: true
-Task Atque a doloribus aut odio voluptas., dueDate: 2024-10-12T20:15:45.2241606, isCompleted: false
-Task Corporis mollitia velit expedita fugit esse., dueDate: 2024-10-07T18:16:59.9695161, isCompleted: false
-Task Mollitia incidunt exercitationem voluptas est et amet fugit., dueDate: 2024-10-12T18:28:02.964319, isCompleted: false
-Task Earum aut neque., dueDate: 2024-10-15T03:43:41.6106425, isCompleted: true
-Task Magni saepe ut., dueDate: 2024-10-07T07:32:45.7754386, isCompleted: false
-Task Et ratione nihil numquam autem nihil., dueDate: 2024-10-08T02:23:18.0411732, isCompleted: false
-Task Culpa veniam ut et repudiandae vel voluptas., dueDate: 2024-10-12T10:07:39.9861466, isCompleted: true
 
 ----------------------------------------------------------------------
 
-Item 9c305ac4-1767-7d71-62bc-d64126f3eb7e: Repellat voluptas eum ex eum eum tenetur illum dignissimos sit.
-Desc: Incidunt omnis voluptatem et sed facilis explicabo ipsa molestiae dignissimos. Iste repellat facere mollitia dolores culpa qui eius. Expedita qui explicabo eum et ea. Animi sint sed. Laudantium omnis eius nihil nemo et vitae.
-categoryName: Health, isCompleted: false, dueDate: 2024-12-07T07:41:12.9607106
+Item 3b33199e-bc34-7895-eb67-338383c35c99: Annual check-up at the doctor
+Desc: Yearly health check with the family doctor. The blood test must be done in the morning before breakfast.
+categoryName: Health, isCompleted: false, dueDate: 2026-11-30T13:00:00
 Tasks:
-Task Et quia et sint ratione., dueDate: 2024-10-14T22:15:32.9751967, isCompleted: false
-Task Cupiditate nobis ad recusandae cum et pariatur et necessitatibus tempore., dueDate: 2024-10-18T08:34:03.8705575, isCompleted: false
-Task Dolor qui id dolor tempora., dueDate: 2024-10-22T06:13:02.5272692, isCompleted: true
-Task Aspernatur laboriosam itaque., dueDate: 2024-11-07T15:51:10.5117808, isCompleted: true
-Task Dolore tempora non tempora in., dueDate: 2024-10-06T04:44:57.9000666, isCompleted: false
-Task Recusandae officiis reprehenderit rerum incidunt quas aut harum., dueDate: 2024-11-26T08:40:22.7599599, isCompleted: true
-Task Sint tempora corporis., dueDate: null, isCompleted: false
-Task Ipsum quisquam maxime ipsum sit., dueDate: null, isCompleted: false
-Task Sint quas illo alias perferendis officiis et vero., dueDate: 2024-12-03T13:23:56.9589557, isCompleted: false
-Task Eligendi tenetur qui voluptatem., dueDate: null, isCompleted: false
-Task Facere itaque libero., dueDate: 2024-11-22T07:59:34.5142538, isCompleted: true
-Task Veniam rerum id voluptas., dueDate: 2024-11-11T12:57:37.2365648, isCompleted: true
-Task Minus architecto provident rerum qui omnis ad voluptates vel., dueDate: 2024-11-27T18:00:55.9370528, isCompleted: false
-Task Accusamus illum voluptatum voluptatibus deleniti libero., dueDate: 2024-12-05T15:01:10.7619496, isCompleted: false
-Task Dolorem modi hic eligendi possimus rem enim ut maxime., dueDate: 2024-12-03T23:02:33.1759242, isCompleted: false
-Task Similique nisi et cum itaque dignissimos voluptatem., dueDate: null, isCompleted: true
-Task Quas voluptates numquam reiciendis et., dueDate: 2024-11-18T13:53:13.9519122, isCompleted: false
-Task Voluptatem officiis asperiores aut voluptatem ratione., dueDate: 2024-10-20T20:46:45.5658842, isCompleted: true
+Task Call the doctor's office for an appointment, dueDate: 2026-10-01T13:00:00, isCompleted: true
+Task Fill in the health questionnaire, dueDate: 2026-10-21T13:00:00, isCompleted: true
+Task Go to the blood test, dueDate: 2026-11-10T13:00:00, isCompleted: false
+Task Discuss the results with the doctor, dueDate: 2026-11-30T13:00:00, isCompleted: false
 
 ----------------------------------------------------------------------
 
-Item 33e37ff0-296f-a384-1d4d-dadeaeadce92: Dolor et nihil suscipit perspiciatis quia aut eius corporis.
-Desc: Officia molestias ut. Qui sunt et in harum quisquam. Vel et deserunt non tempore corporis excepturi quod voluptatibus alias. Explicabo voluptatem quo. Reprehenderit quo et vel libero vitae sapiente dolor dolorem.
-categoryName: Health, isCompleted: true, dueDate: 2024-11-29T10:14:15.4579637
+Item 7749fda6-bbef-5721-49a8-a8e5819ac533: Prepare quarterly sales presentation
+Desc: Slides for the quarterly meeting with the management. Focus on the new customers in Vienna and Graz.
+categoryName: Work, isCompleted: false, dueDate: 2026-11-29T17:00:00
 Tasks:
-Task Consequatur voluptas corrupti eius., dueDate: 2024-11-28T19:13:52.1225342, isCompleted: true
-Task Et labore aspernatur illum commodi maiores., dueDate: 2024-11-23T02:36:35.0158129, isCompleted: false
-Task Placeat est enim nesciunt laborum et., dueDate: 2024-10-19T18:12:16.9788937, isCompleted: true
-Task Excepturi sint in et doloremque consequatur dignissimos beatae dolores tempora., dueDate: 2024-10-07T00:49:59.377682, isCompleted: false
-Task Neque magnam tempore consectetur saepe dolores itaque., dueDate: 2024-10-22T15:56:08.7883297, isCompleted: false
-Task Temporibus et recusandae fugit totam optio est., dueDate: 2024-10-30T06:58:59.7739007, isCompleted: true
-Task Minus qui nam perspiciatis ut., dueDate: 2024-11-20T05:37:13.5595283, isCompleted: true
-Task Vel eligendi aliquid ut et., dueDate: 2024-10-07T05:40:58.8222482, isCompleted: true
+Task Export sales figures from the CRM, dueDate: 2026-09-28T17:00:00, isCompleted: true
+Task Create charts for revenue by region, dueDate: 2026-10-13T17:00:00, isCompleted: true
+Task Write speaker notes, dueDate: 2026-10-29T17:00:00, isCompleted: true
+Task Rehearse the presentation with Anna, dueDate: 2026-11-14T17:00:00, isCompleted: true
+Task Send the slides to the team lead for review, dueDate: 2026-11-29T17:00:00, isCompleted: false
 
 ----------------------------------------------------------------------
 
-Item 6dc6bbf4-3273-2cc0-d4ab-ff13c3a6fd49: Itaque et earum modi similique veniam explicabo quo.
-Desc: Excepturi tenetur unde quia quia beatae unde corporis. Eius fuga sit qui vel atque quis numquam dolore omnis. Suscipit doloremque quo quod aut velit velit impedit repudiandae. Ut fugit vitae perferendis veniam. Voluptas aspernatur voluptatibus voluptas aliquid dolore magni temporibus quae id.
-categoryName: Finance, isCompleted: true, dueDate: 2025-08-30T06:16:12.4258956
+Item 27bdba69-e768-6061-4df7-25335b9dddab: Plan summer vacation in Croatia
+Desc: Two weeks at the coast next summer. We travel by car and want to visit Split and Hvar.
+categoryName: Personal, isCompleted: false, dueDate: 2027-01-04T11:00:00
 Tasks:
-Task Hic reprehenderit ipsum odit earum qui illum maiores vel., dueDate: 2025-03-07T10:15:08.7895919, isCompleted: false
-Task Amet aliquid laborum illo perspiciatis dolorum., dueDate: 2025-04-05T23:35:11.8274432, isCompleted: true
-Task Voluptatem voluptatem beatae., dueDate: 2025-01-09T15:37:31.5260258, isCompleted: true
-Task Ipsum earum deleniti nobis corrupti., dueDate: 2025-01-18T10:54:26.6557333, isCompleted: false
-Task Tempora qui voluptatem deleniti in at ipsum., dueDate: 2025-06-23T15:55:08.9144539, isCompleted: false
-Task Qui ad nisi provident reiciendis ea et doloribus quia odio., dueDate: 2025-06-14T15:23:54.8370814, isCompleted: false
+Task Agree on travel dates with the family, dueDate: 2026-10-06T11:00:00, isCompleted: true
+Task Book an apartment in Split, dueDate: 2026-10-28T11:00:00, isCompleted: true
+Task Book ferry tickets to Hvar, dueDate: 2026-11-20T11:00:00, isCompleted: false
+Task Buy the vignette for Slovenia, dueDate: 2026-12-12T11:00:00, isCompleted: false
+Task Write a packing list, dueDate: 2027-01-04T11:00:00, isCompleted: false
 
 ----------------------------------------------------------------------
 
-Item 070db2a9-63a3-2575-5aca-528b522defb3: Commodi incidunt sunt maiores consequuntur eum qui cum ipsum earum.
-Desc: Nemo sapiente molestiae enim. Et recusandae aut numquam minus quo qui sint. Eaque maxime ipsa. Veritatis dolor delectus quis vel. Minima qui fuga recusandae expedita tenetur dolores. Atque velit cupiditate facere molestias dolorum minus nihil.
-categoryName: Finance, isCompleted: true, dueDate: null
+Item a2786a5c-f8f7-e9f0-e4ca-b143b9c855b8: Repair dripping kitchen tap
+Desc: The kitchen tap has been dripping for a week. Probably the washer is broken.
+categoryName: Home, isCompleted: false, dueDate: 2026-11-16T10:00:00
 Tasks:
-Task Aliquam quo tempore ea quia dolores impedit., dueDate: 2024-10-28T22:28:54.9526071, isCompleted: true
-Task Eligendi alias cum doloremque omnis nemo pariatur dolor nisi., dueDate: 2025-01-14T09:53:11.5576033, isCompleted: true
-Task Sit ad at perspiciatis ullam assumenda sint., dueDate: 2025-09-14T02:25:55.8784539, isCompleted: true
-Task Corrupti molestiae sed at totam officiis nostrum nulla dolore., dueDate: 2025-05-18T00:36:18.1618251, isCompleted: true
-Task Deserunt ex qui ex minima., dueDate: 2025-03-07T05:46:29.7062705, isCompleted: true
+Task Turn off the water supply, dueDate: 2026-09-30T10:00:00, isCompleted: true
+Task Buy a new washer at the hardware store, dueDate: 2026-10-15T10:00:00, isCompleted: true
+Task Replace the washer, dueDate: 2026-10-31T10:00:00, isCompleted: true
+Task Check for leaks, dueDate: 2026-11-16T10:00:00, isCompleted: false
 
 ----------------------------------------------------------------------
 
-Item 41e291d6-55b4-9a89-8210-a281d32432c8: Odio nemo error ea.
-Desc: Et ipsam aut quae culpa veniam reiciendis culpa. Recusandae sed eaque itaque commodi enim praesentium facere. Quia quia maiores aut est soluta voluptas consequuntur velit molestiae. Voluptas ullam consectetur. Voluptatum rem cumque.
-categoryName: Finance, isCompleted: false, dueDate: 2025-02-18T06:29:17.5635797
+Item 9a42a0ae-138f-0267-79a5-714ec54d721d: File tax return for last year
+Desc: Employee tax assessment via FinanzOnline. Costs for the home office and training courses can be deducted.
+categoryName: Finance, isCompleted: false, dueDate: 2026-12-15T15:00:00
 Tasks:
-Task Numquam distinctio odio quo animi., dueDate: null, isCompleted: true
-Task Aut est possimus eius error aperiam consequatur non accusamus voluptatem., dueDate: 2025-02-14T16:59:12.3932583, isCompleted: false
-Task Numquam aut id perspiciatis., dueDate: 2024-10-18T22:34:59.893592, isCompleted: true
-Task Quaerat ullam ipsum rerum ipsa consequatur fugit exercitationem., dueDate: 2025-02-17T21:48:33.8592536, isCompleted: false
-Task Nihil aperiam et quibusdam., dueDate: 2024-11-08T04:57:16.4441497, isCompleted: true
-Task Dolores consequatur harum eaque totam quisquam., dueDate: 2025-01-27T21:52:11.5870886, isCompleted: false
-Task Quos adipisci aut., dueDate: 2024-10-25T03:21:59.414981, isCompleted: false
-Task Et tenetur consequuntur ea dolor aliquam ullam eum nemo., dueDate: 2025-01-27T12:14:16.6921268, isCompleted: true
-Task Fuga a rerum vero repudiandae fugiat ipsum., dueDate: 2025-01-30T19:17:55.4439091, isCompleted: false
-Task Vel rerum ad occaecati nulla asperiores., dueDate: 2024-11-26T00:05:16.4825273, isCompleted: false
-Task Voluptas debitis fuga voluptatem minus., dueDate: 2024-12-30T23:55:05.7093409, isCompleted: true
+Task Collect receipts for training courses, dueDate: 2026-10-03T15:00:00, isCompleted: true
+Task Download the annual pay slip (L16), dueDate: 2026-10-21T15:00:00, isCompleted: true
+Task Enter the expenses in FinanzOnline, dueDate: 2026-11-09T15:00:00, isCompleted: true
+Task Submit the tax return, dueDate: 2026-11-27T15:00:00, isCompleted: false
+Task Check the tax assessment notice, dueDate: 2026-12-15T15:00:00, isCompleted: false
 
 ----------------------------------------------------------------------
 
-Item 2a8518b0-9bf5-5cd1-004e-a168d400fad3: Voluptas illum vitae esse sed consequuntur facere quos eum maxime.
-Desc: Ut ratione ducimus nisi dolorem nesciunt. Mollitia quia suscipit. Harum voluptate corporis qui quae corrupti corrupti suscipit ea voluptas. Porro fuga maiores. Ut nesciunt velit. Quo eveniet quae nam velit velit soluta voluptas ea.
-categoryName: Work, isCompleted: true, dueDate: 2025-04-15T09:39:24.2383309
+Item db276584-a83e-a245-9f83-12e372168300: Write monthly project report
+Desc: Monthly report for the customer about progress, budget and risks of the project.
+categoryName: Work, isCompleted: true, dueDate: 2026-10-31T13:00:00
 Tasks:
-Task Alias libero quasi consequuntur., dueDate: null, isCompleted: false
-Task Aspernatur animi distinctio tenetur enim aut rerum repellendus in., dueDate: 2025-01-23T10:01:06.7803784, isCompleted: true
-Task Quasi soluta placeat tenetur., dueDate: 2025-02-06T19:42:41.8847884, isCompleted: false
-Task Velit a modi., dueDate: 2024-10-28T03:52:23.5079972, isCompleted: true
-Task Aut qui qui expedita illo dolores dolorum., dueDate: 2025-03-05T04:15:28.0757038, isCompleted: false
-Task Ut odit tenetur ut aut tenetur., dueDate: 2024-10-31T08:22:23.1374764, isCompleted: true
-Task Esse et ipsam nesciunt., dueDate: 2024-11-08T20:56:58.675639, isCompleted: true
-Task Error omnis minima., dueDate: 2024-12-22T19:44:57.4996056, isCompleted: true
-Task Sed dolor rerum., dueDate: 2024-12-13T14:58:25.6673739, isCompleted: false
-Task Reiciendis praesentium quisquam quod ab., dueDate: 2024-10-24T19:06:35.9710969, isCompleted: false
-Task Autem et dicta ut modi illum rerum quibusdam similique quis., dueDate: 2024-12-30T23:57:33.5184027, isCompleted: true
+Task Collect hours from the time tracking tool, dueDate: 2026-09-27T13:00:00, isCompleted: true
+Task Summarize finished milestones, dueDate: 2026-10-09T13:00:00, isCompleted: true
+Task List open risks, dueDate: 2026-10-20T13:00:00, isCompleted: true
+Task Send the report to the customer, dueDate: 2026-10-31T13:00:00, isCompleted: true
 
 ----------------------------------------------------------------------
 
-Item a83a6f4c-ce92-7e70-74a1-329dc357e7ca: Delectus voluptatem quis ut qui quas quia incidunt.
-Desc: Voluptatem tempore sit adipisci. Sed quae ducimus voluptatibus facere et illum repellat aliquid omnis. Voluptas occaecati cupiditate consequatur fuga dolorem sunt. Necessitatibus dolore sit.
-categoryName: Health, isCompleted: true, dueDate: null
+Item 5b26abef-fe84-94fb-f35e-e469bf86e1b5: Train for the Vienna City Marathon
+Desc: Goal: finish the half marathon in under two hours. The training plan has four runs per week.
+categoryName: Health, isCompleted: false, dueDate: 2027-01-19T17:00:00
 Tasks:
-Task Unde qui provident aspernatur id et ab rerum repellendus., dueDate: null, isCompleted: false
-Task Sed dicta et quia et maxime., dueDate: 2025-08-09T03:01:50.4055503, isCompleted: false
-Task Nihil sint non minima tempora numquam quasi fuga., dueDate: null, isCompleted: false
-Task Fugit dolores eos., dueDate: 2025-06-03T10:10:33.2773589, isCompleted: true
-Task Officia provident est., dueDate: 2025-02-11T07:58:50.0859138, isCompleted: true
-Task Sit temporibus laudantium aut modi qui quasi quia voluptatum., dueDate: 2025-06-03T13:02:06.4275136, isCompleted: false
-Task Consequatur odit ut occaecati incidunt., dueDate: 2025-02-03T02:43:52.920807, isCompleted: true
-Task Voluptatem eveniet alias voluptas hic., dueDate: 2025-04-02T01:43:18.2163204, isCompleted: false
-Task Placeat vitae facilis sint molestiae dolore optio quibusdam., dueDate: 2024-12-22T22:51:33.4963209, isCompleted: true
-Task Architecto nihil provident., dueDate: 2025-07-24T13:22:52.7237847, isCompleted: true
-Task Quia ut aspernatur ullam illo numquam natus at laudantium., dueDate: 2024-12-16T15:18:36.7476438, isCompleted: false
+Task Register for the half marathon, dueDate: 2026-10-08T17:00:00, isCompleted: true
+Task Buy new running shoes, dueDate: 2026-10-29T17:00:00, isCompleted: true
+Task Run 10 km without a break, dueDate: 2026-11-18T17:00:00, isCompleted: false
+Task Run 15 km in under 1:30 h, dueDate: 2026-12-09T17:00:00, isCompleted: false
+Task Do an 18 km long run, dueDate: 2026-12-30T17:00:00, isCompleted: false
+Task Rest two days before the race, dueDate: 2027-01-19T17:00:00, isCompleted: false
 
 ----------------------------------------------------------------------
 
-Item 7fb6dcb9-09d4-811f-75e3-0408733aa380: Ut nesciunt dolore.
-Desc: Eius quia aut non eum quisquam dolorum exercitationem. Maiores illo ullam totam fugiat qui dolorem magnam in pariatur. Sint in impedit laboriosam labore possimus aut voluptatem repellat molestias. Accusantium omnis voluptatem inventore. Est ipsum blanditiis asperiores possimus tempora voluptas nemo sunt. Doloremque enim omnis et.
-categoryName: Work, isCompleted: false, dueDate: 2025-04-11T09:31:42.7207338
+Item 417df495-f3ca-3f51-454b-d16562aa08e9: Organize birthday party for Sarah
+Desc: Surprise party on Saturday evening at our place. About 15 guests are invited.
+categoryName: Personal, isCompleted: false, dueDate: 2026-11-26T16:00:00
 Tasks:
-Task Voluptatem aut sed eum quasi et., dueDate: 2024-12-10T17:39:08.7132479, isCompleted: true
-Task Laudantium consequatur nam cupiditate ipsa et perferendis quo., dueDate: 2024-10-25T14:17:33.1140496, isCompleted: true
-Task Atque nihil ab amet rerum mollitia dolor., dueDate: 2024-11-23T16:20:02.3432858, isCompleted: true
-Task Veritatis aut rerum numquam excepturi., dueDate: null, isCompleted: false
-Task Fuga accusamus id sunt accusamus suscipit provident aut., dueDate: 2025-03-29T20:17:16.2327827, isCompleted: true
-Task Quia iusto ipsa nemo delectus quasi natus occaecati vero., dueDate: 2024-11-19T16:28:17.7119994, isCompleted: true
-Task At est molestiae sunt dolores ipsam velit., dueDate: 2024-10-31T17:25:33.3435243, isCompleted: true
-Task Sed in molestiae nobis., dueDate: 2024-11-30T22:47:48.2492529, isCompleted: true
-Task Nesciunt quaerat dolore nemo natus dolorem., dueDate: 2025-01-24T19:11:21.7696401, isCompleted: false
-Task Itaque minima et in amet voluptas recusandae sapiente ex aperiam., dueDate: 2024-12-18T06:34:55.2983114, isCompleted: true
-Task Adipisci saepe tempora non ipsum., dueDate: 2025-03-13T07:52:11.1760044, isCompleted: false
+Task Send invitations in the group chat, dueDate: 2026-10-02T16:00:00, isCompleted: true
+Task Order the birthday cake, dueDate: 2026-10-16T16:00:00, isCompleted: true
+Task Buy drinks and snacks, dueDate: 2026-10-29T16:00:00, isCompleted: true
+Task Decorate the living room, dueDate: 2026-11-12T16:00:00, isCompleted: false
+Task Buy a present, dueDate: 2026-11-26T16:00:00, isCompleted: false
 
 ----------------------------------------------------------------------
 
-Item 8341150d-8775-e50b-82ac-9c56558312ef: Aperiam ex deserunt.
-Desc: Laborum aperiam enim et reprehenderit. Qui nam aut aut amet dicta facilis odio. Aut perferendis nostrum ut ex laboriosam recusandae laboriosam. Doloribus consequatur quas repudiandae ipsam nobis iste omnis ratione. Deserunt nihil ullam. Consequatur quibusdam ea occaecati ex quia aut praesentium dicta.
-categoryName: Work, isCompleted: false, dueDate: 2025-04-23T00:10:53.705343
+Item f6823367-0f6a-68b9-91c7-05d600bdfb25: Deep cleaning of the flat
+Desc: The whole flat needs a deep cleaning before the guests arrive.
+categoryName: Home, isCompleted: false, dueDate: 2026-12-08T16:00:00
 Tasks:
-Task Et et suscipit odit est mollitia saepe est nemo quis., dueDate: 2025-01-12T21:50:11.7781324, isCompleted: false
-Task Explicabo qui et minima eum officiis at illum nihil distinctio., dueDate: 2025-04-20T19:23:30.6630286, isCompleted: true
-Task Deserunt distinctio consectetur illum., dueDate: 2025-04-14T22:56:51.2501036, isCompleted: true
-Task Illum ipsum modi ad delectus veniam eos., dueDate: null, isCompleted: false
-Task Cum qui dolor laborum labore blanditiis alias vel., dueDate: 2025-02-26T03:50:16.2306262, isCompleted: false
-Task Qui voluptate ducimus labore possimus ipsam quis voluptas ut., dueDate: 2024-11-22T23:04:25.7005379, isCompleted: false
-Task Veritatis aut ut cumque illo soluta., dueDate: 2025-03-17T16:14:24.2194172, isCompleted: true
-Task Laudantium hic nisi deserunt., dueDate: 2025-04-13T11:03:33.5861024, isCompleted: true
-Task Consectetur dolorem molestiae eos sit voluptas., dueDate: 2025-03-09T13:45:11.7131928, isCompleted: true
-Task Aut unde aut., dueDate: 2025-01-04T03:40:54.5387032, isCompleted: false
+Task Clean the windows, dueDate: 2026-10-05T16:00:00, isCompleted: true
+Task Wash the curtains, dueDate: 2026-10-21T16:00:00, isCompleted: true
+Task Clean the oven and the fridge, dueDate: 2026-11-06T16:00:00, isCompleted: true
+Task Sort out old clothes, dueDate: 2026-11-22T16:00:00, isCompleted: false
+Task Bring old clothes to the donation box, dueDate: 2026-12-08T16:00:00, isCompleted: false
 
 ----------------------------------------------------------------------
 
