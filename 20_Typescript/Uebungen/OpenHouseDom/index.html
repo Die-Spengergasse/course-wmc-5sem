@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open House Day</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1 id="eventTitle">Open House Day</h1>
+        <p id="eventInfo"></p>
+      </header>
+
+      <section>
+        <h2>Stations</h2>
+        <form id="filterForm">
+          <label>
+            Department
+            <select id="departmentFilter">
+              <option value="all">All departments</option>
+            </select>
+          </label>
+          <label>
+            Search
+            <input id="search" type="search" placeholder="e.g. robot" />
+          </label>
+        </form>
+        <p id="stationCount"></p>
+        <ul id="stationList"></ul>
+      </section>
+
+      <section>
+        <h2>My plan (<span id="planCount">0</span>)</h2>
+        <p id="emptyPlan">Your plan is empty. Add a station with the button "Add".</p>
+        <ol id="planList"></ol>
+      </section>
+
+      <section>
+        <h2>Own appointment</h2>
+        <form id="appointmentForm">
+          <label>
+            Title
+            <input id="appointmentTitle" type="text" required placeholder="e.g. Lunch break" />
+          </label>
+          <label>
+            Start
+            <input id="appointmentStart" type="time" required />
+          </label>
+          <label>
+            End
+            <input id="appointmentEnd" type="time" required />
+          </label>
+          <button type="submit">Add to plan</button>
+        </form>
+        <p id="formError" class="error" hidden></p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

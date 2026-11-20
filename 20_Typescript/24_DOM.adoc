@@ -1,0 +1,647 @@
+= DOM Tree (Wiederholung)
+:source-highlighter: rouge
+:icons: font
+:lang: DE
+:hyphens:
+:figure-caption!:
+ifndef::root_dir[:root_dir: .]
+ifndef::github_url[:github_url: ..]
+ifndef::env-github[:icons: font]
+ifdef::env-github[]
+:caution-caption: :fire:
+:important-caption: :exclamation:
+:note-caption: :paperclip:
+:tip-caption: :bulb:
+:warning-caption: :warning:
+endif::[]
+
+Die Mensa der Schule stellt ihren Speiseplan als JSON-Datei bereit.
+Du sollst daraus eine Seite bauen: Alle Gerichte stehen in einer Liste, ein Suchfeld filtert sie, und mit einem Button legst du ein Gericht auf dein Tablett.
+In der Datei _index.html_ steht aber nur eine leere Liste:
+
+[source,html]
+----
+<ul id="dishList"></ul>
+----
+
+Die Einträge muss dein Programm zur Laufzeit erzeugen.
+Bei jeder Eingabe im Suchfeld muss es die Liste neu aufbauen, ohne die Seite neu zu laden.
+Genau so arbeitet eine *Single Page Application (SPA)*: Der Browser lädt eine einzige HTML-Seite, und JavaScript ändert danach den Inhalt.
+
+Dafür brauchst du den *DOM Tree*.
+Du kennst ihn schon aus JavaScript.
+In diesem Kapitel wiederholst du ihn mit TypeScript und Vite.
+Dabei lernst du, wie TypeScript die HTML-Elemente typisiert.
+Später übernimmt React diese Arbeit für dich, aber auch React verändert am Ende den DOM Tree.
+
+[TIP]
+====
+*Zum Selbst-Erarbeiten: Den DOM Tree sehen und verändern*
+
+In der https://die-spengergasse.github.io/course-wmc-5sem/20_Typescript/24_DOM.html[interaktiven Präsentation zum DOM Tree] siehst du animiert, wie aus HTML ein Baum wird und wie `append()` und `replaceChildren()` ihn verändern.
+Du probierst eigene CSS-Selektoren aus und verfolgst einen Klick vom Button bis zum Event Listener.
+In der Übung bestimmst du die Typen, die TypeScript für DOM-Aufrufe ableitet.
+Genau diese Typen brauchst du, damit dein Code ohne Fehler kompiliert.
+====
+
+[.lead]
+_Link zum Programm: link:{github_url}/20_Typescript/Beispiele/DomDemo.7z[DomDemo.7z], im Repo unter 20_Typescript/Beispiele/DomDemo._
+
+== Vom HTML zum DOM Tree
+
+Die Datei _index.html_ ist nur Text.
+Der Browser liest diesen Text und baut daraus Objekte im Speicher.
+Jedes Tag wird ein *Element*, jeder Text zwischen den Tags ein *Text-Knoten*.
+Die Objekte hängen wie ein Baum zusammen.
+Diesen Baum nennt man *DOM Tree* (Document Object Model).
+Seine Wurzel ist das Objekt `document`.
+
+image::{root_dir}/assets/dom-tree.svg[Aus HTML wird der DOM Tree,width=100%]
+
+[cols="1,3"]
+|===
+|Begriff |Bedeutung
+
+|Knoten (*node*)
+|Jedes Objekt im Baum: das Dokument, ein Element oder ein Text.
+
+|Element
+|Ein Knoten, der aus einem Tag entsteht, z. B. `<ul>`.
+Nur Elemente haben Attribute wie `id` oder `class`.
+
+|Eltern (*parent*)
+|Der Knoten direkt darüber. Das Element `<ul>` ist der Parent von `<li>`.
+
+|Kinder (*children*)
+|Die Knoten direkt darunter. `<li>` hat zwei Kinder: einen Text und einen Button.
+
+|Geschwister (*siblings*)
+|Knoten mit demselben Parent, z. B. `<h1>` und `<ul>`.
+|===
+
+Auch die Zeilenumbrüche und Leerzeichen zwischen den Tags sind Text-Knoten.
+Die Grafik lässt sie weg.
+Deshalb gibt es zwei Listen von Kindern:
+
+[source,typescript]
+----
+const list = document.querySelector("ul");
+console.log(list?.children.length);   // 1: only the <li> element
+console.log(list?.childNodes.length); // 3: text, <li>, text
+----
+
+Meistens willst du nur die Elemente.
+Verwende daher `children`, `parentElement` und `nextElementSibling`.
+
+TIP: Öffne die Entwicklertools mit _F12_ und wähle den Reiter _Elements_.
+Dort siehst du den *aktuellen* DOM Tree.
+Mit _Strg+U_ siehst du dagegen den Quelltext der Datei.
+In der Mensa-App ist die Liste im Quelltext leer, im Reiter _Elements_ hat sie acht Einträge.
+
+== Elemente finden
+
+Bevor du ein Element ändern kannst, musst du es finden.
+Dafür gibt es diese Methoden:
+
+[cols="7,4,5"]
+|===
+|Aufruf |Findet |Typ in TypeScript
+
+|`document.getElementById("title")`
+|das Element mit `id="title"`
+|`HTMLElement \| null`
+
+|`document.querySelector("#title")`
+|das erste Element zum CSS-Selektor
+|`Element \| null`
+
+|`document.querySelector("li")`
+|das erste `<li>`
+|`HTMLLIElement \| null`
+
+|`document.querySelectorAll(".dish")`
+|alle Elemente zum CSS-Selektor
+|`NodeListOf<Element>`
+
+|`document.querySelectorAll("li")`
+|alle `<li>`
+|`NodeListOf<HTMLLIElement>`
+
+|`button.closest("li")`
+|das nächste `<li>` über dem Button (oder den Button selbst)
+|`HTMLLIElement \| null`
+|===
+
+`querySelector()` und `querySelectorAll()` verwenden die Selektoren aus CSS:
+
+[cols="2,3"]
+|===
+|Selektor |Findet
+
+|`#dishList`
+|das Element mit `id="dishList"`
+
+|`.dish`
+|alle Elemente mit der Klasse `dish`
+
+|`ul > li`
+|alle `<li>`, die direkt in einem `<ul>` stehen
+
+|`button[data-id="3"]`
+|alle Buttons mit dem Attribut `data-id="3"`
+|===
+
+Du kannst die Methoden auch auf einem Element aufrufen.
+`dishList.querySelectorAll("button")` sucht dann nur innerhalb der Liste.
+
+`querySelectorAll()` liefert eine `NodeList` und kein Array.
+Sie hat `forEach()`, aber kein `map()` oder `filter()`.
+Mit `[...list]` oder `Array.from(list)` machst du daraus ein Array.
+
+== DOM-Elemente in TypeScript
+
+=== Die Vererbungshierarchie
+
+Jedes Tag hat im DOM eine eigene Klasse.
+Aus `<input>` wird ein Objekt der Klasse `HTMLInputElement`, aus `<form>` ein `HTMLFormElement`.
+Diese Klassen erben voneinander.
+Ein `HTMLInputElement` hat daher alle Properties und Methoden von `HTMLElement`, `Element`, `Node` und `EventTarget`.
+
+image::{root_dir}/assets/dom-hierarchy.svg[Vererbungshierarchie der DOM-Klassen,width=90%]
+
+[cols="2,4"]
+|===
+|Klasse |Was sie hinzufügt
+
+|https://developer.mozilla.org/en-US/docs/Web/API/EventTarget[EventTarget]
+|Events: `addEventListener()`.
+Auch `window` ist ein `EventTarget`.
+
+|https://developer.mozilla.org/en-US/docs/Web/API/Node[Node]
+|Alles, was im Baum hängt: `textContent`, `parentElement`, `childNodes`.
+
+|https://developer.mozilla.org/en-US/docs/Web/API/Element[Element]
+|Attribute und Suche: `id`, `classList`, `children`, `querySelector()`, `closest()`, `append()`, `remove()`.
+
+|https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement[HTMLElement]
+|Gemeinsames aller HTML-Elemente: `hidden`, `dataset`, `style`, `focus()`.
+
+|https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement[HTMLInputElement]
+|Eingabefelder: `value`, `valueAsNumber`, `checked`.
+
+|https://developer.mozilla.org/en-US/docs/Web/API/HTMLFormElement[HTMLFormElement]
+|Formulare: `reset()`, `requestSubmit()`.
+|===
+
+`Document` und `Text` sind auch Knoten, aber keine Elemente.
+Ein `<circle>` in einer SVG-Grafik ist ein `Element`, aber kein `HTMLElement`.
+
+Welche Klasse zu einem Tag gehört, steht in der MDN.
+Die Seite zu jedem Tag (z. B. https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input[<input>]) nennt sie in der Tabelle _Technical summary_ unter _DOM interface_.
+In VS Code führt dich _Strg+Klick_ auf einen Typ wie `HTMLInputElement` zur Datei _lib.dom.d.ts_.
+Dort steht `interface HTMLInputElement extends HTMLElement`.
+TypeScript kennt diese Datei, weil in der _tsconfig.json_ `"lib": ["ES2023", "DOM"]` steht.
+
+=== Woher kennt TypeScript den genauen Typ?
+
+In _lib.dom.d.ts_ gibt es eine Tabelle `HTMLElementTagNameMap`.
+Sie ordnet jedem Tag-Namen seine Klasse zu, z. B. `"input"` zu `HTMLInputElement`.
+Deshalb liefert `document.querySelector("li")` ein `HTMLLIElement` und `document.createElement("button")` ein `HTMLButtonElement`.
+
+Bei `querySelector("#search")` sieht TypeScript nur einen String.
+Es weiß nicht, welches Tag die id `search` hat.
+Der Typ ist daher nur `Element | null`.
+Ähnlich ist es bei `getElementById()`:
+
+[source,typescript]
+----
+const search = document.getElementById("search");
+search.value = "soup";
+// error TS18047: 'search' is possibly 'null'.
+// error TS2339: Property 'value' does not exist on type 'HTMLElement'.
+----
+
+Der Compiler hat recht.
+Vielleicht gibt es kein Element mit dieser id.
+Und ein `HTMLElement` hat kein `value`, das hat erst `HTMLInputElement`.
+Es gibt drei Wege, dem Compiler den richtigen Typ zu geben:
+
+[source%unbreakable,typescript]
+----
+// 1. instanceof: checked at runtime
+if (search instanceof HTMLInputElement) {
+    search.value = "soup";
+}
+// 2. Generic type argument: a promise to the compiler, not checked
+const input = document.querySelector<HTMLInputElement>("#search");
+// 3. Type assertion with as: not checked, and null is hidden
+const input2 = document.getElementById("search") as HTMLInputElement;
+----
+
+. ✓ `instanceof` prüft zur Laufzeit.
+  Im `if`-Block ist `search` ein `HTMLInputElement`.
+. Mit dem Typargument in spitzen Klammern ist `input` ein `HTMLInputElement | null`.
+  Ob das Element wirklich ein `<input>` ist, prüft niemand.
+. ✗ `as` behauptet einen Typ ohne Prüfung und versteckt sogar `null`.
+  Ein Fehler zeigt sich erst später an einer anderen Stelle.
+  In unseren Übungen ist `as` deshalb verboten.
+
+`instanceof` prüft, ob ein Objekt zu einer Klasse oder einer ihrer Unterklassen gehört.
+Es nutzt also genau die Vererbungshierarchie von oben.
+Damit du die Prüfung nicht bei jedem Element schreiben musst, gibt es in der Beispiel-App die Funktion `getElement()`:
+
+.link:{github_url}/20_Typescript/Beispiele/DomDemo/src/dom.ts[→ DomDemo/src/dom.ts]
+[source%unbreakable,typescript]
+----
+export function getElement<T extends Element>(selector: string,
+        type: new () => T): T {
+    const element = document.querySelector(selector);
+    if (element === null) {
+        throw new Error(`Element ${selector} not found.`);
+    }
+    // instanceof narrows Element to T, so no type assertion (as) is needed.
+    if (!(element instanceof type)) {
+        throw new Error(`Element ${selector} is not a ${type.name}.`);
+    }
+    return element;
+}
+----
+
+`HTMLInputElement` ist in TypeScript ein Typ *und* ein Wert: die Klasse, die der Browser bereitstellt.
+Der Parameter `type: new () => T` nimmt diese Klasse entgegen.
+`new () => T` bedeutet: etwas, das mit `new` ein `T` erzeugt.
+So bestimmt das zweite Argument den Rückgabetyp:
+
+[source,typescript]
+----
+const searchInput = getElement("#search", HTMLInputElement);
+searchInput.value = "soup"; // OK: searchInput is an HTMLInputElement
+----
+
+Fehlt das Element oder hat es ein anderes Tag, bricht das Programm sofort mit einer klaren Meldung ab.
+
+== Elemente erzeugen und einhängen
+
+Die Liste der Gerichte ist anfangs leer.
+Für jedes Gericht erzeugt die App ein `<li>` und hängt es in die Liste:
+
+.link:{github_url}/20_Typescript/Beispiele/DomDemo/src/views.ts[→ DomDemo/src/views.ts]
+[source,typescript]
+----
+export function createDishItem(dish: Dish): HTMLLIElement {
+    const item = document.createElement("li");
+    item.classList.add("dish");
+    item.classList.toggle("veggie", dish.vegetarian);
+
+    const name = document.createElement("span");
+    name.textContent = dish.name;
+
+    const price = document.createElement("span");
+    price.classList.add("price");
+    price.textContent = formatPrice(dish.price);
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Add";
+    // data-id: the click handler finds the dish with this id.
+    button.dataset.id = String(dish.id);
+
+    item.append(name, price, button);
+    return item;
+}
+----
+
+[cols="2,3"]
+|===
+|Aufruf |Wirkung
+
+|`document.createElement("li")`
+|Erzeugt ein neues Element.
+Es hängt noch nicht im Baum und ist nicht sichtbar.
+
+|`item.textContent = "..."`
+|Ersetzt den Inhalt durch *Text*.
+
+|`item.classList.add("dish")`
+|Fügt eine CSS-Klasse hinzu.
+`toggle("veggie", true/false)` setzt oder entfernt sie.
+
+|`button.dataset.id = "3"`
+|Setzt das Attribut `data-id="3"`.
+Lesen mit `button.dataset.id`, der Typ ist `string \| undefined`.
+
+|`list.append(a, b)`
+|Hängt Knoten als letzte Kinder ein.
+`prepend()` hängt sie vorne ein.
+
+|`list.replaceChildren(a, b)`
+|Entfernt alle Kinder und hängt die neuen ein.
+
+|`item.remove()`
+|Entfernt das Element aus dem Baum.
+|===
+
+Erst `append()` bringt das neue Element in den Baum.
+Ab dann zeigt der Browser es an.
+
+WARNING: Verwende für Daten immer `textContent` und nicht `innerHTML`.
+`innerHTML` liest den String als HTML.
+Steht im Namen eines Gerichts `<img src=x onerror="alert('hacked')">`, führt der Browser den Code aus.
+Das heißt *Cross-Site Scripting (XSS)*.
+`textContent` zeigt den String nur als Text an.
+
+=== Der Zustand und die render-Funktion
+
+Die App speichert die Daten in Variablen, z. B. das Array `tray` für das Tablett.
+Das ist der *Zustand* (*state*) der App.
+Eine *render-Funktion* baut aus dem Zustand den passenden Teil des DOM Trees:
+
+.link:{github_url}/20_Typescript/Beispiele/DomDemo/src/main.ts[→ DomDemo/src/main.ts]
+[source,typescript]
+----
+function renderDishes(): void {
+    const search = searchInput.value.trim().toLowerCase();
+    const visible = menu.dishes.filter(dish =>
+        dish.name.toLowerCase().includes(search)
+        && (!veggieCheckbox.checked || dish.vegetarian));
+    // replaceChildren removes the old items and appends the new ones.
+    dishList.replaceChildren(...visible.map(createDishItem));
+}
+----
+
+Ändert sich der Zustand, rufst du die render-Funktion wieder auf.
+Du änderst also nicht einzelne `<li>`-Elemente, sondern baust die Liste neu.
+Das ist einfach und macht wenig Fehler.
+React arbeitet nach demselben Prinzip.
+
+== Auf Events reagieren
+
+Mit `addEventListener()` reagierst du auf Aktionen der Benutzer.
+TypeScript leitet den Typ des Events aus seinem Namen ab:
+
+[cols="2,2,3"]
+|===
+|Event |Typ |Wann?
+
+|`"click"`
+|`PointerEvent`
+|Klick auf ein Element.
+
+|`"input"`
+|`InputEvent`
+|Bei jeder Änderung in einem Eingabefeld.
+
+|`"change"`
+|`Event`
+|Nach einer Änderung, z. B. bei einem `<select>`.
+
+|`"submit"`
+|`SubmitEvent`
+|Ein Formular wird abgeschickt.
+|===
+
+Ein Formular lädt beim Abschicken die Seite neu.
+In einer SPA verhinderst du das mit `event.preventDefault()`.
+
+=== Event Delegation
+
+Ein Klick auf einen Button löst das Event zuerst beim Button aus.
+Danach wandert es nach oben, zu `<li>`, `<ul>`, `<body>` bis zu `document`.
+Das heißt *Event Bubbling*.
+
+image::{root_dir}/assets/dom-event-delegation.svg[Ein Klick wandert vom Button nach oben zur Liste,width=100%]
+
+Die Mensa-App registriert deshalb *einen* Listener auf der Liste, nicht einen pro Button.
+Das funktioniert auch für Buttons, die erst später erzeugt werden.
+Diese Technik heißt *Event Delegation*.
+
+.link:{github_url}/20_Typescript/Beispiele/DomDemo/src/main.ts[→ DomDemo/src/main.ts]
+[source,typescript]
+----
+// One listener for all buttons in the list (event delegation).
+dishList.addEventListener("click", event => {
+    if (!(event.target instanceof HTMLButtonElement)) {
+        return;
+    }
+    const id = Number(event.target.dataset.id);
+    const dish = menu.dishes.find(d => d.id === id);
+    if (dish !== undefined) {
+        tray.push(dish);
+        renderTray();
+    }
+});
+----
+
+* `event.target` ist das Element, das geklickt wurde.
+  Sein Typ ist `EventTarget | null`, denn ein Event kann auch von `window` kommen.
+  Erst nach `instanceof HTMLButtonElement` kennt TypeScript `dataset`.
+* `event.currentTarget` ist das Element mit dem Listener, hier die Liste.
+* Ein Klick neben einen Button liefert z. B. das `<li>`.
+  Die erste Prüfung beendet den Listener dann.
+  Enthält der Button selbst Elemente (z. B. ein Icon), hilft `event.target.closest("button")`.
+* Werte aus `dataset` sind immer Strings.
+  `Number()` macht daraus eine Zahl.
+
+Auch das Event `input` wandert nach oben.
+Deshalb reicht ein Listener auf dem Formular für das Suchfeld und die Checkbox:
+
+[source,typescript]
+----
+filterForm.addEventListener("input", renderDishes);
+// Enter in the search field would submit the form and reload the page.
+filterForm.addEventListener("submit", event => event.preventDefault());
+----
+
+== Daten aus einer JSON-Datei
+
+Die Gerichte stehen in der Datei _src/data/menu.json_:
+
+.link:{github_url}/20_Typescript/Beispiele/DomDemo/src/data/menu.json[→ DomDemo/src/data/menu.json]
+[source,json]
+----
+{
+  "canteen": "Spengi Canteen",
+  "week": "23 to 27 November 2026",
+  "dishes": [
+    { "id": 1, "name": "Pumpkin soup", "category": "Soup",
+      "price": 2.9, "vegetarian": true },
+    ...
+  ]
+}
+----
+
+Mit Vite importierst du eine JSON-Datei wie ein Modul:
+
+[source,typescript]
+----
+import menuData from "./data/menu.json";
+import type { Menu } from "./types.ts";
+
+// tsc checks that the JSON file matches the interface Menu.
+const menu: Menu = menuData;
+----
+
+TypeScript liest die Datei und leitet einen Typ aus ihrem Inhalt ab.
+Die Zuweisung an `Menu` prüft, ob die Daten zum Interface passen.
+Steht in der Datei `"price": "2.90"` statt `2.9`, bricht `npm run build` ab:
+
+[source%unbreakable,text]
+----
+src/main.ts(8,7): error TS2322: Type '{ canteen: string; ... }'
+  is not assignable to type 'Menu'.
+    ...
+      Types of property 'price' are incompatible.
+        Type 'string' is not assignable to type 'number'.
+----
+
+Beim Build kopiert Vite die Daten in die Datei _dist/assets/index-….js_.
+Der Browser lädt also keine eigene JSON-Datei.
+Im Kapitel link:{github_url}/20_Typescript/25_TypescriptWithApi.md[Typescript und API] kommen die Daten dann mit `fetch()` von einem Server.
+Erst zur Laufzeit ist bekannt, was der Server schickt, und der Compiler kann es nicht mehr prüfen.
+
+== Zusammenfassung
+
+[cols="1,2"]
+|===
+|Aufgabe |Lösung
+
+|Element finden
+|`querySelector()` mit CSS-Selektor, `getElementById()`
+
+|richtigen Typ bekommen
+|`instanceof` oder `getElement(selector, HTMLInputElement)`
+
+|Element erzeugen
+|`document.createElement("li")`, Inhalt mit `textContent`
+
+|in den Baum hängen
+|`append()`, `prepend()`, `replaceChildren()`
+
+|auf Klicks in Listen reagieren
+|ein Listener auf der Liste, `event.target` mit `instanceof` prüfen
+
+|Daten laden
+|`import data from "./data.json"` und Zuweisung an ein Interface
+|===
+
+// tag::pdf_exclude[]
+== Übung: Tag der offenen Tür
+
+Am Tag der offenen Tür gibt es in der Schule viele Stationen: Workshops, Labore und Führungen.
+Besucherinnen und Besucher sollen sich im Browser einen eigenen Plan zusammenstellen.
+Das Programm steht in der Datei _src/data/openHouse.json_.
+
+_Vorlage: link:{github_url}/20_Typescript/Uebungen/OpenHouseDom.7z[OpenHouseDom.7z], im Repo unter 20_Typescript/Uebungen/OpenHouseDom._
+
+[IMPORTANT]
+====
+*Keine KI in dieser Übung.*
+Eine KI schreibt diesen Code in Sekunden.
+Du sollst aber die DOM-Methoden und ihre Typen sicher beherrschen.
+Nur dann erkennst du später, ob der Code einer KI richtig ist.
+====
+
+=== Vorbereitung
+
+Entpacke das Archiv und starte die App:
+
+[source,text]
+----
+cd OpenHouseDom
+npm install
+npm run dev
+----
+
+Die Vorlage zeigt nur die Überschrift.
+_index.html_, _src/style.css_, _src/types.ts_, _src/dom.ts_ und die JSON-Datei sind fertig.
+Du schreibst deinen Code in _src/main.ts_ und darfst weitere Module anlegen.
+Ändere _index.html_ und die JSON-Datei nicht.
+
+Halte dabei diese Regeln ein:
+
+. Kein `any`, keine Typumwandlung mit `as`, keine Non-null-Assertion `!` und kein `// @ts-ignore`.
+. Elemente holst du mit `getElement()` aus _dom.ts_.
+. Daten gibst du nur mit `textContent` aus, nie mit `innerHTML`.
+. Für die Buttons in einer Liste gibt es genau einen Listener auf der Liste (Event Delegation).
+. Nach jeder Änderung baut eine render-Funktion die betroffene Liste neu auf.
+
+=== Teil 1: Stationen anzeigen
+
+Zeige alle Stationen in der Liste `#stationList`.
+Ein Eintrag soll so aussehen:
+
+[source,html]
+----
+<li class="station">
+  <span class="time">09:30–10:15</span>
+  <span class="title">Build your own game in the browser</span>
+  <span class="room">C3.07</span>
+  <span class="badge">Informatics</span>
+  <button type="button" data-id="2">Add</button>
+</li>
+----
+
+Der Absatz `#stationCount` zeigt, wie viele Stationen sichtbar sind, z. B. `Showing 11 of 11 stations`.
+
+=== Teil 2: Filtern
+
+* Die Auswahlliste `#departmentFilter` enthält nur die Option _All departments_.
+  Ergänze per Code für jede Abteilung (*department*) aus den Daten ein `<option>`, alphabetisch sortiert und ohne doppelte Einträge.
+  Schreibe die Abteilungen nicht fix in den Code.
+* Das Suchfeld `#search` filtert die Stationen nach dem Titel.
+  Groß- und Kleinschreibung spielt keine Rolle.
+* Beide Filter wirken gemeinsam und sofort bei jeder Eingabe.
+
+=== Teil 3: Mein Plan
+
+* Ein Klick auf _Add_ fügt die Station in die Liste `#planList` ein.
+  Der Plan ist immer nach der Startzeit sortiert.
+* Ist eine Station im Plan, zeigt ihr Button in `#stationList` den Text `Added ✓` und ist deaktiviert (`disabled`).
+* Jeder Eintrag im Plan hat einen Button _Remove_, der ihn wieder entfernt.
+* `#planCount` zeigt die Anzahl der Einträge.
+  Der Absatz `#emptyPlan` ist nur sichtbar, wenn der Plan leer ist.
+  Verwende dafür das Property `hidden`.
+
+=== Teil 4: Zeitkonflikte
+
+Zwei Einträge überschneiden sich, wenn der eine beginnt, bevor der andere endet.
+Endet eine Station um 10:15 und die nächste beginnt um 10:15, ist das kein Konflikt.
+
+* Ein Eintrag im Plan, der sich mit einem anderen überschneidet, bekommt die CSS-Klasse `conflict`.
+* Unter dem Eintrag steht ein Absatz `<p class="warning">` mit den Titeln der anderen Einträge, z. B. `Overlaps with: Welcome and school tour`.
+
+TIP: Die Zeiten sind Strings im Format `HH:MM`.
+Solche Strings kannst du direkt mit `<` vergleichen, weil alle Stunden zwei Stellen haben.
+
+=== Teil 5: Eigener Termin
+
+Mit dem Formular `#appointmentForm` fügt man einen eigenen Termin in den Plan ein, z. B. eine Mittagspause.
+
+* Ein eigener Termin hat die Abteilung `Own` und den Raum `–`.
+  Seine `id` darf mit keiner Station übereinstimmen.
+* Liegt das Ende nicht nach dem Start, wird nichts eingefügt.
+  Der Absatz `#formError` zeigt dann `The end must be after the start.`.
+  Sonst ist er versteckt.
+* Nach dem Einfügen ist das Formular wieder leer.
+* Die Seite darf beim Abschicken nicht neu laden.
+* Eigene Termine nehmen an der Prüfung auf Zeitkonflikte teil.
+
+=== Teil 6: Build und Fragen
+
+Prüfe dein Ergebnis mit `npm run build` und `npm run preview`.
+Der Build muss ohne Fehler durchlaufen.
+Lege eine Datei _PROTOKOLL.md_ an und beantworte diese Fragen:
+
+. Welchen Typ liefern `document.querySelector("#planList")` und `document.querySelector("ol")`?
+  Warum sind sie verschieden?
+. Ändere in der JSON-Datei testweise bei einer Station `"start": "09:30"` auf `"start": 930` und starte `npm run build`.
+  Welche Meldung erscheint, und in welcher Zeile deines Codes?
+  Mache die Änderung danach rückgängig.
+. Suche in _dist/assets/index-….js_ den Titel einer Station.
+  Wo stehen die Daten nach dem Build, und gibt es in _dist_ noch eine JSON-Datei?
+. Wie viele Event Listener registriert deine App?
+  Wie viele wären es ohne Event Delegation, wenn alle Stationen im Plan sind?
+. Ändere im Reiter _Elements_ der Entwicklertools den Text einer Station.
+  Was passiert damit beim nächsten Filtern?
+  Erkläre das Ergebnis mit dem Begriff render-Funktion.
+// end::pdf_exclude[]

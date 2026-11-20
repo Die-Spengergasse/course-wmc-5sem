@@ -1,0 +1,102 @@
+@startuml
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam defaultFontSize 15
+skinparam ArrowThickness 1.5
+skinparam class {
+  BackgroundColor #ffffff
+  HeaderBackgroundColor #ededed
+  BorderColor #1d1d1b
+  BorderThickness 1.5
+  FontStyle bold
+}
+skinparam stereotypeCBackgroundColor #d1ebf7
+skinparam stereotypeABackgroundColor #fdebd1
+skinparam stereotypeIBackgroundColor #e5f4f1
+skinparam stereotypeEBackgroundColor #e5f1d9
+hide empty members
+skinparam nodesep 25
+skinparam ranksep 40
+
+class EventTarget {
+  + addEventListener(type, listener)
+  + removeEventListener(type, listener)
+}
+
+class Node {
+  + textContent: string | null
+  + parentElement: HTMLElement | null
+  + childNodes: NodeList
+  + appendChild(node)
+}
+
+class Document {
+  + body: HTMLElement
+  + getElementById(id)
+  + createElement(tagName)
+}
+
+class Element {
+  + id: string
+  + classList: DOMTokenList
+  + children: HTMLCollection
+  + innerHTML: string
+  + querySelector(selectors)
+  + closest(selectors)
+  + append(...nodes)
+  + replaceChildren(...nodes)
+  + remove()
+}
+
+class Text {
+  + data: string
+}
+
+class HTMLElement {
+  + hidden: boolean
+  + dataset: DOMStringMap
+  + style: CSSStyleDeclaration
+  + focus()
+}
+
+class SVGElement
+
+class HTMLInputElement {
+  + value: string
+  + valueAsNumber: number
+  + checked: boolean
+  + disabled: boolean
+}
+
+class HTMLButtonElement {
+  + type: string
+  + disabled: boolean
+}
+
+class HTMLSelectElement {
+  + value: string
+  + options: HTMLOptionsCollection
+}
+
+class HTMLFormElement {
+  + reset()
+  + requestSubmit()
+}
+
+class HTMLUListElement
+
+EventTarget <|-- Node
+Node <|-- Document
+Node <|-- Element
+Node <|-- Text
+Element <|-- HTMLElement
+Element <|-- SVGElement
+HTMLElement <|-- HTMLInputElement
+HTMLElement <|-- HTMLButtonElement
+HTMLElement <|-- HTMLSelectElement
+HTMLElement <|-- HTMLFormElement
+HTMLElement <|-- HTMLUListElement
+' Second row for the leaves, so the diagram stays narrow.
+HTMLInputElement -[hidden]down- HTMLFormElement
+HTMLSelectElement -[hidden]down- HTMLUListElement
+@enduml

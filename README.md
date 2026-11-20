@@ -20,6 +20,7 @@ Siehe [software.md](software.md).
 - [Typescript Basics](./20_Typescript/20_TypescriptBasics.md)
 - [Module: Code auf mehrere Dateien aufteilen](./20_Typescript/22_Modules.adoc)
 - [Vite: Module im Browser verwenden](./20_Typescript/23_Vite.adoc)
+- [DOM Tree (Wiederholung)](./20_Typescript/24_DOM.adoc)
 - [Typescript und API](./20_Typescript/25_TypescriptWithApi.md)
 - **Vertiefung in Typescript**
   - [Object und Array destructing](./20_Typescript/30_Destructing.md)

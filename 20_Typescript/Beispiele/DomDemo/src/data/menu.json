@@ -1,0 +1,14 @@
+{
+  "canteen": "Spengi Canteen",
+  "week": "23 to 27 November 2026",
+  "dishes": [
+    { "id": 1, "name": "Pumpkin soup", "category": "Soup", "price": 2.9, "vegetarian": true },
+    { "id": 2, "name": "Beef broth with pancake strips", "category": "Soup", "price": 2.9, "vegetarian": false },
+    { "id": 3, "name": "Wiener Schnitzel with potato salad", "category": "Main", "price": 7.5, "vegetarian": false },
+    { "id": 4, "name": "Spinach lasagna", "category": "Main", "price": 6.2, "vegetarian": true },
+    { "id": 5, "name": "Chicken curry with rice", "category": "Main", "price": 6.9, "vegetarian": false },
+    { "id": 6, "name": "Falafel wrap", "category": "Main", "price": 5.8, "vegetarian": true },
+    { "id": 7, "name": "Apple strudel", "category": "Dessert", "price": 2.5, "vegetarian": true },
+    { "id": 8, "name": "Chocolate mousse", "category": "Dessert", "price": 2.7, "vegetarian": true }
+  ]
+}

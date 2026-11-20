@@ -1,0 +1,18 @@
+{
+  "event": "Open House Day",
+  "school": "HTL Spengergasse",
+  "date": "2027-01-22",
+  "stations": [
+    { "id": 1, "title": "Welcome and school tour", "department": "General", "room": "Aula", "start": "09:00", "end": "09:45" },
+    { "id": 2, "title": "Build your own game in the browser", "department": "Informatics", "room": "C3.07", "start": "09:30", "end": "10:15" },
+    { "id": 3, "title": "Ask an AI, check the answer", "department": "Informatics", "room": "C3.09", "start": "10:00", "end": "10:30" },
+    { "id": 4, "title": "Robots that sort parcels", "department": "Informatics", "room": "B2.14", "start": "11:00", "end": "11:45" },
+    { "id": 5, "title": "Founding a start-up in 30 minutes", "department": "Business", "room": "A1.04", "start": "10:00", "end": "10:30" },
+    { "id": 6, "title": "Stock market game", "department": "Business", "room": "A1.06", "start": "11:30", "end": "12:15" },
+    { "id": 7, "title": "Measure your heart rate", "department": "Biomedical", "room": "D0.12", "start": "09:30", "end": "10:00" },
+    { "id": 8, "title": "Inside a hospital lab", "department": "Biomedical", "room": "D0.15", "start": "10:45", "end": "11:30" },
+    { "id": 9, "title": "Design a T-shirt print", "department": "Design", "room": "E1.02", "start": "10:15", "end": "11:00" },
+    { "id": 10, "title": "Photo studio: your portrait", "department": "Design", "room": "E1.05", "start": "12:00", "end": "12:30" },
+    { "id": 11, "title": "Q&A with students and teachers", "department": "General", "room": "Aula", "start": "12:30", "end": "13:00" }
+  ]
+}

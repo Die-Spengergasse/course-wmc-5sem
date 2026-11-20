@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DOM Tree Trainer</title>
+<style>
+  :root {
+    --bg: #f6f6f6; --card: #ffffff; --fg: #1d1d1b; --muted: #5f5f5e; --border: #9d9d9c; --soft: #ededed;
+    --n-stroke: #0090d4; --n-fill: #d1ebf7; --n-text: #00628f;
+    --a-stroke: #f39000; --a-fill: #fdebd1; --a-text: #a35f00;
+    --ok-stroke: #71af2e; --ok-fill: #e5f1d9; --ok-text: #4a7a1c;
+    --err-stroke: #cc0935; --err-fill: #f6d3db; --err-text: #a8072c;
+    --c2-stroke: #6cc1b0; --c2-fill: #e5f4f1; --c2-text: #2f7d6e;
+    --btn: #0090d4; --btn-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212; --card: #1f1f1e; --fg: #ededed; --muted: #b5b5b4; --border: #6f6f6e; --soft: #2e2e2d;
+      --n-stroke: #0090d4; --n-fill: #0d3346; --n-text: #0090d4;
+      --a-stroke: #f39000; --a-fill: #4a2e05; --a-text: #f39000;
+      --ok-stroke: #71af2e; --ok-fill: #23360f; --ok-text: #71af2e;
+      --err-stroke: #f5b4c7; --err-fill: #4a1622; --err-text: #f5b4c7;
+      --c2-stroke: #6cc1b0; --c2-fill: #173832; --c2-text: #6cc1b0;
+      --btn: #0090d4; --btn-fg: #ffffff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Segoe UI", Helvetica, Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.5; }
+  code, .mono { font-family: Consolas, Menlo, monospace; }
+  code { background: var(--soft); padding: 0 4px; border-radius: 4px; overflow-wrap: anywhere; }
+  a { color: var(--n-text); }
+  header { position: sticky; top: 0; z-index: 5; background: var(--card); border-bottom: 1px solid var(--border);
+           padding: 8px 16px; display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 18px; margin: 0; flex: 1; }
+  #progressText { font-variant-numeric: tabular-nums; color: var(--muted); }
+  #progressBar { position: absolute; left: 0; bottom: -1px; height: 3px; background: var(--btn); transition: width .3s; }
+  main { max-width: 1240px; margin: 0 auto; padding: 16px; }
+  .slide { display: none; }
+  .slide.active { display: block; }
+  .slide h2 { margin: 4px 0 8px; font-size: 24px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; margin: 12px 0; min-width: 0; }
+  .card > b:first-child { display: block; margin-bottom: 4px; }
+  .nav { display: flex; justify-content: space-between; max-width: 1240px; margin: 0 auto; padding: 0 16px 24px; }
+  button { font: inherit; border: 1px solid var(--border); background: var(--card); color: var(--fg); border-radius: 6px;
+           padding: 5px 12px; cursor: pointer; }
+  button:hover:not(:disabled) { border-color: var(--btn); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  button.primary { background: var(--btn); color: var(--btn-fg); border-color: var(--btn); }
+  input[type=text], select { font: inherit; padding: 4px 8px; border: 1px solid var(--border); border-radius: 6px;
+                             background: var(--card); color: var(--fg); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 8px 0; }
+  .muted { color: var(--muted); }
+  .hint { font-size: 14px; color: var(--muted); }
+  .stepinfo { font-variant-numeric: tabular-nums; color: var(--muted); }
+  .appear { animation: appear .6s ease-out; }
+  @keyframes appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .caption { min-height: 96px; }
+  .grid2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 16px; align-items: start; }
+  .grid2 > * { min-width: 0; }
+  @media (max-width: 860px) { .grid2 { grid-template-columns: 1fr; } }
+  .badge { display: inline-block; text-align: center; font-weight: 700; font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+           font-size: 12px; border-radius: 10px; padding: 0 6px; margin-left: 6px; vertical-align: 1px; white-space: nowrap; }
+  .badge.new { background: var(--a-fill); color: var(--a-text); border: 1px solid var(--a-stroke); }
+  .badge.ok { background: var(--ok-fill); color: var(--ok-text); border: 1px solid var(--ok-stroke); }
+  .badge.bad { background: var(--err-fill); color: var(--err-text); border: 1px solid var(--err-stroke); }
+  .badge.info { background: var(--n-fill); color: var(--n-text); border: 1px solid var(--n-stroke); }
+  .badge.gray { background: var(--soft); color: var(--muted); border: 1px dashed var(--border); }
+
+  /* code panels */
+  pre.code { margin: 0; font-family: Consolas, Menlo, monospace; font-size: 13px; line-height: 1.7; white-space: pre; overflow-x: auto; }
+  .ln { display: block; border-radius: 3px; padding: 0 4px; }
+  .ln.hl { background: var(--a-fill); box-shadow: inset 3px 0 0 var(--a-stroke); }
+  .ln.info { background: var(--n-fill); box-shadow: inset 3px 0 0 var(--n-stroke); }
+  .ln.ok { background: var(--ok-fill); box-shadow: inset 3px 0 0 var(--ok-stroke); }
+  .ln.bad { background: var(--err-fill); box-shadow: inset 3px 0 0 var(--err-stroke); }
+  .ln.dim { color: var(--muted); }
+
+  /* DOM tree */
+  .tree { font-family: Consolas, Menlo, monospace; font-size: 13.5px; overflow-x: auto; overflow-y: hidden; }
+  .tree ul { list-style: none; margin: 0 0 0 12px; padding-left: 16px; }
+  .tree > ul { margin-left: 0; padding-left: 0; }
+  .tree li { position: relative; margin: 4px 0; }
+  /* Connector lines: a horizontal stub per child and a vertical line that stops at the last child. */
+  .tree ul ul > li::before { content: ""; position: absolute; left: -16px; top: 13px; width: 13px; border-top: 1.5px solid var(--border); }
+  .tree ul ul > li::after { content: ""; position: absolute; left: -16px; top: -4px; bottom: -4px; border-left: 1.5px solid var(--border); }
+  .tree ul ul > li:last-child::after { bottom: auto; height: 18px; }
+  .nd { display: inline-block; border-radius: 4px; padding: 1px 8px; border: 1.5px solid var(--n-stroke); background: var(--n-fill);
+        white-space: nowrap; }
+  .nd .at { color: var(--n-text); font-weight: 400; }
+  .nd.el { font-weight: 700; }
+  .nd.el .at { font-weight: 400; }
+  .nd.txt { border: 1.5px dashed var(--ok-text); background: var(--ok-fill); border-radius: 12px; }
+  .nd.doc { border: 2.5px solid var(--a-stroke); background: var(--a-fill); font-weight: 700; }
+  .nd.ws { border: 1.5px dashed var(--border); background: var(--soft); color: var(--muted); border-radius: 12px; }
+  .nd.hl { border: 3px solid var(--a-stroke); background: var(--a-fill); }
+  .nd.path { border: 3px solid var(--a-stroke); }
+  .nd.detached { border-style: dashed; }
+  .nd.miss { opacity: .45; }
+  .tree li.hidden-node { display: none; }
+  .tag-mark { font-family: "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12.5px; font-weight: 700; margin-left: 6px; color: var(--a-text); }
+  .tag-mark.n { color: var(--n-text); }
+  .tag-mark.ok { color: var(--ok-text); }
+  .tag-mark.bad { color: var(--err-text); }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13.5px; color: var(--muted); margin-top: 8px; }
+  .detached-box { border: 1.5px dashed var(--border); border-radius: 8px; padding: 6px 10px; margin-top: 8px; min-height: 44px; }
+
+  /* type result */
+  .typebox { font-family: Consolas, Menlo, monospace; font-size: 15px; padding: 6px 10px; border-radius: 6px;
+             background: var(--n-fill); border: 1.5px solid var(--n-stroke); display: inline-block; }
+  .errbox { font-family: Consolas, Menlo, monospace; font-size: 14px; padding: 6px 10px; border-radius: 6px;
+            background: var(--err-fill); border: 1.5px solid var(--err-stroke); color: var(--err-text); }
+
+  /* class chain */
+  .chain { display: flex; flex-direction: column; gap: 4px; align-items: stretch; }
+  .cls { border: 1.5px solid var(--border); border-radius: 8px; background: var(--card); padding: 6px 10px; position: relative; }
+  .cls .cn { font-family: Consolas, Menlo, monospace; font-weight: 700; }
+  .cls .mem { font-family: Consolas, Menlo, monospace; font-size: 13px; color: var(--muted); }
+  .cls.hl { border: 3px solid var(--a-stroke); background: var(--a-fill); }
+  .cls.hl .mem { color: var(--fg); }
+  .cls.side { border-style: dashed; }
+  .arrow-up { text-align: center; color: var(--muted); font-size: 14px; line-height: 1; }
+  .inst { display: grid; grid-template-columns: auto auto; gap: 4px 12px; font-family: Consolas, Menlo, monospace; font-size: 14px; }
+  .inst .t { color: var(--ok-text); font-weight: 700; }
+  .inst .f { color: var(--err-text); font-weight: 700; }
+
+  /* preview of the rendered page */
+  .preview { border: 1.5px solid var(--border); border-radius: 8px; padding: 6px 12px; background: var(--card); min-height: 60px; }
+  .preview ul, .preview ol { margin: 4px 0; padding-left: 20px; }
+  .preview li { margin: 4px 0; }
+  .preview li button { margin-left: 10px; padding: 1px 8px; font-size: 13px; }
+  .preview .dish span:first-child { margin-right: 8px; }
+
+  /* live demo */
+  .demo ul { list-style: none; padding: 0; margin: 4px 0; }
+  .demo li { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid var(--border);
+             border-radius: 6px; padding: 4px 10px; margin: 4px 0; background: var(--soft); }
+  .demo li span { cursor: default; }
+  .log { font-family: Consolas, Menlo, monospace; font-size: 13px; min-height: 60px; }
+  .log .entry { padding: 4px 8px; margin: 4px 0; border-radius: 4px; background: var(--soft); overflow-wrap: anywhere; }
+  .log .entry.fresh { background: var(--a-fill); box-shadow: inset 3px 0 0 var(--a-stroke); }
+
+  /* exercise */
+  .rounds button { min-width: 40px; }
+  .rounds button.solved { background: var(--ok-fill); border-color: var(--ok-stroke); }
+  .rounds button.solved::after { content: " ✓"; color: var(--ok-text); }
+  .rounds button.current { outline: 2px solid var(--btn); outline-offset: 1px; font-weight: 700; }
+  .ex-code { font-family: Consolas, Menlo, monospace; font-size: 14px; line-height: 1.7; background: var(--card); border: 1px solid var(--border);
+             border-radius: 8px; padding: 8px 12px; white-space: pre-wrap; word-break: break-word; margin: 8px 0; }
+  .choice button { margin: 4px 8px 4px 0; text-align: left; }
+  .choice button.picked-right { background: var(--ok-fill); border-color: var(--ok-stroke); border-width: 2px; }
+  .choice button.picked-right::before { content: "✓ "; color: var(--ok-text); font-weight: 700; }
+  .choice button.picked-wrong { background: var(--err-fill); border-color: var(--err-stroke); border-width: 2px; }
+  .choice button.picked-wrong::before { content: "✗ "; color: var(--err-text); font-weight: 700; }
+  .assign { display: grid; gap: 6px; margin: 8px 0; }
+  .arow { display: grid; grid-template-columns: minmax(180px, 320px) 1fr 28px; gap: 4px 12px; align-items: center; padding: 6px 10px;
+          border: 1.5px solid var(--border); border-radius: 8px; background: var(--card); }
+  .arow .what.code { font-family: Consolas, Menlo, monospace; overflow-wrap: anywhere; }
+  .arow .opts { display: flex; flex-wrap: wrap; gap: 6px; }
+  .arow .opts button { padding: 3px 10px; font-size: 14px; }
+  .arow .opts.code button { font-family: Consolas, Menlo, monospace; font-size: 13px; }
+  .arow .opts button.sel { background: var(--a-fill); border: 2px dashed var(--a-stroke); font-weight: 600; }
+  .arow .opts button.sel::before { content: "● "; color: var(--a-text); }
+  .arow .res { font-weight: 700; font-size: 18px; text-align: center; }
+  .arow.right { border-color: var(--ok-stroke); background: var(--ok-fill); }
+  .arow.right .res { color: var(--ok-text); }
+  .arow.wrong { border-color: var(--err-stroke); background: var(--err-fill); }
+  .arow.wrong .res { color: var(--err-text); }
+  .arow.right .opts button.sel, .arow.wrong .opts button.sel { background: var(--card); }
+  @media (max-width: 700px) { .arow { grid-template-columns: 1fr 28px; } .arow .opts { grid-column: 1 / -1; grid-row: 2; } }
+  .feedback { padding: 8px 12px; border-radius: 6px; margin-top: 8px; display: none; }
+  .feedback.ok { display: block; background: var(--ok-fill); border: 1px solid var(--ok-stroke); }
+  .feedback.bad { display: block; background: var(--err-fill); border: 1px solid var(--err-stroke); }
+  .feedback.info { display: block; background: var(--soft); border: 1px solid var(--border); }
+  .feedback ul { margin: 6px 0 0; padding-left: 20px; }
+  kbd { font-family: Consolas, Menlo, monospace; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--soft); }
+</style>
+</head>
+<body>
+<header>
+  <h1>DOM Tree (Wiederholung)</h1>
+  <span id="progressText">1 / 6</span>
+  <div id="progressBar"></div>
+</header>
+
+<main>
+  <!-- Slide 1 -->
+  <section class="slide" data-slide="0">
+    <h2>Vom HTML zum DOM Tree</h2>
+    <p>Der Browser liest die Datei <i>index.html</i> Zeile für Zeile und baut daraus Objekte im Speicher. Gehe mit
+      <b>Schritt</b> durch das Einlesen oder lass es mit <b>Play</b> ablaufen.</p>
+    <div class="row">
+      <button id="p-reset">⏮ Anfang</button>
+      <button id="p-back">◀ Zurück</button>
+      <button id="p-step" class="primary">Schritt ▶</button>
+      <button id="p-play">▶ Play</button>
+      <span class="stepinfo" id="p-info"></span>
+    </div>
+    <div class="card caption" id="p-caption"></div>
+    <div class="grid2">
+      <div class="card"><b>index.html (Text in der Datei)</b><pre class="code" id="p-code"></pre></div>
+      <div class="card"><b>DOM Tree (Objekte im Speicher)</b><div class="tree" id="p-tree"></div>
+        <div class="legend">
+          <span><span class="nd doc">document</span> Dokument</span>
+          <span><span class="nd el">&lt;li&gt;</span> Element</span>
+          <span><span class="nd txt">"Text"</span> Text-Knoten</span>
+          <span><span class="nd ws">↵ Leerraum</span> Text aus Leerzeichen</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 2 -->
+  <section class="slide" data-slide="1">
+    <h2>Elemente finden</h2>
+    <p>Mit <code>querySelector()</code> und <code>querySelectorAll()</code> findest du Elemente über CSS-Selektoren.
+      TypeScript leitet aus dem Aufruf einen Typ ab. Gehe die Beispiele durch und probiere danach eigene Selektoren aus.</p>
+    <div class="row">
+      <button id="q-reset">⏮ Anfang</button>
+      <button id="q-back">◀ Zurück</button>
+      <button id="q-step" class="primary">Schritt ▶</button>
+      <button id="q-play">▶ Play</button>
+      <span class="stepinfo" id="q-info"></span>
+    </div>
+    <div class="card caption" id="q-caption"></div>
+    <div class="grid2">
+      <div>
+        <div class="card"><b>Aufruf</b><pre class="code" id="q-code"></pre>
+          <p style="margin:8px 0 4px">Typ in TypeScript:</p><span class="typebox" id="q-type"></span>
+          <p style="margin:8px 0 0" id="q-result"></p>
+        </div>
+        <div class="card"><b>Selbst ausprobieren</b>
+          <div class="row">
+            <select id="q-method" aria-label="Methode">
+              <option value="all">document.querySelectorAll</option>
+              <option value="one">document.querySelector</option>
+              <option value="id">document.getElementById</option>
+            </select>
+            <span class="mono">(&quot;</span><input type="text" id="q-input" value="li.veggie" size="18" aria-label="Selektor"><span class="mono">&quot;)</span>
+            <button id="q-run" class="primary">Ausführen</button>
+          </div>
+          <p class="hint">Ideen: <code>button</code>, <code>.dish</code>, <code>ul &gt; li</code>, <code>#dishList span</code>,
+            <code>button[data-id="3"]</code>, <code>input[type=checkbox]</code>. Bei <code>getElementById</code> gibst du nur die id ein, z. B. <code>search</code>.</p>
+        </div>
+      </div>
+      <div class="card"><b>DOM Tree</b><div class="tree" id="q-tree"></div>
+        <p class="hint">Treffer sind orange umrandet und nummeriert (Reihenfolge im Dokument). Leerraum-Knoten sind ausgeblendet.</p></div>
+    </div>
+  </section>
+
+  <!-- Slide 3 -->
+  <section class="slide" data-slide="2">
+    <h2>Die Vererbungshierarchie der DOM-Klassen</h2>
+    <p>Jedes Tag hat eine eigene Klasse. Ein <code>&lt;input&gt;</code> ist ein <code>HTMLInputElement</code>. Es erbt alles
+      von <code>HTMLElement</code>, <code>Element</code>, <code>Node</code> und <code>EventTarget</code>. Woher kommt welches Property?</p>
+    <div class="row">
+      <button id="h-reset">⏮ Anfang</button>
+      <button id="h-back">◀ Zurück</button>
+      <button id="h-step" class="primary">Schritt ▶</button>
+      <button id="h-play">▶ Play</button>
+      <span class="stepinfo" id="h-info"></span>
+    </div>
+    <div class="card caption" id="h-caption"></div>
+    <div class="grid2">
+      <div>
+        <div class="card"><b>Code</b><pre class="code" id="h-code"></pre></div>
+        <div class="card" id="h-extra"></div>
+      </div>
+      <div class="card"><b>Klassen (oben die Basisklasse)</b><div class="chain" id="h-chain"></div></div>
+    </div>
+  </section>
+
+  <!-- Slide 4 -->
+  <section class="slide" data-slide="3">
+    <h2>Elemente erzeugen und einhängen</h2>
+    <p>Neue Elemente entstehen mit <code>document.createElement()</code>. Sichtbar werden sie erst, wenn du sie in den Baum hängst.
+      Jeder Schritt führt den Code wirklich aus.</p>
+    <div class="row">
+      <button id="c-reset">⏮ Anfang</button>
+      <button id="c-back">◀ Zurück</button>
+      <button id="c-step" class="primary">Schritt ▶</button>
+      <button id="c-play">▶ Play</button>
+      <span class="stepinfo" id="c-info"></span>
+    </div>
+    <div class="card caption" id="c-caption"></div>
+    <div class="grid2">
+      <div class="card"><b>Code</b><pre class="code" id="c-code"></pre></div>
+      <div>
+        <div class="card"><b>DOM Tree</b><div class="tree" id="c-tree"></div>
+          <b style="display:block;margin-top:10px">Im Speicher, aber nicht im Baum</b>
+          <div class="detached-box tree" id="c-detached"></div></div>
+        <div class="card"><b>So sieht es im Browser aus</b><div class="preview" id="c-preview"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 5 -->
+  <section class="slide" data-slide="4">
+    <h2>Event Bubbling und Event Delegation</h2>
+    <p>Ein Klick beginnt beim geklickten Element und wandert dann nach oben bis zu <code>document</code>. Deshalb reicht
+      <b>ein</b> Listener auf der Liste für alle Buttons darin.</p>
+    <div class="row">
+      <button id="e-reset">⏮ Anfang</button>
+      <button id="e-back">◀ Zurück</button>
+      <button id="e-step" class="primary">Schritt ▶</button>
+      <button id="e-play">▶ Play</button>
+      <span class="stepinfo" id="e-info"></span>
+    </div>
+    <div class="card caption" id="e-caption"></div>
+    <div class="grid2">
+      <div class="card"><b>main.ts</b><pre class="code" id="e-code"></pre>
+        <p style="margin:8px 0 0" id="e-vars"></p></div>
+      <div class="card"><b>DOM Tree</b><div class="tree" id="e-tree"></div></div>
+    </div>
+    <div class="card"><b>Selbst ausprobieren: echte Events</b>
+      <p class="hint" style="margin-top:0">Klicke auf einen Button <i>oder</i> auf einen Namen. Ein einziger Listener auf dem <code>&lt;ul&gt;</code>
+        schreibt mit, was er bekommt.</p>
+      <div class="grid2">
+        <div class="demo" id="e-demo"></div>
+        <div class="log" id="e-log" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Slide 6 -->
+  <section class="slide" data-slide="5">
+    <h2>Übung: DOM und Typen</h2>
+    <div class="row rounds" id="roundButtons"></div>
+    <div class="card" id="roundCard"></div>
+    <div id="exArea"></div>
+    <div class="row" id="exButtons">
+      <button class="primary" id="checkBtn">Prüfen</button>
+      <button id="resetBtn">Auswahl löschen</button>
+      <button id="solutionBtn">Lösung zeigen</button>
+    </div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <p class="hint">Gelöste Runden merkt sich dein Browser. Ohne Maus wählst du mit <kbd>Tab</kbd> eine Antwort und bestätigst
+      mit <kbd>Enter</kbd> oder <kbd>Leertaste</kbd>. Die Typen sind mit TypeScript 6 geprüft, die Treffer der Selektoren
+      berechnet dein Browser.</p>
+  </section>
+</main>
+
+<div class="nav">
+  <button id="prevBtn">← Zurück</button>
+  <button id="nextBtn" class="primary">Weiter →</button>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  const PLAY_DELAY = 3200;
+
+  // ---------- storage (works without localStorage) ----------
+  const store = {
+    get(key, fallback) {
+      try {
+        const raw = window.localStorage.getItem('wmc-24-' + key);
+        return raw === null ? fallback : JSON.parse(raw);
+      } catch (e) { return fallback; }
+    },
+    set(key, value) {
+      try { window.localStorage.setItem('wmc-24-' + key, JSON.stringify(value)); } catch (e) { /* ignore */ }
+    }
+  };
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  const $ = id => document.getElementById(id);
+
+  /**
+   * Renders code lines as HTML. marks maps a line index to a CSS class (hl, info, ok, bad, dim)
+   * or to { c: class, b: badge text }.
+   */
+  function codeHtml(lines, marks) {
+    marks = marks || {};
+    return lines.map((l, i) => {
+      const m = typeof marks[i] === 'string' ? { c: marks[i] } : (marks[i] || {});
+      const kind = { bad: 'bad', ok: 'ok', info: 'info', dim: 'gray' }[m.c] || 'new';
+      const badge = m.b ? `<span class="badge ${kind}">${esc(m.b)}</span>` : '';
+      return `<span class="ln${m.c ? ' ' + m.c : ''}">${esc(l) || ' '}${badge}</span>`;
+    }).join('');
+  }
+
+  // ---------- generic step animation ----------
+  /** Connects reset/back/step/play buttons to a render function for steps 0..count-1. */
+  function stepper(prefix, count, render) {
+    let step = 0;
+    let timer = null;
+    const playBtn = $(prefix + '-play');
+    const self = {
+      get step() { return step; },
+      show(i) {
+        step = Math.min(Math.max(i, 0), count - 1);
+        $(prefix + '-info').textContent = `Schritt ${step + 1} von ${count}`;
+        $(prefix + '-back').disabled = step === 0;
+        $(prefix + '-step').disabled = step === count - 1;
+        render(step);
+      },
+      stop() {
+        if (timer) { clearTimeout(timer); timer = null; }
+        playBtn.textContent = '▶ Play';
+      },
+      play() {
+        if (timer) { self.stop(); return; }
+        if (step === count - 1) { self.show(0); }
+        playBtn.textContent = '⏸ Pause';
+        const tick = () => {
+          if (step >= count - 1) { self.stop(); return; }
+          self.show(step + 1);
+          timer = setTimeout(tick, PLAY_DELAY);
+        };
+        timer = setTimeout(tick, 600);
+      }
+    };
+    $(prefix + '-reset').addEventListener('click', () => { self.stop(); self.show(0); });
+    $(prefix + '-back').addEventListener('click', () => { self.stop(); self.show(step - 1); });
+    $(prefix + '-step').addEventListener('click', () => { self.stop(); self.show(step + 1); });
+    playBtn.addEventListener('click', () => self.play());
+    return self;
+  }
+
+  // ---------- DOM tree rendering ----------
+  /** Parses an HTML string with the real HTML parser of the browser. */
+  function parse(html) {
+    return new DOMParser().parseFromString(html, 'text/html');
+  }
+  function isWhitespace(n) {
+    return n.nodeType === Node.TEXT_NODE && n.data.trim() === '';
+  }
+  /** Label of a node as HTML: <tag id="..." class="..." data-*="...">, "text" or document. */
+  function nodeChip(n, extraClass, mark) {
+    let cls = 'nd';
+    let label;
+    if (n.nodeType === Node.DOCUMENT_NODE) {
+      cls += ' doc'; label = 'document';
+    } else if (n.nodeType === Node.TEXT_NODE) {
+      if (isWhitespace(n)) { cls += ' ws'; label = '↵ Leerraum'; }
+      else { cls += ' txt'; label = esc('"' + n.data.replace(/\s+/g, ' ') + '"'); }
+    } else {
+      cls += ' el';
+      const attrs = Array.from(n.attributes).map(a => ` <span class="at">${esc(a.name)}="${esc(a.value)}"</span>`).join('');
+      label = `&lt;${esc(n.localName)}${attrs}&gt;`;
+    }
+    if (extraClass) { cls += ' ' + extraClass; }
+    return `<span class="${cls}">${label}</span>${mark || ''}`;
+  }
+  /**
+   * Renders a node and its children as nested lists.
+   * opts.ws: show whitespace text nodes; opts.visible(n): false hides a node;
+   * opts.cls(n): extra CSS class; opts.mark(n): HTML after the chip; opts.fresh: node that gets an animation.
+   */
+  function treeHtml(root, opts) {
+    opts = opts || {};
+    function walk(n) {
+      if (!opts.ws && isWhitespace(n)) { return ''; }
+      if (n.nodeType === Node.COMMENT_NODE || n.nodeType === Node.DOCUMENT_TYPE_NODE) { return ''; }
+      if (opts.visible && !opts.visible(n)) { return ''; }
+      const kids = Array.from(n.childNodes).map(walk).join('');
+      const fresh = opts.fresh === n ? ' class="appear"' : '';
+      return `<li${fresh}>${nodeChip(n, opts.cls ? opts.cls(n) : '', opts.mark ? opts.mark(n) : '')}${kids ? '<ul>' + kids + '</ul>' : ''}</li>`;
+    }
+    return '<ul>' + walk(root) + '</ul>';
+  }
+
+  // ---------- slide 1: parsing ----------
+  const P_LINES = [
+    '<!doctype html>',
+    '<html>',
+    '<head><title>Canteen</title></head>',
+    '<body>',
+    '  <h1 id="title">Canteen</h1>',
+    '  <ul id="dishList">',
+    '    <li class="dish">Pumpkin soup <button data-id="1">Add</button></li>',
+    '  </ul>',
+    '</body>',
+    '</html>'
+  ];
+  const pDoc = parse(P_LINES.join('\n'));
+  // Nodes in the order the parser creates them (document order), without whitespace nodes.
+  const pOrder = [];
+  (function collect(n) {
+    if (!isWhitespace(n) && n.nodeType !== Node.DOCUMENT_TYPE_NODE) { pOrder.push(n); }
+    Array.from(n.childNodes).forEach(collect);
+  })(pDoc);
+  const P_STEPS = [
+    { line: 0, text: 'Am Anfang erzeugt der Browser das Objekt <code>document</code>. Es ist die Wurzel des Baums. Im Code erreichst du es über die globale Variable <code>document</code>.' },
+    { line: 1, text: 'Aus dem Tag <code>&lt;html&gt;</code> wird das erste <b>Element</b>. Es hängt als Kind unter <code>document</code>.' },
+    { line: 2, text: '<code>&lt;head&gt;</code> ist ein Kind von <code>&lt;html&gt;</code>.' },
+    { line: 2, text: '<code>&lt;title&gt;</code> steht im <code>&lt;head&gt;</code>, also ist es ein Kind von <code>&lt;head&gt;</code>.' },
+    { line: 2, text: 'Der Text zwischen <code>&lt;title&gt;</code> und <code>&lt;/title&gt;</code> wird ein eigener <b>Text-Knoten</b>. Text ist kein Element: Er hat keine Attribute und keine Kinder.' },
+    { line: 3, text: '<code>&lt;body&gt;</code> ist das zweite Kind von <code>&lt;html&gt;</code>. <code>&lt;head&gt;</code> und <code>&lt;body&gt;</code> sind <b>Geschwister</b> (siblings).' },
+    { line: 4, text: '<code>&lt;h1&gt;</code> bekommt das Attribut <code>id="title"</code>. Attribute sind keine Knoten, sie gehören zum Element.' },
+    { line: 4, text: 'Der Text „Canteen“ wird ein Text-Knoten unter <code>&lt;h1&gt;</code>. Im Code liest du ihn mit <code>title.textContent</code>.' },
+    { line: 5, text: '<code>&lt;ul id="dishList"&gt;</code> ist ein Geschwister von <code>&lt;h1&gt;</code>. Später hängt dein Programm hier neue <code>&lt;li&gt;</code> ein.' },
+    { line: 6, text: '<code>&lt;li class="dish"&gt;</code> ist ein Kind der Liste. <code>li.parentElement</code> liefert das <code>&lt;ul&gt;</code>, <code>ul.children[0]</code> das <code>&lt;li&gt;</code>.' },
+    { line: 6, text: 'Der Text „Pumpkin soup “ (mit Leerzeichen am Ende) ist das erste Kind des <code>&lt;li&gt;</code>.' },
+    { line: 6, text: 'Der Button ist das zweite Kind des <code>&lt;li&gt;</code>. Das Attribut <code>data-id="1"</code> liest du in TypeScript mit <code>button.dataset.id</code>.' },
+    { line: 6, text: 'Auch die Beschriftung „Add“ ist ein Text-Knoten, diesmal unter dem Button. Damit ist der Baum fertig.' },
+    { line: 7, ws: true, text: 'Bisher fehlten die Zeilenumbrüche und Einrückungen zwischen den Tags. Auch sie werden Text-Knoten (grau). Deshalb hat das <code>&lt;ul&gt;</code> drei <code>childNodes</code> (Leerraum, <code>&lt;li&gt;</code>, Leerraum), aber nur ein Element in <code>children</code>. Meistens willst du <code>children</code>.' }
+  ];
+  function renderP(step) {
+    const s = P_STEPS[step];
+    const shown = new Set(pOrder.slice(0, Math.min(step + 1, pOrder.length)));
+    const fresh = s.ws ? null : pOrder[step];
+    $('p-caption').innerHTML = s.text;
+    const marks = {};
+    for (let i = 0; i < P_LINES.length; i++) { if (i < s.line) { marks[i] = 'dim'; } }
+    marks[s.line] = 'hl';
+    $('p-code').innerHTML = codeHtml(P_LINES, marks);
+    $('p-tree').innerHTML = treeHtml(pDoc, {
+      ws: !!s.ws,
+      fresh: fresh,
+      visible: n => shown.has(n) || (s.ws && isWhitespace(n)),
+      cls: n => (n === fresh ? 'hl' : ''),
+      mark: n => (n === fresh ? '<span class="tag-mark">◀ neu</span>' : '')
+    });
+  }
+  const pAnim = stepper('p', P_STEPS.length, renderP);
+
+  // ---------- slide 2: finding elements ----------
+  const Q_HTML = [
+    '<body>',
+    '  <h1 id="title">Canteen</h1>',
+    '  <form id="filterForm">',
+    '    <input id="search" type="search">',
+    '    <input id="veggieOnly" type="checkbox">',
+    '  </form>',
+    '  <ul id="dishList">',
+    '    <li class="dish veggie"><span>Pumpkin soup</span><button data-id="1">Add</button></li>',
+    '    <li class="dish"><span>Wiener Schnitzel</span><button data-id="3">Add</button></li>',
+    '    <li class="dish veggie"><span>Apple strudel</span><button data-id="7">Add</button></li>',
+    '  </ul>',
+    '  <ol id="trayList"></ol>',
+    '</body>'
+  ].join('\n');
+  const qDoc = parse(Q_HTML);
+  /** The tag names TypeScript maps to a class in HTMLElementTagNameMap (only those used here). */
+  const TAG_TYPES = {
+    body: 'HTMLBodyElement', h1: 'HTMLHeadingElement', form: 'HTMLFormElement', input: 'HTMLInputElement',
+    ul: 'HTMLUListElement', ol: 'HTMLOListElement', li: 'HTMLLIElement', span: 'HTMLSpanElement',
+    button: 'HTMLButtonElement', div: 'HTMLDivElement', p: 'HTMLParagraphElement', a: 'HTMLAnchorElement'
+  };
+  /** The type TypeScript infers: a pure tag name gives its class, every other selector only Element. */
+  function tsType(method, arg) {
+    if (method === 'id') { return 'HTMLElement | null'; }
+    const cls = TAG_TYPES[arg.trim().toLowerCase()] || 'Element';
+    return method === 'all' ? `NodeListOf<${cls}>` : `${cls} | null`;
+  }
+  /** Runs the call on the sample document and returns the matched elements (or an error message). */
+  function runQuery(method, arg) {
+    try {
+      if (method === 'id') { const e = qDoc.getElementById(arg); return { list: e ? [e] : [] }; }
+      if (method === 'one') { const e = qDoc.querySelector(arg); return { list: e ? [e] : [] }; }
+      return { list: Array.from(qDoc.querySelectorAll(arg)) };
+    } catch (e) {
+      return { error: 'SyntaxError: ' + arg + ' is not a valid selector.' };
+    }
+  }
+  function callText(method, arg) {
+    const name = { id: 'getElementById', one: 'querySelector', all: 'querySelectorAll' }[method];
+    return `document.${name}(${JSON.stringify(arg)})`;
+  }
+  function showQuery(method, arg, extraLines) {
+    const r = runQuery(method, arg);
+    const lines = [(method === 'all' ? 'const items = ' : 'const element = ') + callText(method, arg) + ';'].concat(extraLines || []);
+    $('q-code').innerHTML = codeHtml(lines, { 0: 'hl' });
+    if (r.error) {
+      $('q-type').textContent = '–';
+      $('q-result').innerHTML = `<span class="errbox">${esc(r.error)}</span>`;
+      $('q-tree').innerHTML = treeHtml(qDoc.body);
+      return;
+    }
+    $('q-type').textContent = tsType(method, arg);
+    const index = new Map(r.list.map((e, i) => [e, i + 1]));
+    $('q-tree').innerHTML = treeHtml(qDoc.body, {
+      cls: n => (index.has(n) ? 'hl' : ''),
+      mark: n => (index.has(n) ? `<span class="tag-mark">◀ ${method === 'all' ? 'Treffer ' + index.get(n) : 'Treffer'}</span>` : '')
+    });
+    let result;
+    if (method === 'all') {
+      result = `Ergebnis: eine <code>NodeList</code> mit <b>${r.list.length}</b> ${r.list.length === 1 ? 'Element' : 'Elementen'}.`;
+    } else {
+      result = r.list.length ? 'Ergebnis: <b>ein Element</b>.' : 'Ergebnis: <b>null</b>, kein Element passt.';
+    }
+    $('q-result').innerHTML = result;
+  }
+  const Q_STEPS = [
+    { m: 'id', a: 'dishList', text: '<code>getElementById()</code> sucht nach der id, ohne <code>#</code>. TypeScript weiß nicht, welches Tag die id hat. Der Typ ist daher nur <code>HTMLElement | null</code>.' },
+    { m: 'one', a: '#dishList', text: 'Dasselbe mit <code>querySelector()</code>: Jetzt brauchst du <code>#</code> wie in CSS. Der Typ ist sogar nur <code>Element | null</code>, denn ein Selektor kann auch ein SVG-Element finden.' },
+    { m: 'one', a: 'li', text: 'Bei einem reinen Tag-Namen kennt TypeScript die Klasse: <code>"li"</code> steht in <code>HTMLElementTagNameMap</code>. <code>querySelector()</code> liefert nur den <b>ersten</b> Treffer.' },
+    { m: 'all', a: 'li', text: '<code>querySelectorAll()</code> liefert <b>alle</b> Treffer als <code>NodeList</code>. Sie hat <code>forEach()</code>, aber kein <code>map()</code>. Mit <code>[...items]</code> wird daraus ein Array.' },
+    { m: 'all', a: '.veggie', text: 'Ein Klassen-Selektor findet alle Elemente mit dieser Klasse. Weil <code>".veggie"</code> kein Tag-Name ist, bleibt der Typ <code>NodeListOf&lt;Element&gt;</code>.' },
+    { m: 'all', a: 'li.dish', text: 'Auch <code>"li.dish"</code> ist kein reiner Tag-Name. TypeScript wertet den Selektor nicht aus und liefert nur <code>Element</code>.' },
+    { m: 'all', a: '#dishList button', text: 'Ein Leerzeichen bedeutet „irgendwo darin“: alle Buttons innerhalb von <code>#dishList</code>, egal wie tief.' },
+    { m: 'all', a: 'ul > span', text: '<code>&gt;</code> bedeutet „direktes Kind“. Die <code>&lt;span&gt;</code> stehen im <code>&lt;li&gt;</code>, nicht direkt im <code>&lt;ul&gt;</code>. Kein Treffer: eine leere NodeList, nicht <code>null</code>.' },
+    { m: 'one', a: 'button[data-id="3"]', text: 'Mit <code>[...]</code> suchst du nach Attributen. So findest du den Button des Gerichts mit der id 3.' },
+    { m: 'one', a: '#search', text: 'Für ein Eingabefeld brauchst du <code>HTMLInputElement</code>, sonst gibt es kein <code>value</code>. Die Lösung im Kapitel: <code>getElement("#search", HTMLInputElement)</code> prüft mit <code>instanceof</code>.',
+      extra: ['element.value;', '// error TS18047: \'element\' is possibly \'null\'.', '// error TS2339: Property \'value\' does not exist on type \'Element\'.'] }
+  ];
+  function renderQ(step) {
+    const s = Q_STEPS[step];
+    $('q-caption').innerHTML = s.text;
+    showQuery(s.m, s.a, s.extra);
+  }
+  const qAnim = stepper('q', Q_STEPS.length, renderQ);
+  function runOwnQuery() {
+    qAnim.stop();
+    const method = $('q-method').value;
+    const arg = $('q-input').value;
+    $('q-caption').innerHTML = 'Dein eigener Aufruf. Der Typ folgt derselben Regel: Nur ein reiner Tag-Name ergibt eine genaue Klasse.';
+    showQuery(method, arg);
+  }
+  $('q-run').addEventListener('click', runOwnQuery);
+  $('q-input').addEventListener('keydown', e => { if (e.key === 'Enter') { runOwnQuery(); } });
+
+  // ---------- slide 3: class hierarchy ----------
+  const CLASSES = [
+    { name: 'EventTarget', mem: 'addEventListener(), removeEventListener()', url: 'EventTarget' },
+    { name: 'Node', mem: 'textContent, parentElement, childNodes, appendChild()', url: 'Node' },
+    { name: 'Element', mem: 'id, classList, children, querySelector(), closest(), append(), remove()', url: 'Element' },
+    { name: 'HTMLElement', mem: 'hidden, dataset, style, focus()', url: 'HTMLElement' },
+    { name: 'HTMLInputElement', mem: 'value, valueAsNumber, checked, disabled', url: 'HTMLInputElement' }
+  ];
+  const SIDE = { name: 'HTMLFormElement', mem: 'reset(), requestSubmit()', url: 'HTMLFormElement' };
+  const H_CODE = [
+    'const search = getElement("#search", HTMLInputElement);',
+    'search.value = "soup";',
+    'search.checked;',
+    'search.dataset.id; search.hidden = true;',
+    'search.classList.add("big"); search.closest("form");',
+    'search.parentElement; search.textContent;',
+    'search.addEventListener("input", renderDishes);',
+    'search instanceof HTMLElement;'
+  ];
+  // A real input element, so the instanceof results come from the browser.
+  const realInput = document.createElement('input');
+  const H_STEPS = [
+    { line: 0, cls: 4, text: '<code>search</code> ist ein Objekt der Klasse <code>HTMLInputElement</code>. Die Klasse ganz unten ist die genaueste. Alles darüber erbt sie.' },
+    { line: 1, cls: 4, text: '<code>value</code> gibt es erst in <code>HTMLInputElement</code>. Deshalb kennt TypeScript <code>value</code> nicht, wenn der Typ nur <code>Element</code> oder <code>HTMLElement</code> ist.' },
+    { line: 2, cls: 4, text: 'Auch <code>checked</code> (für Checkboxen) und <code>valueAsNumber</code> (für Zahlenfelder) gehören zu <code>HTMLInputElement</code>.' },
+    { line: 3, cls: 3, text: '<code>dataset</code> und <code>hidden</code> haben alle HTML-Elemente. Sie stehen in <code>HTMLElement</code>.' },
+    { line: 4, cls: 2, text: '<code>classList</code>, <code>closest()</code> und <code>querySelector()</code> stehen in <code>Element</code>. Sie funktionieren auch bei SVG-Elementen.' },
+    { line: 5, cls: 1, text: '<code>parentElement</code> und <code>textContent</code> stehen in <code>Node</code>. Auch Text-Knoten haben sie.' },
+    { line: 6, cls: 0, text: '<code>addEventListener()</code> kommt aus der Basisklasse <code>EventTarget</code>. Auch <code>window</code> und <code>document</code> sind ein <code>EventTarget</code>.' },
+    { line: 7, cls: -1, inst: true, text: '<code>instanceof</code> folgt dieser Kette. Ein <code>HTMLInputElement</code> ist auch ein <code>HTMLElement</code>, ein <code>Element</code> und ein <code>Node</code>. Ein <code>HTMLFormElement</code> ist es nicht: Diese Klasse liegt auf einem anderen Ast.' }
+  ];
+  function mdn(name) { return `https://developer.mozilla.org/en-US/docs/Web/API/${name}`; }
+  function renderH(step) {
+    const s = H_STEPS[step];
+    $('h-caption').innerHTML = s.text;
+    const marks = {};
+    for (let i = 0; i < s.line; i++) { marks[i] = 'dim'; }
+    marks[s.line] = 'hl';
+    $('h-code').innerHTML = codeHtml(H_CODE, marks);
+    const boxes = CLASSES.map((c, i) => {
+      const hl = i === s.cls || s.inst;
+      const mark = s.inst ? ' <span class="badge ok">✓ instanceof</span>' : (i === s.cls ? ' <span class="badge new">◀ hier</span>' : '');
+      return `<div class="cls${hl ? ' hl' : ''}"><span class="cn">${c.name}</span>${mark}<div class="mem">${esc(c.mem)}</div></div>`;
+    });
+    $('h-chain').innerHTML = boxes.join('<div class="arrow-up" aria-hidden="true">▲ erbt von</div>') +
+      `<div class="cls side" style="margin-top:14px"><span class="cn">${SIDE.name}</span>${s.inst ? ' <span class="badge bad">✗ instanceof</span>' : ''}` +
+      `<div class="mem">erbt auch von HTMLElement · ${esc(SIDE.mem)}</div></div>`;
+    if (s.inst) {
+      const tests = [['HTMLInputElement', HTMLInputElement], ['HTMLElement', HTMLElement], ['Element', Element], ['Node', Node],
+        ['EventTarget', EventTarget], ['HTMLFormElement', HTMLFormElement]];
+      $('h-extra').innerHTML = '<b>Ergebnis im Browser (echtes &lt;input&gt;)</b><div class="inst">' + tests.map(t => {
+        const r = realInput instanceof t[1];
+        return `<span>input instanceof ${t[0]}</span><span class="${r ? 't' : 'f'}">${r ? '✓ true' : '✗ false'}</span>`;
+      }).join('') + '</div>';
+    } else {
+      const c = s.cls >= 0 ? CLASSES[s.cls] : CLASSES[4];
+      $('h-extra').innerHTML = `<b>Nachschlagen in der MDN</b>Alle Properties und Methoden: <a href="${mdn(c.url)}" target="_blank" rel="noopener">${c.name} auf MDN</a>.` +
+        '<p class="hint" style="margin:6px 0 0">Welche Klasse zu einem Tag gehört, steht auf der MDN-Seite des Tags unter <i>DOM interface</i>. In VS Code führt <kbd>Strg</kbd>+Klick auf einen Typ zu <i>lib.dom.d.ts</i>.</p>';
+    }
+  }
+  const hAnim = stepper('h', H_STEPS.length, renderH);
+
+  // ---------- slide 4: create and append ----------
+  const C_CODE = [
+    'const item = document.createElement("li");',
+    'item.classList.add("dish");',
+    'const name = document.createElement("span");',
+    'name.textContent = "Spinach lasagna";',
+    'const button = document.createElement("button");',
+    'button.textContent = "Add";',
+    'button.dataset.id = "4";',
+    'item.append(name, button);',
+    'dishList.append(item);',
+    'dishList.replaceChildren(item);',
+    'item.remove();'
+  ];
+  const C_TEXT = [
+    'Am Anfang steht ein Gericht in der Liste. Der Code erzeugt gleich ein zweites.',
+    '<code>createElement("li")</code> erzeugt ein neues <code>HTMLLIElement</code>. Es existiert nur im Speicher und hängt nicht im Baum. Der Browser zeigt es nicht an.',
+    '<code>classList.add()</code> setzt das Attribut <code>class</code>. Das Element ist immer noch nicht im Baum.',
+    'Ein zweites Element entsteht: ein <code>&lt;span&gt;</code>, ebenfalls ohne Platz im Baum.',
+    '<code>textContent</code> hängt einen Text-Knoten in das <code>&lt;span&gt;</code>. Der String wird nie als HTML gelesen. Das schützt vor Cross-Site Scripting (XSS).',
+    'Jetzt der Button.',
+    'Der Button bekommt seine Beschriftung.',
+    '<code>dataset.id = "4"</code> setzt das Attribut <code>data-id="4"</code>. Der Click-Listener liest es später wieder aus.',
+    '<code>item.append(name, button)</code> hängt beide Elemente als Kinder in das <code>&lt;li&gt;</code>. Es entsteht ein kleiner Teilbaum, aber noch immer außerhalb des DOM Trees.',
+    '<code>dishList.append(item)</code> hängt den Teilbaum an die Liste. <b>Erst jetzt</b> zeigt der Browser das neue Gericht.',
+    '<code>replaceChildren(item)</code> entfernt alle bisherigen Kinder und hängt <code>item</code> ein. Die render-Funktionen der Mensa-App bauen eine Liste so neu auf.',
+    '<code>item.remove()</code> nimmt das Element aus dem Baum. Die Variable <code>item</code> zeigt weiter darauf, nur ist es nicht mehr sichtbar.'
+  ];
+  /** Builds the sandbox again and runs the first count statements, so every step is real DOM code. */
+  function runCreate(count) {
+    const doc = parse('<ul id="dishList"><li class="dish"><span>Pumpkin soup</span><button data-id="1">Add</button></li></ul>');
+    const dishList = doc.getElementById('dishList');
+    const v = {};
+    const actions = [
+      () => { v.item = doc.createElement('li'); },
+      () => { v.item.classList.add('dish'); },
+      () => { v.name = doc.createElement('span'); },
+      () => { v.name.textContent = 'Spinach lasagna'; },
+      () => { v.button = doc.createElement('button'); },
+      () => { v.button.textContent = 'Add'; },
+      () => { v.button.dataset.id = '4'; },
+      () => { v.item.append(v.name, v.button); },
+      () => { dishList.append(v.item); },
+      () => { dishList.replaceChildren(v.item); },
+      () => { v.item.remove(); }
+    ];
+    actions.slice(0, count).forEach(a => a());
+    return { doc: doc, dishList: dishList, v: v };
+  }
+  function renderC(step) {
+    const r = runCreate(step);
+    $('c-caption').innerHTML = C_TEXT[step];
+    const marks = {};
+    for (let i = 0; i < step - 1; i++) { marks[i] = 'dim'; }
+    if (step > 0) { marks[step - 1] = 'hl'; }
+    $('c-code').innerHTML = codeHtml(C_CODE, marks);
+    const vars = [['item', r.v.item], ['name', r.v.name], ['button', r.v.button]];
+    const varMark = n => vars.filter(x => x[1] === n).map(x => `<span class="tag-mark n">← ${x[0]}</span>`).join('');
+    $('c-tree').innerHTML = treeHtml(r.dishList, { mark: varMark });
+    // Detached roots: created elements without a parent.
+    const roots = vars.map(x => x[1]).filter(n => n && n.parentNode === null);
+    $('c-detached').innerHTML = roots.length
+      ? roots.map(n => treeHtml(n, { cls: () => 'detached', mark: varMark })).join('')
+      : '<span class="hint">leer</span>';
+    const preview = $('c-preview');
+    preview.replaceChildren(document.importNode(r.dishList, true));
+  }
+  const cAnim = stepper('c', C_CODE.length + 1, renderC);
+
+  // ---------- slide 5: events ----------
+  const eDoc = parse([
+    '<body>',
+    '  <ul id="dishList">',
+    '    <li class="dish"><span>Pumpkin soup</span><button data-id="1">Add</button></li>',
+    '    <li class="dish"><span>Wiener Schnitzel</span><button data-id="3">Add</button></li>',
+    '  </ul>',
+    '  <ol id="trayList"></ol>',
+    '</body>'].join('\n'));
+  const eUl = eDoc.getElementById('dishList');
+  const eLi = eUl.children[1];
+  const eSpan = eLi.children[0];
+  const eBtn = eLi.children[1];
+  const E_CODE = [
+    'dishList.addEventListener("click", event => {',
+    '    if (!(event.target instanceof HTMLButtonElement)) {',
+    '        return;',
+    '    }',
+    '    const id = Number(event.target.dataset.id);',
+    '    const dish = menu.dishes.find(d => d.id === id);',
+    '    if (dish !== undefined) {',
+    '        tray.push(dish);',
+    '        renderTray();',
+    '    }',
+    '});'
+  ];
+  const E_STEPS = [
+    { path: [eBtn], target: eBtn, lines: {}, text: 'Du klickst auf <i>Add</i> bei „Wiener Schnitzel“. Das Event beginnt beim Button. Er ist das <code>event.target</code>. Der Button selbst hat keinen Listener.' },
+    { path: [eBtn, eLi], target: eBtn, lines: {}, text: 'Das Event wandert nach oben zum <code>&lt;li&gt;</code> (<b>Event Bubbling</b>). Auch hier ist kein Listener.' },
+    { path: [eBtn, eLi, eUl], target: eBtn, cur: eUl, lines: { 0: 'hl' }, text: 'Beim <code>&lt;ul&gt;</code> wartet der Listener. Er läuft jetzt. <code>event.currentTarget</code> ist das <code>&lt;ul&gt;</code>, <code>event.target</code> ist weiterhin der Button.' },
+    { path: [eBtn, eLi, eUl], target: eBtn, cur: eUl, lines: { 1: 'ok' }, text: '<code>event.target</code> hat den Typ <code>EventTarget | null</code>. Erst <code>instanceof HTMLButtonElement</code> sagt TypeScript, dass es ein Button ist. Die Prüfung ist erfüllt.' },
+    { path: [eBtn, eLi, eUl], target: eBtn, cur: eUl, lines: { 4: 'hl', 5: 'hl' }, vars: 'event.target.dataset.id = "3" → id = 3', text: 'Das Attribut <code>data-id="3"</code> verrät, welches Gericht gemeint ist. <code>dataset</code> liefert immer Strings, <code>Number()</code> macht eine Zahl daraus.' },
+    { path: [eBtn, eLi, eUl], target: eBtn, cur: eUl, tray: true, lines: { 7: 'hl', 8: 'hl' }, text: 'Das Gericht kommt in das Array <code>tray</code>. <code>renderTray()</code> baut die Liste <code>#trayList</code> neu auf: Ein neues <code>&lt;li&gt;</code> erscheint.' },
+    { path: [eBtn, eLi, eUl, eDoc.body, eDoc], target: eBtn, tray: true, lines: {}, text: 'Danach wandert das Event weiter zu <code>&lt;body&gt;</code> und <code>document</code>. Dort hört niemand zu. Ein Listener für <b>alle</b> Buttons reicht, auch für Buttons, die erst später erzeugt werden.' },
+    { path: [eSpan, eLi, eUl], target: eSpan, cur: eUl, lines: { 1: 'bad', 2: 'bad' }, text: 'Jetzt ein Klick auf den <b>Namen</b>. <code>event.target</code> ist das <code>&lt;span&gt;</code>. Der Listener auf dem <code>&lt;ul&gt;</code> läuft trotzdem. Die Prüfung mit <code>instanceof</code> schlägt fehl, und <code>return</code> beendet ihn. Nichts passiert.' }
+  ];
+  function renderE(step) {
+    const s = E_STEPS[step];
+    $('e-caption').innerHTML = s.text;
+    $('e-code').innerHTML = codeHtml(E_CODE, s.lines);
+    const tray = eDoc.getElementById('trayList');
+    tray.replaceChildren();
+    if (s.tray) { const li = eDoc.createElement('li'); li.textContent = 'Wiener Schnitzel'; tray.append(li); }
+    const order = new Map(s.path.map((n, i) => [n, i + 1]));
+    $('e-tree').innerHTML = treeHtml(eDoc, {
+      cls: n => (n === s.cur || n === s.target ? 'hl' : (order.has(n) ? 'path' : '')),
+      mark: n => {
+        let m = '';
+        if (order.has(n)) { m += `<span class="tag-mark">${order.get(n)}.</span>`; }
+        if (n === s.target) { m += '<span class="tag-mark n">event.target</span>'; }
+        if (n === s.cur) { m += '<span class="tag-mark">✓ Listener: event.currentTarget</span>'; }
+        if (s.tray && n.parentNode === tray) { m += '<span class="tag-mark ok">◀ neu</span>'; }
+        return m;
+      }
+    });
+    $('e-vars').innerHTML = s.vars ? `<code>${esc(s.vars)}</code>` : '';
+  }
+  const eAnim = stepper('e', E_STEPS.length, renderE);
+
+  // Live demo with real events and one delegated listener.
+  (function buildDemo() {
+    const demo = $('e-demo');
+    const list = document.createElement('ul');
+    [['1', 'Pumpkin soup'], ['3', 'Wiener Schnitzel'], ['7', 'Apple strudel']].forEach(d => {
+      const li = document.createElement('li');
+      const span = document.createElement('span');
+      span.textContent = d[1];
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = 'Add';
+      btn.dataset.id = d[0];
+      li.append(span, btn);
+      list.append(li);
+    });
+    const tray = document.createElement('ol');
+    demo.append(list, tray);
+    const log = $('e-log');
+    function describe(n) {
+      if (!(n instanceof Element)) { return String(n); }
+      return '<' + n.localName + (n.dataset && n.dataset.id ? ` data-id="${n.dataset.id}"` : '') + '>';
+    }
+    list.addEventListener('click', event => {
+      // composedPath() lists all nodes the event passes on its way up.
+      const path = event.composedPath().filter(n => n instanceof Element && demo.contains(n)).map(describe).join(' → ');
+      const entry = document.createElement('div');
+      entry.className = 'entry fresh';
+      let result;
+      if (event.target instanceof HTMLButtonElement) {
+        const name = event.target.previousElementSibling ? event.target.previousElementSibling.textContent : '';
+        const item = document.createElement('li');
+        item.textContent = name;
+        tray.append(item);
+        result = `✓ instanceof HTMLButtonElement, dataset.id = "${event.target.dataset.id}" → aufs Tablett`;
+      } else {
+        result = '✗ kein Button → return';
+      }
+      entry.textContent = `Weg: ${path} | target: ${describe(event.target)} | currentTarget: ${describe(event.currentTarget)} | ${result}`;
+      log.querySelectorAll('.entry').forEach(e => e.classList.remove('fresh'));
+      log.prepend(entry);
+      while (log.children.length > 4) { log.lastElementChild.remove(); }
+    });
+    log.innerHTML = '<span class="hint">Noch kein Klick.</span>';
+    list.addEventListener('click', () => { const h = log.querySelector('.hint'); if (h) { h.remove(); } }, { once: true });
+  })();
+
+  // ---------- slide 6: exercise ----------
+  // kind 'assign': pick one option per item. kind 'choice': pick one option, checked at once.
+  const TYPE_OPTS = ['HTMLElement | null', 'Element | null', 'HTMLLIElement | null', 'NodeListOf<Element>',
+    'NodeListOf<HTMLLIElement>', 'HTMLButtonElement', 'EventTarget | null'];
+  const SEL_ITEMS = [
+    ['li', 3], ['.veggie', 2], ['li.dish', 3], ['#dishList button', 3], ['button[data-id="3"]', 1],
+    ['ul > span', 0], ['input', 2], ['#trayList li', 0], ['form #search', 1]
+  ];
+  const ROUNDS = [
+    { id: 'types', kind: 'assign', title: 'Welchen Typ leitet TypeScript ab?',
+      intro: 'Ordne jedem Aufruf den Typ zu, den TypeScript ableitet.', options: TYPE_OPTS, code: true, optCode: true,
+      items: [
+        { what: 'document.getElementById("dishList")', a: 0, why: 'getElementById() kennt nur die id, nicht das Tag. Der Typ ist immer HTMLElement | null.' },
+        { what: 'document.querySelector("#dishList")', a: 1, why: '"#dishList" ist kein Tag-Name. querySelector() liefert dann Element | null, denn der Selektor könnte auch ein SVG-Element finden.' },
+        { what: 'document.querySelector("li")', a: 2, why: '"li" steht in HTMLElementTagNameMap. Daher kennt TypeScript die Klasse HTMLLIElement. null bleibt möglich.' },
+        { what: 'document.querySelector("li.dish")', a: 1, why: 'TypeScript wertet Selektoren nicht aus. Nur ein reiner Tag-Name ergibt eine genaue Klasse, "li.dish" ergibt Element | null.' },
+        { what: 'document.querySelectorAll("li")', a: 4, why: 'querySelectorAll() liefert eine NodeList. Bei einem reinen Tag-Namen hat sie den genauen Typ NodeListOf<HTMLLIElement>.' },
+        { what: 'document.querySelectorAll(".dish")', a: 3, why: 'Ein Klassen-Selektor ist kein Tag-Name. Der Typ ist NodeListOf<Element>. Eine NodeList ist nie null, höchstens leer.' },
+        { what: 'document.createElement("button")', a: 5, why: 'createElement() erzeugt immer ein Element, deshalb ohne null. Über HTMLElementTagNameMap wird "button" zu HTMLButtonElement.' },
+        { what: 'event.target in einem Click-Listener', a: 6, why: 'Ein Event kann auch von window oder einem Text kommen. Deshalb ist event.target nur EventTarget | null. Prüfe es mit instanceof.' },
+        { what: 'button.closest("li")', a: 2, why: 'closest() sucht nach oben. Mit einem reinen Tag-Namen liefert es den genauen Typ, hier HTMLLIElement | null.' }
+      ] },
+    { id: 'members', kind: 'assign', title: 'Woher kommt das Property?',
+      intro: 'search ist ein HTMLInputElement, form ein HTMLFormElement. In welcher Klasse ist das Property oder die Methode definiert?',
+      options: ['EventTarget', 'Node', 'Element', 'HTMLElement', 'HTMLInputElement', 'HTMLFormElement'], code: true,
+      items: [
+        { what: 'search.addEventListener()', a: 0, why: 'addEventListener() kommt aus der Basisklasse EventTarget. Auch window ist ein EventTarget.' },
+        { what: 'search.textContent', a: 1, why: 'textContent steht in Node. Auch Text-Knoten haben es.' },
+        { what: 'search.parentElement', a: 1, why: 'parentElement steht in Node. Jeder Knoten im Baum kann ein Eltern-Element haben.' },
+        { what: 'search.classList', a: 2, why: 'classList steht in Element. Auch SVG-Elemente haben Klassen.' },
+        { what: 'search.closest()', a: 2, why: 'closest() steht in Element.' },
+        { what: 'search.dataset', a: 3, why: 'dataset steht in HTMLElement. Jedes HTML-Element kann data-*-Attribute haben.' },
+        { what: 'search.hidden', a: 3, why: 'hidden steht in HTMLElement. Jedes HTML-Element kann man verstecken.' },
+        { what: 'search.value', a: 4, why: 'value gibt es erst bei Formularfeldern. Für <input> steht es in HTMLInputElement.' },
+        { what: 'search.checked', a: 4, why: 'checked steht in HTMLInputElement. Es ist für Checkboxen und Radio-Buttons gedacht.' },
+        { what: 'form.reset()', a: 5, why: 'reset() setzt alle Felder des Formulars zurück. Die Methode gibt es nur in HTMLFormElement.' }
+      ] },
+    { id: 'selectors', kind: 'assign', title: 'Wie viele Treffer?',
+      intro: 'Wie viele Elemente findet document.querySelectorAll() mit diesem Selektor im HTML unten?',
+      html: Q_HTML, options: ['0', '1', '2', '3'], code: true,
+      items: SEL_ITEMS.map(x => ({ what: x[0], a: x[1], why: '' })) },
+    { id: 'null-value', kind: 'choice', title: 'getElementById und value',
+      intro: 'Was meldet tsc zu diesem Code? Im HTML gibt es <input id="search">.',
+      code: 'const search = document.getElementById("search");\nsearch.value = "soup";',
+      options: ['Nichts. Der Code kompiliert.', 'search is possibly null, und value gibt es auf HTMLElement nicht.', 'Nur: search is possibly null.'], correct: 1,
+      explanation: 'tsc meldet zwei Fehler: TS18047 \'search\' is possibly \'null\' und TS2339 Property \'value\' does not exist on type \'HTMLElement\'. getElementById() kennt das Tag nicht. Mit getElement("#search", HTMLInputElement) sind beide Probleme gelöst.',
+      wrong: 'Welchen Typ liefert getElementById()? Hat dieser Typ ein value?' },
+    { id: 'append-twice', kind: 'choice', title: 'Zweimal append()',
+      intro: 'Die Liste list ist leer. Wie viele <li> hat sie nach diesem Code?',
+      code: 'const item = document.createElement("li");\nitem.textContent = "Soup";\nlist.append(item);\nlist.append(item);',
+      options: ['0', '1', '2', 'Ein Fehler: item ist schon im Baum.'], correct: 1,
+      explanation: 'Ein Knoten kann nur an einer Stelle im Baum hängen. Das zweite append() verschiebt item an das Ende, es kopiert es nicht. Für zwei Einträge brauchst du zwei createElement()-Aufrufe (oder cloneNode()).',
+      wrong: 'Wird item kopiert oder verschoben? Ein Objekt kann nur einen Parent haben.',
+      check: () => { const l = document.createElement('ul'); const i = document.createElement('li'); l.append(i); l.append(i); return l.children.length === 1; } },
+    { id: 'xss', kind: 'choice', title: 'textContent oder innerHTML',
+      intro: 'Ein Gericht heißt <img src=x onerror="alert(1)">. Was zeigt der Browser nach item.textContent = dish.name?',
+      code: 'item.textContent = dish.name;',
+      options: ['Den Text <img src=x onerror="alert(1)"> als normalen Text.', 'Ein kaputtes Bild und ein Fenster mit 1.', 'Nichts. textContent entfernt alle Tags.'], correct: 0,
+      explanation: 'textContent erzeugt einen Text-Knoten. Der Browser liest den String nie als HTML. Mit innerHTML entstünde ein <img>, und onerror würde Code ausführen: Cross-Site Scripting (XSS).',
+      wrong: 'Erzeugt textContent Elemente oder einen Text-Knoten?',
+      check: () => { const li = document.createElement('li'); li.textContent = '<img src=x>'; return li.children.length === 0 && li.textContent === '<img src=x>'; } },
+    { id: 'span-click', kind: 'choice', title: 'Klick auf den Namen',
+      intro: 'Der Listener aus der Mensa-App hängt auf dem <ul>. Du klickst auf den Namen „Pumpkin soup“ (ein <span> im <li>). Was passiert?',
+      code: 'dishList.addEventListener("click", event => {\n    if (!(event.target instanceof HTMLButtonElement)) {\n        return;\n    }\n    // ... add the dish to the tray\n});',
+      options: ['Das Gericht kommt auf das Tablett.', 'Der Listener läuft, event.target ist das <span>, und return beendet ihn.', 'Der Listener läuft nicht, weil das <span> keinen Listener hat.'], correct: 1,
+      explanation: 'Das Event wandert vom <span> nach oben und erreicht den Listener auf dem <ul>. event.target ist aber das <span>. Die Prüfung mit instanceof HTMLButtonElement schlägt fehl. Probiere es im Live-Beispiel auf Folie 5 aus.',
+      wrong: 'Denk an Event Bubbling: Kommt der Klick beim <ul> an? Und was ist dann event.target?' },
+    { id: 'lost-listeners', kind: 'choice', title: 'Verlorene Listener',
+      intro: 'Nach einer Eingabe im Suchfeld reagieren die Add-Buttons nicht mehr. Warum?',
+      code: 'renderDishes();\ndishList.querySelectorAll("button").forEach(button =>\n    button.addEventListener("click", addToTray));\n\n// on every input in the search field:\nfunction renderDishes(): void {\n    dishList.replaceChildren(...visible.map(createDishItem));\n}',
+      options: ['replaceChildren() erzeugt neue Buttons. Die Listener hängen an den alten, entfernten Buttons.', 'querySelectorAll() findet Buttons nicht.', 'Das Suchfeld setzt disabled bei allen Buttons.'], correct: 0,
+      explanation: 'Die Listener werden nur einmal registriert, auf den ersten Buttons. renderDishes() ersetzt sie durch neue Buttons ohne Listener. Mit Event Delegation hängt der Listener auf dem <ul>, das nie ersetzt wird.',
+      wrong: 'Was macht replaceChildren() mit den alten Buttons, und haben die neuen einen Listener?' },
+    { id: 'dataset', kind: 'choice', title: 'Werte aus dataset',
+      intro: 'event.target ist schon als HTMLButtonElement geprüft. Was meldet tsc?',
+      code: 'const id: number = event.target.dataset.id;',
+      options: ['Nichts, data-id="3" ist eine Zahl.', 'Type \'string | undefined\' is not assignable to type \'number\'.', 'Property \'dataset\' does not exist on type \'HTMLButtonElement\'.'], correct: 1,
+      explanation: 'Attribute sind immer Strings. dataset.id hat den Typ string | undefined, denn das Attribut kann fehlen. Number(event.target.dataset.id) macht eine Zahl daraus (oder NaN).',
+      wrong: 'Welchen Typ haben Werte aus dataset?' },
+    { id: 'json', kind: 'choice', title: 'Fehler in der JSON-Datei',
+      intro: 'In menu.json steht bei einem Gericht "price": "2.90" statt 2.9. Wann fällt der Fehler auf?',
+      code: 'import menuData from "./data/menu.json";\nconst menu: Menu = menuData;',
+      options: ['Erst im Browser, wenn der Preis angezeigt wird.', 'Bei npm run build: tsc meldet einen Fehler in der Zeile const menu: Menu = menuData.', 'Gar nicht, JSON-Dateien haben keine Typen.'], correct: 1,
+      explanation: 'TypeScript leitet den Typ aus dem Inhalt der JSON-Datei ab. Die Zuweisung an Menu prüft ihn: Type \'string\' is not assignable to type \'number\'. Der Dev-Server prüft keine Typen, VS Code zeigt den Fehler aber rot an.',
+      wrong: 'Kennt TypeScript den Inhalt einer importierten JSON-Datei?' },
+    { id: 'submit', kind: 'choice', title: 'Formular ohne preventDefault()',
+      intro: 'Der Listener für submit fehlt. Was passiert, wenn du im Suchfeld Enter drückst, nachdem schon zwei Gerichte auf dem Tablett liegen?',
+      code: '<form id="filterForm">\n  <input id="search" type="search">\n</form>',
+      options: ['Nichts, das Formular hat keinen Submit-Button.', 'Die Seite lädt neu, und das Tablett ist wieder leer.', 'Der Browser zeigt einen Fehler in der Console.'], correct: 1,
+      explanation: 'Enter in einem Formularfeld schickt das Formular ab, auch ohne Button. Der Browser lädt die Seite neu, alle Variablen wie tray sind weg. event.preventDefault() im submit-Listener verhindert das.',
+      wrong: 'Was macht ein Browser standardmäßig, wenn ein Formular abgeschickt wird?' }
+  ];
+  // The selector answers come from the real parser; the explanation lists the matches.
+  ROUNDS[2].items.forEach(it => {
+    const found = Array.from(qDoc.querySelectorAll(it.what));
+    it.why = found.length
+      ? `Treffer: ${found.map(e => '<' + e.localName + (e.id ? '#' + e.id : '') + (e.dataset.id ? ' data-id=' + e.dataset.id : '') + '>').join(', ')}.`
+      : 'Kein Element passt.';
+    if (it.what === 'ul > span') { it.why += ' Die <span> stehen im <li>, nicht direkt im <ul>.'; }
+    if (it.what === 'li.dish') { it.why += ' Alle drei <li> haben die Klasse dish, auch die mit veggie.'; }
+  });
+
+  const solved = new Set((store.get('solved', []) || []).filter(id => ROUNDS.some(r => r.id === id)));
+  let roundIndex = Math.min(Math.max(store.get('round', 0) | 0, 0), ROUNDS.length - 1);
+  let picks = {};
+  const exArea = $('exArea');
+  const feedback = $('feedback');
+
+  function clearFeedback() { feedback.className = 'feedback'; feedback.innerHTML = ''; }
+  function markSolved(r) { solved.add(r.id); store.set('solved', Array.from(solved)); drawRounds(); }
+  function nextRoundIndex() { return ROUNDS.findIndex((x, i) => i > roundIndex && !solved.has(x.id)); }
+  function nextRoundButton() {
+    const next = nextRoundIndex();
+    if (next >= 0) { return `<p><button id="nextRound">Weiter zu Runde ${next + 1}</button></p>`; }
+    return solved.size === ROUNDS.length ? '<p><b>Du hast alle Runden gelöst!</b></p>' : '';
+  }
+  function wireNext() {
+    const nb = $('nextRound');
+    if (nb) { const next = nextRoundIndex(); nb.addEventListener('click', () => selectRound(next)); }
+  }
+
+  function renderAssign(r) {
+    exArea.innerHTML = (r.html ? `<div class="ex-code">${esc(r.html)}</div>` : '') + '<div class="assign">' + r.items.map((it, i) =>
+      `<div class="arow" data-row="${i}"><span class="what${r.code ? ' code' : ''}">${esc(it.what)}</span>` +
+      `<span class="opts${r.optCode ? ' code' : ''}" role="group" aria-label="${esc(it.what)}">` + r.options.map((o, k) =>
+        `<button type="button" data-row="${i}" data-opt="${k}" aria-pressed="false">${esc(o)}</button>`).join('') +
+      '</span><span class="res" aria-hidden="true"></span></div>').join('') + '</div>';
+    paintPicks();
+  }
+  /** Shows the selection; with a result it also marks every row right or wrong. */
+  function paintPicks(result) {
+    exArea.querySelectorAll('.arow').forEach(row => {
+      const i = +row.dataset.row;
+      row.classList.remove('right', 'wrong');
+      row.querySelector('.res').textContent = '';
+      row.querySelectorAll('button[data-opt]').forEach(b => {
+        const on = picks[i] === +b.dataset.opt;
+        b.classList.toggle('sel', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      if (result && picks[i] !== undefined) {
+        const ok = result[i];
+        row.classList.add(ok ? 'right' : 'wrong');
+        row.querySelector('.res').textContent = ok ? '✓' : '✗';
+      }
+    });
+  }
+  function renderChoice(r) {
+    exArea.innerHTML = `<div class="ex-code">${esc(r.code)}</div><div class="choice row">` +
+      r.options.map((o, i) => `<button type="button" data-choice="${i}">${esc(o)}</button>`).join('') + '</div>';
+  }
+  exArea.addEventListener('click', e => {
+    const opt = e.target.closest('button[data-opt]');
+    if (opt) {
+      picks[+opt.dataset.row] = +opt.dataset.opt;
+      clearFeedback();
+      paintPicks();
+      return;
+    }
+    const ch = e.target.closest('button[data-choice]');
+    if (ch) { checkChoice(+ch.dataset.choice); }
+  });
+
+  function checkAssign() {
+    const r = ROUNDS[roundIndex];
+    const open = r.items.filter((it, i) => picks[i] === undefined).length;
+    const result = r.items.map((it, i) => picks[i] === it.a);
+    paintPicks(result);
+    const wrong = r.items.map((it, i) => ({ it: it, i: i })).filter(x => picks[x.i] !== undefined && picks[x.i] !== x.it.a);
+    if (open === 0 && wrong.length === 0) {
+      markSolved(r);
+      feedback.className = 'feedback ok';
+      feedback.innerHTML = `✓ Richtig! Alle ${r.items.length} Zeilen stimmen.` + nextRoundButton();
+      wireNext();
+      return;
+    }
+    const items = wrong.map(x => `<li>✗ <b>${esc(x.it.what)}</b><br>${esc(x.it.why)}</li>`);
+    if (open) { items.push(`<li>? ${open === 1 ? 'Eine Zeile hat' : open + ' Zeilen haben'} noch keine Antwort.</li>`); }
+    feedback.className = 'feedback bad';
+    feedback.innerHTML = `Noch nicht ganz. ${result.filter(Boolean).length} von ${r.items.length} richtig.<ul>${items.join('')}</ul><p class="hint">Ändere deine Auswahl und prüfe noch einmal.</p>`;
+  }
+  function checkChoice(opt) {
+    const r = ROUNDS[roundIndex];
+    exArea.querySelectorAll('button[data-choice]').forEach(b => b.classList.remove('picked-right', 'picked-wrong'));
+    const btn = exArea.querySelector(`button[data-choice="${opt}"]`);
+    if (opt === r.correct) {
+      btn.classList.add('picked-right');
+      markSolved(r);
+      feedback.className = 'feedback ok';
+      feedback.innerHTML = `✓ Richtig! ${esc(r.explanation)}` + nextRoundButton();
+      wireNext();
+    } else {
+      btn.classList.add('picked-wrong');
+      feedback.className = 'feedback bad';
+      feedback.innerHTML = `✗ Nicht ganz. ${esc(r.wrong)} Versuche es noch einmal.`;
+    }
+  }
+  function showSolution() {
+    const r = ROUNDS[roundIndex];
+    if (r.kind === 'assign') {
+      picks = {};
+      r.items.forEach((it, i) => { picks[i] = it.a; });
+      paintPicks();
+      feedback.className = 'feedback info';
+      feedback.innerHTML = 'So sieht die Lösung aus. Lösche die Auswahl und versuche es selbst, damit die Runde als gelöst zählt.<ul>' +
+        r.items.map(it => `<li><b>${esc(it.what)}</b> → ${esc(r.options[it.a])}<br>${esc(it.why)}</li>`).join('') + '</ul>';
+    } else {
+      feedback.className = 'feedback info';
+      feedback.innerHTML = `Richtig ist: <b>${esc(r.options[r.correct])}</b>. ${esc(r.explanation)}`;
+    }
+  }
+
+  function drawRounds() {
+    const box = $('roundButtons');
+    box.innerHTML = '';
+    ROUNDS.forEach((r, i) => {
+      const b = document.createElement('button');
+      b.textContent = String(i + 1);
+      b.title = r.title;
+      b.className = (solved.has(r.id) ? 'solved ' : '') + (i === roundIndex ? 'current' : '');
+      b.setAttribute('aria-label', `Runde ${i + 1}: ${r.title}${solved.has(r.id) ? ' (gelöst)' : ''}`);
+      b.addEventListener('click', () => selectRound(i));
+      box.appendChild(b);
+    });
+    const r = ROUNDS[roundIndex];
+    $('roundCard').innerHTML =
+      `<div><b>Runde ${roundIndex + 1} von ${ROUNDS.length}: ${esc(r.title)}</b>${solved.has(r.id) ? ' <span class="badge ok">✓ gelöst</span>' : ''}</div>` +
+      `${esc(r.intro)}` +
+      (r.kind === 'assign' ? '<br><span class="hint">Wähle in jeder Zeile eine Antwort und drücke dann auf Prüfen.</span>' : '<br><span class="hint">Klicke auf eine Antwort. Du bekommst sofort eine Rückmeldung.</span>') +
+      `<br><span class="hint">Gelöst: ${solved.size} von ${ROUNDS.length} Runden</span>`;
+  }
+  function selectRound(i) {
+    roundIndex = i;
+    store.set('round', i);
+    picks = {};
+    clearFeedback();
+    drawRounds();
+    const r = ROUNDS[i];
+    if (r.kind === 'assign') { renderAssign(r); } else { renderChoice(r); }
+    $('checkBtn').style.display = r.kind === 'assign' ? '' : 'none';
+    $('resetBtn').style.display = r.kind === 'assign' ? '' : 'none';
+  }
+  $('checkBtn').addEventListener('click', checkAssign);
+  $('resetBtn').addEventListener('click', () => { picks = {}; clearFeedback(); paintPicks(); });
+  $('solutionBtn').addEventListener('click', showSolution);
+
+  // ---------- slides ----------
+  const anims = [pAnim, qAnim, hAnim, cAnim, eAnim];
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  let current = Math.min(Math.max(store.get('slide', 0) | 0, 0), slides.length - 1);
+  function showSlide(i) {
+    current = Math.min(Math.max(i, 0), slides.length - 1);
+    slides.forEach((s, k) => s.classList.toggle('active', k === current));
+    $('progressText').textContent = `${current + 1} / ${slides.length}`;
+    $('progressBar').style.width = `${(current + 1) / slides.length * 100}%`;
+    $('prevBtn').disabled = current === 0;
+    $('nextBtn').disabled = current === slides.length - 1;
+    anims.forEach(a => a.stop());
+    store.set('slide', current);
+    window.scrollTo(0, 0);
+  }
+  $('prevBtn').addEventListener('click', () => showSlide(current - 1));
+  $('nextBtn').addEventListener('click', () => showSlide(current + 1));
+  document.addEventListener('keydown', evt => {
+    const tag = evt.target && evt.target.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (evt.target && evt.target.isContentEditable)) { return; }
+    if (evt.ctrlKey || evt.altKey || evt.metaKey) { return; }
+    if (evt.key === 'ArrowRight' || evt.key === 'PageDown') { showSlide(current + 1); evt.preventDefault(); }
+    if (evt.key === 'ArrowLeft' || evt.key === 'PageUp') { showSlide(current - 1); evt.preventDefault(); }
+  });
+
+  // ---------- start ----------
+  anims.forEach(a => a.show(0));
+  selectRound(roundIndex);
+  showSlide(current);
+
+  /** Read-only hooks for automated tests. */
+  window.domDebug = {
+    rounds: () => ROUNDS.map(r => r.id),
+    answer: () => (ROUNDS[roundIndex].kind === 'assign' ? ROUNDS[roundIndex].items.map(it => it.a) : [ROUNDS[roundIndex].correct]),
+    /** Every answer must point to an existing option, and the DOM facts must hold in this browser. */
+    selfTest: () => {
+      const problems = [];
+      ROUNDS.forEach(r => {
+        if (r.kind === 'assign') {
+          r.items.forEach(it => {
+            if (!(it.a >= 0 && it.a < r.options.length)) { problems.push(`${r.id}: ${it.what} has no valid answer`); }
+            if (!it.why) { problems.push(`${r.id}: ${it.what} without explanation`); }
+          });
+        } else if (!(r.correct >= 0 && r.correct < r.options.length)) { problems.push(`${r.id}: invalid correct option`); }
+        if (r.check && !r.check()) { problems.push(`${r.id}: DOM check failed`); }
+      });
+      SEL_ITEMS.forEach(x => { if (qDoc.querySelectorAll(x[0]).length !== x[1]) { problems.push(`selectors: ${x[0]} finds ${qDoc.querySelectorAll(x[0]).length}`); } });
+      return problems;
+    }
+  };
+})();
+</script>
+</body>
+</html>

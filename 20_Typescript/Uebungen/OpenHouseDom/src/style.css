@@ -1,0 +1,83 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: light dark;
+}
+
+main {
+  max-width: 48rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  padding: 0.3rem 0.6rem;
+}
+
+#stationList {
+  list-style: none;
+  padding: 0;
+}
+
+/* One row per station: time, title, room, department, button. */
+.station {
+  display: grid;
+  grid-template-columns: 7rem 1fr 4rem 7rem 6rem;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #9d9d9c;
+}
+
+.time {
+  font-variant-numeric: tabular-nums;
+}
+
+.badge {
+  font-size: 0.85rem;
+  text-align: center;
+  border: 1px solid #0090d4;
+  border-radius: 1rem;
+  padding: 0 0.5rem;
+}
+
+#planList li {
+  margin: 0.4rem 0;
+  padding-left: 0.5rem;
+}
+
+#planList li span {
+  margin-right: 0.75rem;
+}
+
+/* A plan entry that overlaps with another entry. */
+#planList li.conflict {
+  border-left: 4px solid #cc0935;
+}
+
+.warning,
+.error {
+  margin: 0.2rem 0;
+  font-weight: bold;
+}
+
+/* A symbol, so the warning does not depend on color only. */
+.warning::before,
+.error::before {
+  content: "⚠ ";
+}

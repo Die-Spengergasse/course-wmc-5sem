@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="340" viewBox="0 0 800 340" font-family="Segoe UI, Helvetica, Arial, sans-serif" fill="#1d1d1b">
+  <defs>
+    <marker id="up" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#a35f00"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="798" height="338" rx="12" fill="#ffffff" stroke="#9d9d9c" stroke-width="1.5"/>
+
+  <!-- left: rendered list -->
+  <text x="200" y="34" text-anchor="middle" font-size="16" font-weight="bold">Die Liste im Browser</text>
+  <rect x="20" y="50" width="360" height="270" rx="8" fill="#ffffff" stroke="#f39000" stroke-width="3"/>
+  <text x="34" y="76" font-size="15" font-weight="bold" font-family="Consolas, Menlo, monospace">&lt;ul id="dishList"&gt;</text>
+  <text x="34" y="98" font-size="14" fill="#a35f00">ein Listener für alle Buttons</text>
+
+  <g font-size="15">
+    <rect x="36" y="112" width="328" height="56" rx="6" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="50" y="145">Pumpkin soup</text>
+    <rect x="276" y="124" width="72" height="32" rx="5" fill="#ffffff" stroke="#5f5f5e" stroke-width="1.5"/>
+    <text x="312" y="145" text-anchor="middle">Add</text>
+
+    <rect x="36" y="180" width="328" height="56" rx="6" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="50" y="213">Spinach lasagna</text>
+    <rect x="276" y="192" width="72" height="32" rx="5" fill="#fdebd1" stroke="#f39000" stroke-width="3"/>
+    <text x="312" y="213" text-anchor="middle" font-weight="bold">Add</text>
+
+    <rect x="36" y="248" width="328" height="56" rx="6" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="50" y="281">Apple strudel</text>
+    <rect x="276" y="260" width="72" height="32" rx="5" fill="#ffffff" stroke="#5f5f5e" stroke-width="1.5"/>
+    <text x="312" y="281" text-anchor="middle">Add</text>
+  </g>
+  <text x="250" y="213" text-anchor="end" font-size="14" fill="#a35f00" font-weight="bold">Klick →</text>
+
+  <!-- connector to the chain -->
+  <path d="M348,208 C 400,208 400,290 450,290" stroke="#a35f00" stroke-width="1.5" stroke-dasharray="5 4" fill="none"/>
+
+  <!-- right: bubbling chain -->
+  <text x="600" y="34" text-anchor="middle" font-size="16" font-weight="bold">Der Weg des Events (Bubbling)</text>
+  <g font-family="Consolas, Menlo, monospace" font-size="15" text-anchor="middle">
+    <rect x="450" y="50" width="130" height="32" rx="5" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="515" y="71">document</text>
+    <rect x="450" y="110" width="130" height="32" rx="5" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="515" y="131">&lt;body&gt;</text>
+    <rect x="450" y="170" width="130" height="32" rx="5" fill="#fdebd1" stroke="#f39000" stroke-width="3"/>
+    <text x="515" y="191" font-weight="bold">&lt;ul&gt;</text>
+    <rect x="450" y="230" width="130" height="32" rx="5" fill="#ededed" stroke="#9d9d9c" stroke-width="1.5"/>
+    <text x="515" y="251">&lt;li&gt;</text>
+    <rect x="450" y="274" width="130" height="32" rx="5" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+    <text x="515" y="295" font-weight="bold">&lt;button&gt;</text>
+  </g>
+  <g stroke="#a35f00" stroke-width="2" marker-end="url(#up)">
+    <line x1="515" y1="274" x2="515" y2="264"/>
+    <line x1="515" y1="230" x2="515" y2="204"/>
+    <line x1="515" y1="170" x2="515" y2="144"/>
+    <line x1="515" y1="110" x2="515" y2="84"/>
+  </g>
+  <g font-size="14">
+    <text x="592" y="186" font-weight="bold" fill="#a35f00">✓ Listener läuft</text>
+    <text x="592" y="204" font-family="Consolas, Menlo, monospace" fill="#a35f00">event.currentTarget</text>
+    <text x="592" y="295" font-family="Consolas, Menlo, monospace" fill="#00628f">event.target</text>
+    <text x="592" y="250" fill="#5f5f5e">kein Listener</text>
+    <text x="592" y="131" fill="#5f5f5e">kein Listener</text>
+  </g>
+</svg>

@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canteen</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1 id="title">Canteen</h1>
+        <p id="week"></p>
+      </header>
+
+      <section>
+        <h2>Menu</h2>
+        <form id="filterForm">
+          <label>
+            Search
+            <input id="search" type="search" placeholder="e.g. soup" />
+          </label>
+          <label class="inline">
+            <input id="veggieOnly" type="checkbox" />
+            Vegetarian only
+          </label>
+        </form>
+        <!-- main.ts creates the list items from data/menu.json. -->
+        <ul id="dishList"></ul>
+      </section>
+
+      <section>
+        <h2>My tray</h2>
+        <ol id="trayList"></ol>
+        <p>Total: <strong id="total"></strong></p>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

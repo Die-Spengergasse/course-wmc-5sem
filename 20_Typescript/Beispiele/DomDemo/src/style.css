@@ -1,0 +1,57 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color-scheme: light dark;
+}
+
+main {
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+label.inline {
+  flex-direction: row;
+  align-items: center;
+}
+
+button,
+input {
+  font: inherit;
+  padding: 0.3rem 0.6rem;
+}
+
+#dishList {
+  list-style: none;
+  padding: 0;
+}
+
+.dish {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid #9d9d9c;
+}
+
+/* A leaf symbol, so the information does not depend on color. */
+.dish.veggie span:first-child::after {
+  content: " 🌱";
+}
+
+#trayList li {
+  margin: 0.3rem 0;
+}
