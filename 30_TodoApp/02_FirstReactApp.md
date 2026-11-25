@@ -2,7 +2,7 @@
 
 ![](./todo_first_app_1748.png)
 
-> Download der App: [First_App20241118.zip](./First_App20241118.zip).
+> Download der App: [First_App20261125.zip](./First_App20261125.zip).
 > Im Repo ist die App im Ordner *30_TodoApp/First_App*.
 > Vergiss nicht, *npm install* nach dem Download im Ordner, wo die Datei *package.json* ist, auszuführen.
 
@@ -21,31 +21,39 @@ Nun wollen wir die erste SPA (single page app) schreiben, die die Ausgabe in den
 Erstelle mit dem folgendem Befehl in der Konsole ein neues Next.js Projekt mit TypeScript.
 Es wird automatisch ein Ordner *todo-app* erstellt, d. h. du führst den Befehl in der Konsole im Verzeichnis darüber aus.
 
-Um das Skript *create-next-app* zur Verfügung zu haben, muss einmalig das Paket global installiert werden:
-
-```
-npm install -g create-next-app
-```
-
-Danach kann im Zielordner mit der Erstellung der ersten App begonnen werden.
+Das Skript *create-next-app* musst du nicht installieren.
+*npx* lädt es automatisch herunter und führt es aus.
 
 ```bash
-npx create-next-app@latest todo-app --typescript
+npx create-next-app@latest todo-app
 ```
 
 Beantworte die Fragen zur Einrichtung wie folgt.
-Wir wollen nicht den App Router, sondern den Router von Next.js verwenden.
-Deswegen beantworten wir die Frage mit *No*.
+Die empfohlenen Standardwerte (*recommended defaults*) passen nicht ganz für uns.
+Sie legen zum Beispiel keinen Ordner *src* an.
+Deswegen wählen wir bei der ersten Frage *No, customize settings* und beantworten die Fragen selbst.
+Wir verwenden den *App Router*, das ist das aktuelle Routing-System von Next.js.
 
 ```
-npx create-next-app@latest todo-app --typescript
-√ Would you like to use ESLint? ...                               No / Yes <-- YES
-√ Would you like to use Tailwind CSS? ...                         No / Yes <-- YES
-√ Would you like to use *src/* directory? ...                     No / Yes <-- YES
-√ Would you like to use App Router? (recommended) ...             No / Yes <-- YES
-√ Would you like to use Turbopack for next dev? ...               No / Yes <-- NO
-√ Would you like to customize the default import alias (@/*)? ... No / Yes <-- NO
+npx create-next-app@latest todo-app
+√ Would you like to use the recommended Next.js defaults? » No, customize settings
+√ Would you like to use TypeScript? ...                            No / Yes <-- YES
+√ Which linter would you like to use? »                            ESLint
+√ Would you like to use React Compiler? ...                        No / Yes <-- NO
+√ Would you like to use Tailwind CSS? ...                          No / Yes <-- YES
+√ Would you like your code inside a `src/` directory? ...          No / Yes <-- YES
+√ Would you like to use App Router? (recommended) ...              No / Yes <-- YES
+√ Would you like to customize the import alias (`@/*` by default)? No / Yes <-- NO
+√ Would you like to use Cache Components? ...                      No / Yes <-- NO
+√ Would you like to include AGENTS.md to guide coding agents ...?  No / Yes <-- YES
+√ Would you like to help improve Next.js by letting agents ...?    No / Yes <-- NO
 ```
+
+Die genaue Reihenfolge und der Wortlaut der Fragen können sich mit neuen Versionen leicht ändern.
+
+> **Turbopack:** Seit Next.js 16 ist *Turbopack* der Standard-Bundler für `npm run dev` und `npm run build`.
+> Ein *Bundler* fasst deine vielen Quelldateien zu wenigen Dateien für den Browser zusammen.
+> Deshalb gibt es dazu keine Frage mehr, Turbopack ist automatisch aktiv.
 
 ### Überblick über das Next.js Projekt
 
@@ -57,7 +65,11 @@ Nach der Initialisierung findest du die folgenden Dateien und Ordner:
   Es ist der "HTML Boilerplate Code".
   In *{children}* werden die einzelnen Seiten eingesetzt.
 - **public/**: Statische Dateien wie Bilder, Icons oder andere Ressourcen werden hier abgelegt.
-- **next.config.js**: Diese Datei enthält die Konfiguration von Next.js. Hier kannst du spezifische Einstellungen für dein Projekt anpassen.
+- **next.config.ts**: Diese Datei enthält die Konfiguration von Next.js. Hier kannst du spezifische Einstellungen für dein Projekt anpassen.
+  Der Abschnitt *turbopack* bindet Tailwind CSS in den Build ein.
+- **eslint.config.mjs**: Die Konfiguration des Linters ESLint.
+- **AGENTS.md**: Hinweise für KI-Assistenten (Coding Agents), damit sie Code für die aktuelle Next.js Version schreiben.
+  Die Datei wird von `npm run dev` automatisch erstellt.
 - **tsconfig.json**: Hier werden die TypeScript-Konfigurationen festgelegt.
 - **package.json**: Diese Datei listet alle Abhängigkeiten des Projekts sowie Skripte zum Bauen, Starten und Entwickeln.
 
@@ -72,20 +84,37 @@ npm install axios
 ## Konfiguration des Linters
 
 Wie in unseren Typescript Projekten wollen wir die Option *no-explicit-any* zentral setzen.
-Das können wir in der Datei *.eslintrc.json* machen:
+Das können wir in der Datei *eslint.config.mjs* machen.
+Füge dazu den Block mit *rules* in das Array ein:
 
-**.eslintrc.json**
-```json
-{
-  "extends": [
-    "next/core-web-vitals",
-    "next/typescript"
-  ],
-  "rules": {
-    "@typescript-eslint/no-explicit-any": "off"
-  }
-}
+**eslint.config.mjs**
+```javascript
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
+
+const eslintConfig = defineConfig([
+  ...nextVitals,
+  ...nextTs,
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+  ]),
+]);
+
+export default eslintConfig;
 ```
+
+Mit `npm run lint` kannst du den Linter für das ganze Projekt starten.
 
 ## Erstellen der TypeScript Interfaces
 
@@ -267,7 +296,10 @@ export default function Home() {
 - **useState**: Mit diesem Hook erstellen wir lokale State-Variablen. *todoItems* speichert die Liste der Todo-Items, *categories* die Kategorien und *selectedCategory* speichert die aktuell ausgewählte Kategorie.
 - **useEffect**: Dieser Hook führt seiteneffektreiche Aktionen aus, wie z.B. das Abrufen von Daten. Beim Laden der Seite ruft *useEffect* die Daten von den beiden API-Endpunkten ab und speichert sie im State.
 - **axios.get()**: Hiermit werden HTTP GET-Anfragen an die API gesendet. Die Antworten werden in den jeweiligen State-Variablen gespeichert.
-- **handleCategoryChange**: Diese Funktion wird aufgerufen, wenn der Benutzer eine Kategorie aus dem Dropdown-Menü auswählt. Die ausgewählte Kategorie wird im State gespeichert und die Liste der Todo-Items wird entsprechend gefiltert.
+- **onChange**: Die arrow function im *onChange* Attribut des Dropdowns wird aufgerufen, wenn der Benutzer eine Kategorie auswählt. Die ausgewählte Kategorie wird mit *setSelectedCategory* im State gespeichert und die Liste der Todo-Items wird entsprechend gefiltert.
+- **httpsAgent**: Die Option *rejectUnauthorized: false* hat nur in Node.js eine Wirkung. Der Code läuft hier aber im Browser.
+  Der Browser muss dem Zertifikat des Backends vertrauen.
+  Öffne daher einmal *https://localhost:5443/swagger* im Browser und akzeptiere das Zertifikat, falls eine Warnung erscheint.
 - **isTodoItem & isCategory**: Diese Type Guards stellen sicher, dass die vom Backend erhaltenen Daten die erwarteten Strukturen haben, bevor sie in den State gespeichert werden.
 - **use client**: Standardmäßig werden Komponenten von Next.js am Server gerendert.
   Wollen wie Userinteraktion, muss die Komponente allerdings am Client gerendert werden.
@@ -364,7 +396,8 @@ Achte darauf, dass im Ordner *src* nur der Ordner *app* ist.
 
 ```
 todo-app
-  + .eslintrc.json
+  + AGENTS.md
+  + eslint.config.mjs
   + next.config.ts
   + package.json
   + public
@@ -376,7 +409,6 @@ todo-app
   |  |  + types
   |  |  |  + Category.ts
   |  |  |  + TodoItem.ts
-  + tailwind.config.ts
   + tsconfig.json
 ```
 
@@ -395,13 +427,21 @@ npm run dev
 
 Editiere die Datei **next.config.ts** und füge folgenden Inhalt ein:
 
-```javascript
+```typescript
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
-  output: "export"
+  output: "export",
+  turbopack: {
+    rules: {
+      "*.css": {
+        loaders: ["@tailwindcss/turbopack"],
+        as: "*.css",
+      },
+    },
+  },
 };
 
 export default nextConfig;
