@@ -16,6 +16,26 @@ Nun wollen wir die erste SPA (single page app) schreiben, die die Ausgabe in den
 
 *Next.js* wurde 2016 von Vercel (früher ZEIT) entwickelt und veröffentlicht, um das Arbeiten mit React zu vereinfachen und zu erweitern. Es wurde geschaffen, um die Lücken in React zu schließen, indem es serverseitiges Rendering (SSR) und statische Seitengenerierung (SSG) "out of the box" bietet. Next.js hat schnell an Beliebtheit gewonnen, weil es die Entwicklung von performanten und SEO-freundlichen Webanwendungen erleichtert, ohne dass Entwickler zusätzliche Konfigurationen für Routing oder Rendering vornehmen müssen. Seit seiner Veröffentlichung hat Next.js zahlreiche neue Funktionen hinzugefügt, darunter API-Routen, Bildoptimierung und integrierte Unterstützung für TypeScript, was es zu einem der führenden React-Frameworks für moderne Webanwendungen gemacht hat.
 
+### Zusammenspiel von React, Next.js und einer REST API
+
+![Drei Spalten: Links der Browser mit React und Client Components. In der Mitte der Next.js Server mit Server Components. Rechts eine externe REST API. Der Browser fordert die Seite an, die Server Component holt die Daten per fetch von der REST API und schickt fertiges HTML mit Daten zurück. Eine gestrichelte Linie zeigt die Alternative, bei der der Browser die API direkt abruft.](react_nextjs_restapi.svg)
+
+- *React* ist ein clientseitiges Framework.
+  Es läuft im Browser und kümmert sich um die Oberfläche: Klicks, Eingaben und den State.
+- *Next.js* ist ein Full-Stack-Framework.
+  Es verwendet React im Browser, hat aber auch einen eigenen Server (Node.js).
+  Dort laufen die *Server Components*.
+- Die *REST API* ist ein eigenes Programm auf einem anderen Server, zum Beispiel unser [TodoBackend](01_Backend.md).
+  Next.js bindet sie nur an.
+
+Der große Vorteil von Next.js: Eine Server Component kann die REST API direkt am Server abfragen.
+Der Browser bekommt die fertige Seite mit den Daten.
+Die REST API muss dann nicht vom Internet aus erreichbar sein, und API-Keys bleiben am Server.
+
+In diesem ersten Beispiel gehen wir noch den anderen Weg (gestrichelte Linie):
+Die Seite ist eine Client Component (*"use client"*) und der Browser lädt die Daten selbst mit *useEffect*.
+Server Components verwenden wir in den nächsten Kapiteln.
+
 ## Erstellen eine neuen Next.js App
 
 Erstelle mit dem folgendem Befehl in der Konsole ein neues Next.js Projekt mit TypeScript.

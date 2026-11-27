@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="680" viewBox="0 0 1000 680" font-family="Segoe UI, Helvetica, Arial, sans-serif" fill="#1d1d1b">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1d1d1b"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+  <rect x="1" y="1" width="998" height="678" rx="12" fill="#ffffff" stroke="#9d9d9c" stroke-width="1.5"/>
+
+  <!-- Next.js spans client and server -->
+  <text x="340" y="36" text-anchor="middle" font-size="18" font-weight="bold" fill="#a35f00">Next.js – Full-Stack-Framework (Client + Server)</text>
+  <path d="M30,62 V50 H650 V62" fill="none" stroke="#f39000" stroke-width="2.5"/>
+  <text x="860" y="36" text-anchor="middle" font-size="18" font-weight="bold" fill="#5f5f5e">Externer Dienst</text>
+  <path d="M750,62 V50 H970 V62" fill="none" stroke="#9d9d9c" stroke-width="2.5"/>
+
+  <!-- column headers -->
+  <text x="160" y="92" text-anchor="middle" font-size="15" fill="#5f5f5e">Client: Browser</text>
+  <text x="520" y="92" text-anchor="middle" font-size="15" fill="#5f5f5e">Server: Node.js</text>
+  <text x="860" y="92" text-anchor="middle" font-size="15" fill="#5f5f5e">anderer Server</text>
+
+  <!-- client box -->
+  <rect x="30" y="105" width="260" height="225" rx="8" fill="#d1ebf7" stroke="#0090d4" stroke-width="2"/>
+  <text x="160" y="135" text-anchor="middle" font-size="18" font-weight="bold">React</text>
+  <text x="160" y="157" text-anchor="middle" font-size="14">Client Components</text>
+  <line x1="50" y1="172" x2="270" y2="172" stroke="#0090d4" stroke-width="1"/>
+  <text x="48" y="198" font-size="14">läuft im Browser</text>
+  <text x="48" y="221" font-size="14">reagiert auf Klicks, Eingaben</text>
+  <text x="48" y="244" font-size="14">verwaltet State</text>
+  <text x="48" y="276" font-size="14" font-family="Consolas, Menlo, monospace">"use client"</text>
+  <text x="48" y="299" font-size="14" font-family="Consolas, Menlo, monospace">useState, useEffect</text>
+
+  <!-- server box -->
+  <rect x="390" y="105" width="260" height="225" rx="8" fill="#fdebd1" stroke="#f39000" stroke-width="2"/>
+  <text x="520" y="135" text-anchor="middle" font-size="18" font-weight="bold">Next.js</text>
+  <text x="520" y="157" text-anchor="middle" font-size="14">Server Components</text>
+  <line x1="410" y1="172" x2="630" y2="172" stroke="#f39000" stroke-width="1"/>
+  <text x="408" y="198" font-size="14">läuft am Server</text>
+  <text x="408" y="221" font-size="14">lädt die Daten mit await</text>
+  <text x="408" y="244" font-size="14">erzeugt fertiges HTML</text>
+  <text x="408" y="276" font-size="14" font-family="Consolas, Menlo, monospace">async function Page()</text>
+  <text x="408" y="299" font-size="14" font-family="Consolas, Menlo, monospace">await fetch(...)</text>
+
+  <!-- REST API box -->
+  <rect x="750" y="105" width="220" height="225" rx="8" fill="#ededed" stroke="#9d9d9c" stroke-width="2"/>
+  <text x="860" y="135" text-anchor="middle" font-size="18" font-weight="bold">REST API</text>
+  <text x="860" y="157" text-anchor="middle" font-size="14">z. B. TodoBackend</text>
+  <line x1="770" y1="172" x2="950" y2="172" stroke="#9d9d9c" stroke-width="1"/>
+  <text x="768" y="198" font-size="14">eigenes Programm</text>
+  <text x="768" y="221" font-size="14">(.NET, Java, …)</text>
+  <text x="768" y="244" font-size="14">liefert JSON</text>
+  <text x="768" y="276" font-size="14" font-family="Consolas, Menlo, monospace">GET /api/TodoItems</text>
+  <text x="768" y="299" font-size="14" font-family="Consolas, Menlo, monospace">GET /api/Categories</text>
+
+  <!-- 1: browser requests page -->
+  <line x1="292" y1="185" x2="388" y2="185" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="340" y="176" text-anchor="middle" font-size="14" font-weight="bold">1. GET /</text>
+  <!-- 2: server fetches API -->
+  <line x1="652" y1="185" x2="748" y2="185" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="700" y="176" text-anchor="middle" font-size="14" font-weight="bold">2. fetch</text>
+  <!-- 3: API returns JSON -->
+  <line x1="748" y1="260" x2="652" y2="260" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="700" y="251" text-anchor="middle" font-size="14" font-weight="bold">3. JSON</text>
+  <!-- 4: server sends HTML -->
+  <line x1="388" y1="260" x2="292" y2="260" stroke="#1d1d1b" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <text x="340" y="251" text-anchor="middle" font-size="14" font-weight="bold">4. HTML</text>
+  <text x="340" y="280" text-anchor="middle" font-size="13">mit Daten</text>
+
+  <!-- React is client-side only -->
+  <path d="M30,340 V352 H290 V340" fill="none" stroke="#0090d4" stroke-width="2.5"/>
+  <text x="150" y="376" text-anchor="middle" font-size="16" font-weight="bold" fill="#00628f">React</text>
+  <text x="150" y="396" text-anchor="middle" font-size="15" fill="#00628f">clientseitiges Framework</text>
+
+  <!-- advantages of server components -->
+  <rect x="340" y="370" width="380" height="150" rx="8" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
+  <text x="358" y="398" font-size="16" font-weight="bold" fill="#166534">Vorteile: API-Zugriff in Server Components</text>
+  <text x="358" y="426" font-size="14" font-weight="bold" fill="#16a34a">✓</text><text x="378" y="426" font-size="14">Die REST API muss nicht öffentlich sein.</text>
+  <text x="358" y="450" font-size="14" font-weight="bold" fill="#16a34a">✓</text><text x="378" y="450" font-size="14">API-Keys bleiben am Server, nicht im Browser.</text>
+  <text x="358" y="474" font-size="14" font-weight="bold" fill="#16a34a">✓</text><text x="378" y="474" font-size="14">Kein CORS nötig: Server spricht mit Server.</text>
+  <text x="358" y="498" font-size="14" font-weight="bold" fill="#16a34a">✓</text><text x="378" y="498" font-size="14">Die Seite kommt sofort mit Daten an.</text>
+
+  <!-- alternative: browser calls API directly -->
+  <path d="M275,332 V550 H860 V334" fill="none" stroke="#dc2626" stroke-width="2" stroke-dasharray="8 6" marker-end="url(#arrowRed)"/>
+  <text x="300" y="580" font-size="15" font-weight="bold" fill="#b91c1c">Alternative: Der Browser ruft die API selbst ab (Client Component + useEffect)</text>
+  <text x="300" y="604" font-size="14" font-weight="bold" fill="#dc2626">✗</text><text x="320" y="604" font-size="14">Die REST API muss vom Internet aus erreichbar sein.</text>
+  <text x="300" y="626" font-size="14" font-weight="bold" fill="#dc2626">✗</text><text x="320" y="626" font-size="14">Der API-Server muss CORS für die Webseite erlauben.</text>
+  <text x="300" y="648" font-size="14" font-weight="bold" fill="#dc2626">✗</text><text x="320" y="648" font-size="14">Zuerst kommt eine leere Seite, die Daten folgen mit einem zweiten Request.</text>
+</svg>
